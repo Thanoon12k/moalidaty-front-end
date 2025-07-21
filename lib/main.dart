@@ -1,74 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
+import 'package:moalidaty1/features/workers/ui/list_workers.dart';
+import 'package:moalidaty1/routes/routes.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(
+  GetMaterialApp(
+    title: 'Moalidaty App',
+    debugShowCheckedModeBanner: false,
+    initialRoute: Routes.home,
+    getPages: Routes.pages,
+    locale: const Locale('ar', 'IQ'), // اللغة: عربية، الدولة: العراق
+  supportedLocales: const [
+    Locale('ar', 'IQ'), // يمكنك إضافة لغات أخرى إذا أردت
+  ],
+  localizationsDelegates: GlobalMaterialLocalizations.delegates,
+  theme: ThemeData(
+    fontFamily: 'Cairo', // اختياري: لتطبيق خط عربي جميل
+  ),
+  textDirection: TextDirection.rtl, // ← هذا يفرض الاتجاه اليدويًا (اختياري)
+  ),
+);
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
-  // This widget is the root of your application.
+
+
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-       
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-     
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-   
     return Scaffold(
-      appBar: AppBar(
-       
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-       
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text('Home')),
       body: Center(
-    
-        child: Column(
-         
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        child: ElevatedButton(
+          onPressed: () {
+            Get.to(() => WorkersListPage());
+          },
+          child: Text('Go to Workers List'),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

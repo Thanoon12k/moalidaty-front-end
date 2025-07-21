@@ -1,0 +1,5 @@
+###
+GET https://moalidty.pythonanywhere.com/workers/ HTTP/1.1
+
+###
+GET https://dummy-json.mock.beeceptor.com/todos HTTP/1.1
