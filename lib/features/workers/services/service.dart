@@ -30,7 +30,19 @@ class WorkerService extends GetxService {
     workers.add(w);
   }
 
-  void updateWorker(Gen_Worker w) {}
+  void updateWorker(Gen_Worker w) {
+    final repository = WorkerRepository();
+
+    repository.updateWorker(w.id, w).then((updatedWorker) {
+      int index = workers.indexWhere((worker) => worker.id == w.id);
+      if (index != -1) {
+        workers[index] = updatedWorker; // Update the worker in the list
+      }
+    }).catchError((error) {
+      print('Error updating worker: $error');
+    });
+
+  }
 
   void removeWorker(Gen_Worker w) {
     final repository = WorkerRepository();

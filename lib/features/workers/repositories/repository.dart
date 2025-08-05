@@ -51,6 +51,9 @@ class WorkerRepository {
       headers: {'Content-Type': 'application/json'},
       body: json.encode(worker.toJson()),
     );
+    print('Update response: ${response.statusCode}');
+    print('Update response body: ${response.body}');
+    print('Worker to update: ${worker.toJson()}');
     if (response.statusCode == 200) {
       return Gen_Worker.fromJson(json.decode(response.body));
     } else {
