@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/features/subscripers/services/service.dart';
+
+class subscripersListPage extends StatelessWidget {
+  const subscripersListPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final subs_service = Get.put(subscripersService());
+    return Scaffold(
+      appBar: CustomAppBar(title: "قائمة المشتركين", font_size: 32),
+      body: FutureBuilder(
+        future: subs_service.getSubscripers(),
+        builder: (context, snapshot) {
+          return Obx(() {
+            if (subs_service.list_subs.isEmpty) {
+              return const Center(
+                child: Text("data", style: TextStyle(fontSize: 32)),
+              );
+            }
+            return ListView.separated(
+              separatorBuilder: (_, _) => const Divider(thickness: 2),
+              itemCount: subs_service.list_subs.length,
+              padding: EdgeInsets.all(16),
+              itemBuilder: (context, index) {
+                final sub = subs_service.list_subs[index];
+                return Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blueGrey,
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.red[300],
+                        radius: 28,
+                        child: Text(
+                          '${index + 1}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 18),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                          children: [
+                            Text(
+                              sub.name ?? '',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'الامبيرات: ${sub.amber}',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                color: Colors.green,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'رقم الجوزة: ${sub.circuit_number}',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'الهاتف: ${sub.Phone}',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          });
+        },
+      ),
+    );
+  }
+}

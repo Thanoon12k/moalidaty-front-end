@@ -7,10 +7,10 @@ class WorkerRepository {
   final String baseUrl = GlobalConstants.baseAddress;
 
   Future<List<Gen_Worker>> fetchWorkers() async {
-    print('Fetching workers from: $baseUrl/workers/');
 
     final response = await http.get(Uri.parse('$baseUrl/workers/'));
-    print('Response: ${response.body}');
+    print('fetch workers status code: ${response.statusCode}');
+    print('fetch workers Response: ${response.body}');
 
     if (response.statusCode == 200) {
       List data = json.decode(response.body);
