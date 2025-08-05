@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/features/workers/models/model.dart';
 import '../services/service.dart';
 
 class WorkersListPage extends StatelessWidget {
@@ -10,18 +12,7 @@ class WorkersListPage extends StatelessWidget {
     final workerService = Get.put(WorkerService());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('المشغلين'),
-        backgroundColor: Colors.deepPurple[400],
-        toolbarHeight: 80,
-        titleTextStyle: const TextStyle(
-          fontSize: 36,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          letterSpacing: 2,
-        ),
-        iconTheme: const IconThemeData(color: Colors.white, size: 36),
-      ),
+      appBar: CustomAppBar(title: "قائمة المشغلين"),
       body: FutureBuilder(
         future: workerService.fetchWorkers(),
         builder: (context, snapshot) {
@@ -96,14 +87,144 @@ class WorkersListPage extends StatelessWidget {
                           ],
                         ),
                       ),
+
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  title: const Text('تأكيد الحذف'),
+                                  content: const Text(
+                                    'هل أنت متأكد أنك تريد حذف هذا المشغل؟',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('لا'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        workerService.removeWorker(worker);
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('نعم'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 );
               },
             );
+            // Add button at the bottom right
           });
         },
       ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+          height: 60,
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.add, size: 32),
+            label: const Text(
+              'إضافة مشغل جديد',
+              style: TextStyle(fontSize: 24),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[400],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => const AddWorkerDialog(),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class AddWorkerDialog extends StatefulWidget {
+  const AddWorkerDialog({Key? key}) : super(key: key);
+
+  @override
+  State<AddWorkerDialog> createState() => _AddWorkerDialogState();
+}
+
+class _AddWorkerDialogState extends State<AddWorkerDialog> {
+  final nameCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
+  final salaryCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final workerService = Get.find<WorkerService>();
+
+    return AlertDialog(
+      title: const Text('إضافة مشغل جديد'),
+      content: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(
+                labelText: 'الاسم',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: phoneCtrl,
+              decoration: const InputDecoration(
+                labelText: 'الهاتف',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: salaryCtrl,
+              decoration: const InputDecoration(
+                labelText: 'الراتب',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actions: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+          child: const Text('رجوع'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final worker = Gen_Worker(
+              name: nameCtrl.text,
+              phone: phoneCtrl.text,
+              salary: salaryCtrl.text,
+            );
+            workerService.addWorker(worker);
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+          child: const Text('إضافة'),
+        ),
+      ],
     );
   }
 }

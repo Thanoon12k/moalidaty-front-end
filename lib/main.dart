@@ -6,7 +6,7 @@ import 'package:moalidaty1/routes/routes.dart';
 
 void main() => runApp(
   GetMaterialApp(
-    title: 'Moalidaty App',
+    title: 'Moalidaty',
     debugShowCheckedModeBanner: false,
     initialRoute: Routes.home,
     getPages: Routes.pages,

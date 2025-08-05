@@ -1,15 +1,22 @@
 class Gen_Worker {
+  final int id;
   final String name;
   final String? phone;
   final String? salary;
 
-  Gen_Worker({required this.name, this.phone = "077", this.salary = "0.0"});
+  Gen_Worker({
+    this.id = 0,
+    required this.name,
+    this.phone = "077",
+    this.salary = "0.0",
+  });
 
   @override
   String toString() => name;
 
   factory Gen_Worker.fromJson(Map<String, dynamic> json) {
     return Gen_Worker(
+      id: json['id'] as int,
       name: json['name'] as String,
       phone: json['phone'] as String?,
       salary: json['salary'] as String?,

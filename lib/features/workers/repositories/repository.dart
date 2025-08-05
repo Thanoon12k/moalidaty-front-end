@@ -35,6 +35,9 @@ class WorkerRepository {
       headers: {'Content-Type': 'application/json'},
       body: json.encode(worker.toJson()),
     );
+    print('Create response: ${response.statusCode}');
+    print('Create response body: ${response.body}');
+    print('Worker to create: ${worker.toJson()}');
     if (response.statusCode == 201) {
       return Gen_Worker.fromJson(json.decode(response.body));
     } else {
@@ -59,6 +62,8 @@ class WorkerRepository {
 
   Future<void> deleteWorker(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl/workers/$id/'));
+    print('Delete response: ${response.statusCode}');
+    print('Delete response body: ${response.body}');
     if (response.statusCode != 204) {
       throw Exception('Failed to delete worker with id $id');
     }

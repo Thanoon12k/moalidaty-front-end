@@ -24,10 +24,18 @@ class WorkerService extends GetxService {
   }
 
   void addWorker(Gen_Worker w) {
+    final repository = WorkerRepository();
+    repository.createWorker(w);
+
     workers.add(w);
   }
 
+  void updateWorker(Gen_Worker w) {}
+
   void removeWorker(Gen_Worker w) {
+    final repository = WorkerRepository();
+
+    repository.deleteWorker(w.id);
     workers.remove(w);
   }
 }
