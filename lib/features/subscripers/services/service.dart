@@ -15,7 +15,7 @@ class subscripersService {
       final fetched_subs = await sub_repository.fetchSubscribers();
       list_subs.assignAll(fetched_subs);
     } catch (e) {
-      print("error to get all subs because >>> $e");
+      print('Error fetching subscribers: $e');
     }
   }
 

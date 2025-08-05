@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
 import '../services/service.dart';
 
@@ -18,9 +19,7 @@ class WorkersListPage extends StatelessWidget {
         builder: (context, snapshot) {
           return Obx(() {
             if (workerService.workers.isEmpty) {
-              return const Center(
-                child: Text('لا يوجد مشغلين.', style: TextStyle(fontSize: 28)),
-              );
+              return const Center(child: GeneratorLoadingIndicator());
             }
 
             return ListView.separated(

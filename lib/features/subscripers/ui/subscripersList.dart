@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/features/subscripers/services/service.dart';
 
 class subscripersListPage extends StatelessWidget {
@@ -16,9 +17,7 @@ class subscripersListPage extends StatelessWidget {
         builder: (context, snapshot) {
           return Obx(() {
             if (subs_service.list_subs.isEmpty) {
-              return const Center(
-                child: Text("data", style: TextStyle(fontSize: 32)),
-              );
+              return const Center(child: GeneratorLoadingIndicator());
             }
             return ListView.separated(
               separatorBuilder: (_, _) => const Divider(thickness: 2),
@@ -84,7 +83,7 @@ class subscripersListPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'الهاتف: ${sub.Phone}',
+                              'الهاتف: ${sub.phone}',
                               style: const TextStyle(
                                 fontSize: 22,
                                 color: Colors.blue,

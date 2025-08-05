@@ -22,6 +22,7 @@ class Gen_Worker {
       salary: json['salary'] as String?,
     );
   }
+  
 
   Map<String, dynamic> toJson() {
     return {'name': name, 'phone': phone, 'salary': salary};

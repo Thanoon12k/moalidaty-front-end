@@ -9,21 +9,22 @@ class SubscriperRepository {
   final String baseUrl = GlobalConstants.baseAddress;
 
   Future<List<Subscriper>> fetchSubscribers() async {
-    String fetchUrl = "$baseUrl/subsripers";
+    String fetchUrl = "$baseUrl/subscribers";
 
     List<Subscriper> subs = [];
-    final response = await http.get(Uri.parse(fetchUrl));
-    print("return subscriper from $fetchUrl");
-    print("return subscriper code ${response.statusCode}");
-    print("return subscriper body ${response.body}");
+    try {
+      final response = await http.get(Uri.parse(fetchUrl));
 
-    if (response.statusCode == 200) {
-      List list_data = json.decode(response.body);
-      subs =
-          list_data.map((json_row) => Subscriper.fromJson(json_row)).toList();
-      return subs;
-    } else {
-      throw Exception("Failed to Fetch  subscripers from $fetchUrl");
+      if (response.statusCode == 200) {
+        List list_data = json.decode(response.body);
+        subs =
+            list_data.map((json_row) => Subscriper.fromJson(json_row)).toList();
+        return subs;
+      } else {
+        throw Exception("Failed to Fetch  subscripers from $fetchUrl");
+      }
+    } catch (e) {
+      throw Exception("error in fetching subs )($e)");
     }
   }
 
