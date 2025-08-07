@@ -21,7 +21,7 @@ class SubscriperRepository {
             list_data.map((json_row) => Subscriper.fromJson(json_row)).toList();
         return subs;
       } else {
-        throw Exception("Failed to Fetch  subscripers from $fetchUrl");
+        throw Exception("Failed to Fetch  subscribers from $fetchUrl");
       }
     } catch (e) {
       throw Exception("error in fetching subs )($e)");
@@ -29,17 +29,18 @@ class SubscriperRepository {
   }
 
   Future<void> destroySubscriper(int id) async {
-    final String destroyUrl = "$baseUrl/subscripers/$id/";
+    final String destroyUrl = "$baseUrl/subscribers/$id/";
     final response = await http.delete(Uri.parse(destroyUrl));
-    print("delete response ${response.statusCode}");
+    print("delete-$destroyUrl-response ${response.statusCode}");
     print("delete body${response.body}");
+
     if (response.statusCode != 204) {
-      throw Exception("Failed to Fetch  subscripers from $destroyUrl");
+      throw Exception("Failed to Fetch  subscribers from $destroyUrl");
     }
   }
 
   Future<Subscriper> createSubscriper(Subscriper sub) async {
-    final String createUrl = "$baseUrl/subscripers";
+    final String createUrl = "$baseUrl/subscribers/";
     final response = await http.post(
       Uri.parse(createUrl),
       headers: {'Content-Type': 'application/json'},
@@ -57,16 +58,17 @@ class SubscriperRepository {
   }
 
   Future<Subscriper> updateSubscriper(sub) async {
-    final String updateUrl = "$baseUrl/subscripers/${sub.id}";
+    final String updateUrl =
+        "$baseUrl/subscribers/${sub.id}/"; // ✅ trailing slash
 
-    final response = await http.patch(
+    final response = await http.put(
       Uri.parse(updateUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(sub.toJson()),
     );
-    print('update response: ${response.statusCode}');
+    print('update to url <<$updateUrl>>response: ${response.statusCode}');
     print('update response body: ${response.body}');
-    print('sub to update: ${sub.toJson()}');
+    // print('sub to update: ${sub.toJson()}');
     if (response.statusCode == 200) {
       return sub;
     } else {

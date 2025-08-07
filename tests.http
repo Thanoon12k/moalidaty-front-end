@@ -3,3 +3,30 @@ GET https://moalidty.pythonanywhere.com/workers/ HTTP/1.1
 
 ###
 GET https://dummy-json.mock.beeceptor.com/todos HTTP/1.1
+
+
+
+###
+GET https://moalidty.pythonanywhere.com/subscribers/ HTTP/1.1
+###
+PUT https://moalidty.pythonanywhere.com/subscribers/2/ HTTP/1.1
+Content-Type: application/json
+//{id: 2, name: علي احمد, Ambers: 77, circuit_number: 55, phone: 07702790910}
+{
+    "name": "علي احمد",
+    "Ambers":99,
+    "circuit_number": "55",
+    "phone": "07702790910"
+}
+
+###
+POST https://moalidty.pythonanywhere.com/subscribers/
+Content-Type: application/json
+
+{
+    "name": " احمد",
+    "Ambers":99,
+    "circuit_number": "55",
+    "phone": "07702790910"
+}
+

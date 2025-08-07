@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
+import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/subscripers/services/service.dart';
+import 'package:moalidaty1/features/subscripers/ui/add_subscriper_dialoge.dart';
+import 'package:moalidaty1/features/subscripers/ui/update_subscriper_dialoge.dart';
+import 'package:moalidaty1/features/workers/ui/update_worker.dart';
 
 class subscripersListPage extends StatelessWidget {
   const subscripersListPage({super.key});
@@ -59,7 +64,7 @@ class subscripersListPage extends StatelessWidget {
 
                           children: [
                             Text(
-                              sub.name ?? '',
+                              sub.name,
                               style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -92,6 +97,24 @@ class subscripersListPage extends StatelessWidget {
                           ],
                         ),
                       ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => deleteYesNoBox(subscriper: sub),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => UpdateSubscriperDialoge(sub: sub),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 );
@@ -99,6 +122,34 @@ class subscripersListPage extends StatelessWidget {
             );
           });
         },
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+          height: 60,
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.add, size: 32),
+            label: const Text(
+              'إضافة مشترك جديد',
+              style: TextStyle(fontSize: 24),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[400],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              // اضافة مشترك
+              showDialog(
+                context: context,
+                builder: (_) => AddSubscriberDialoge(),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

@@ -28,7 +28,7 @@ class Subscriper {
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
-    'Amber': amber,
+    'Ambers': amber,
     'circuit_number': circuit_number,
     'phone': phone,
   };
