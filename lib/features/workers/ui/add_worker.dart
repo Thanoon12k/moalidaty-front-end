@@ -4,7 +4,7 @@ import 'package:moalidaty1/features/workers/models/model.dart';
 import 'package:moalidaty1/features/workers/services/service.dart';
 
 class AddWorkerDialog extends StatelessWidget {
-  AddWorkerDialog({Key? key}) : super(key: key);
+  AddWorkerDialog({super.key});
 
   final nameCtrl = TextEditingController();
 

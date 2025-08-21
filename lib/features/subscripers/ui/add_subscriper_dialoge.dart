@@ -1,7 +1,7 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/subscripers/services/service.dart';
 
@@ -64,8 +64,8 @@ class AddSubscriberDialoge extends StatelessWidget {
       actions: [
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
-          child: Text("رجوع"),
           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+          child: Text("رجوع"),
         ),
         ElevatedButton(
           onPressed: () {
@@ -79,8 +79,8 @@ class AddSubscriberDialoge extends StatelessWidget {
             sub_service.addSubsciper(new_sub);
             Navigator.pop(context);
           },
-          child: Text("اضافة"),
           style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+          child: Text("اضافة"),
         ),
       ],
     );

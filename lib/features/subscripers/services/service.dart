@@ -1,21 +1,27 @@
-import 'dart:math';
 
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/subscripers/repositories/repository.dart';
+import 'package:moalidaty1/utils/dummy_data.dart';
 
 class subscripersService {
   final RxList<Subscriper> list_subs = <Subscriper>[].obs;
   final sub_repository = SubscriperRepository();
   Future<subscripersService> init() async {
     await getSubscripers();
+    print("subs init successsfully now ");
+
     return this;
   }
 
   Future<void> getSubscripers() async {
+    print("subs get tring now ...............");
+
     try {
-      final fetched_subs = await sub_repository.fetchSubscribers();
-      list_subs.assignAll(fetched_subs);
+      // final fetched_subs = await sub_repository.fetchSubscribers();
+      final fetchedSubs = await DummyData.getDummySubs();
+
+      list_subs.assignAll(fetchedSubs);
     } catch (e) {
       print('Error fetching subscribers: $e');
     }

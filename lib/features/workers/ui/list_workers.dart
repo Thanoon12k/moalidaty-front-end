@@ -3,15 +3,12 @@ import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
 import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
-import 'package:moalidaty1/features/subscripers/models/model.dart';
-import 'package:moalidaty1/features/subscripers/services/service.dart';
-import 'package:moalidaty1/features/workers/models/model.dart';
 import 'package:moalidaty1/features/workers/ui/add_worker.dart';
 import 'package:moalidaty1/features/workers/ui/update_worker.dart';
 import '../services/service.dart';
 
 class WorkersListPage extends StatelessWidget {
-  const WorkersListPage({Key? key}) : super(key: key);
+  const WorkersListPage({super.key});
 
   @override
   Widget build(BuildContext context) {

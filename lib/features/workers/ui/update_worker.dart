@@ -5,7 +5,7 @@ import 'package:moalidaty1/features/workers/services/service.dart';
 
 class UpdateWorkerDialog extends StatefulWidget {
   final Gen_Worker worker;
-  const UpdateWorkerDialog({Key? key, required this.worker}) : super(key: key);
+  const UpdateWorkerDialog({super.key, required this.worker});
 
   @override
   State<UpdateWorkerDialog> createState() => _UpdateWorkerDialogState();

@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 class Subscriper {
   int id;
   String name;
@@ -15,6 +17,7 @@ class Subscriper {
 
   @override
   String toString() => name;
+  
   factory Subscriper.fromJson(Map<String, dynamic> json) {
     return Subscriper(
       id: json["id"],

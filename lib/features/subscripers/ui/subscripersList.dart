@@ -3,33 +3,32 @@ import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
 import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
-import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/subscripers/services/service.dart';
 import 'package:moalidaty1/features/subscripers/ui/add_subscriper_dialoge.dart';
 import 'package:moalidaty1/features/subscripers/ui/update_subscriper_dialoge.dart';
-import 'package:moalidaty1/features/workers/ui/update_worker.dart';
 
-class subscripersListPage extends StatelessWidget {
-  const subscripersListPage({super.key});
+class SubscripersListPage extends StatelessWidget {
+  const SubscripersListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final subs_service = Get.put(subscripersService());
+    final subsService = Get.put(subscripersService());
     return Scaffold(
       appBar: CustomAppBar(title: "قائمة المشتركين", font_size: 32),
       body: FutureBuilder(
-        future: subs_service.getSubscripers(),
+        future: subsService.getSubscripers(),
         builder: (context, snapshot) {
           return Obx(() {
-            if (subs_service.list_subs.isEmpty) {
-              return const Center(child: GeneratorLoadingIndicator());
+            if (subsService.list_subs.isEmpty) {
+              return const Center(child: SimpleWaiting());
             }
+
             return ListView.separated(
               separatorBuilder: (_, _) => const Divider(thickness: 2),
-              itemCount: subs_service.list_subs.length,
+              itemCount: subsService.list_subs.length,
               padding: EdgeInsets.all(16),
               itemBuilder: (context, index) {
-                final sub = subs_service.list_subs[index];
+                final sub = subsService.list_subs[index];
                 return Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(

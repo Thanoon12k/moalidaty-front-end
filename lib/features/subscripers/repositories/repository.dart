@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
@@ -16,9 +15,9 @@ class SubscriperRepository {
       final response = await http.get(Uri.parse(fetchUrl));
 
       if (response.statusCode == 200) {
-        List list_data = json.decode(response.body);
+        List listData = json.decode(response.body);
         subs =
-            list_data.map((json_row) => Subscriper.fromJson(json_row)).toList();
+            listData.map((jsonRow) => Subscriper.fromJson(jsonRow)).toList();
         return subs;
       } else {
         throw Exception("Failed to Fetch  subscribers from $fetchUrl");

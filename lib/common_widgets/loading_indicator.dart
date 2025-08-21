@@ -109,3 +109,18 @@ class _GeneratorLoadingIndicatorState extends State<GeneratorLoadingIndicator>
     );
   }
 }
+
+class SimpleWaiting extends StatelessWidget {
+  const SimpleWaiting({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: 120,
+        height: 60,
+        child: Text("Error in feching the data"),
+      ),
+    );
+  }
+}

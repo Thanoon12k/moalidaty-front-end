@@ -5,7 +5,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final double font_size;
 
-  const CustomAppBar({Key? key, required this.title,this.font_size=36}) : super(key: key);  // Named parameter for 'title'
+  const CustomAppBar({super.key, required this.title,this.font_size=36});  // Named parameter for 'title'
 
   @override
   Widget build(BuildContext context) {

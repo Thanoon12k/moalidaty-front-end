@@ -90,12 +90,12 @@ class _UpdateSubscriperDialogeState extends State<UpdateSubscriperDialoge> {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text("رجوع"),
           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+          child: const Text("رجوع"),
         ),
         ElevatedButton(
           onPressed: () {
-            final Subscriper edited_sub = Subscriper(
+            final Subscriper editedSub = Subscriper(
               id: widget.sub.id,
               name: namectrl.text,
               amber: int.parse(amberctrl.text),
@@ -103,7 +103,7 @@ class _UpdateSubscriperDialogeState extends State<UpdateSubscriperDialoge> {
               phone: phonectrl.text,
             );
 
-            sub_service.editSubscriper(edited_sub);
+            sub_service.editSubscriper(editedSub);
             Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
