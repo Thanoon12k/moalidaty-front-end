@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
 import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
-import 'package:moalidaty1/features/subscripers/services/service.dart';
+import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty1/features/subscripers/ui/add_subscriper_dialoge.dart';
 import 'package:moalidaty1/features/subscripers/ui/update_subscriper_dialoge.dart';
 
@@ -12,7 +12,7 @@ class SubscripersListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subsService = Get.put(subscripersService());
+    final subsService = Get.find<SubscripersService>();
     return Scaffold(
       appBar: CustomAppBar(title: "قائمة المشتركين", font_size: 32),
       body: FutureBuilder(

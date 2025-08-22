@@ -5,19 +5,19 @@ import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/features/workers/ui/add_worker.dart';
 import 'package:moalidaty1/features/workers/ui/update_worker.dart';
-import '../services/service.dart';
+import '../services/service_worker.dart';
 
 class WorkersListPage extends StatelessWidget {
   const WorkersListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final workerService = Get.put(WorkerService());
+    final workerService = Get.find<WorkerService>();
 
     return Scaffold(
       appBar: CustomAppBar(title: "قائمة المشغلين"),
       body: FutureBuilder(
-        future: workerService.fetchWorkers(),
+        future: workerService.getWorkers(),
         builder: (context, snapshot) {
           return Obx(() {
             if (workerService.workers.isEmpty) {
@@ -63,7 +63,7 @@ class WorkersListPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              worker.name ?? '',
+                              worker.name,
                               style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class WorkersListPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'الراتب: ${worker.salary}',
+                              'الهاتف: ${worker.phone ?? "غير محدد"}',
                               style: const TextStyle(
                                 fontSize: 22,
                                 color: Colors.green,

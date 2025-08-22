@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
-import 'package:moalidaty1/features/subscripers/services/service.dart';
+import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
 
 class AddSubscriberDialoge extends StatelessWidget {
   AddSubscriberDialoge({super.key});
-  final sub_service = Get.find<subscripersService>();
+  final sub_service = Get.find<SubscripersService>();
   final namectrl = TextEditingController();
   final amberctrl = TextEditingController();
   final circiut_numctrl = TextEditingController();

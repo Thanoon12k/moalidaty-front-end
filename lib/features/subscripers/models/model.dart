@@ -6,6 +6,7 @@ class Subscriper {
   String circuit_number;
   int amber;
   String phone;
+  String? barcode_data;
 
   Subscriper({
     this.id = 0,
@@ -13,19 +14,31 @@ class Subscriper {
     required this.amber,
     this.circuit_number = "0",
     this.phone = "077",
+    this.barcode_data,
   });
 
   @override
   String toString() => name;
-  
+
   factory Subscriper.fromJson(Map<String, dynamic> json) {
-    return Subscriper(
-      id: json["id"],
-      name: json["name"],
-      amber: json["Ambers"],
-      circuit_number: json["circuit_number"],
-      phone: json["phone"],
-    );
+    // print('Parsing subscriber JSON: $json');
+
+    try {
+      final subscriber = Subscriper(
+        id: json["id"] ?? 0,
+        name: json["name"] ?? "",
+        amber: json["Ambers"] ?? 0,
+        circuit_number: json["circuit_number"] ?? "0",
+        phone: json["phone"] ?? "077",
+        barcode_data: json["barcode_data"],
+      );
+      // print('Successfully parsed subscriber: ID=${subscriber.id}, Name=${subscriber.name}');
+      return subscriber;
+    } catch (e) {
+      print('Error parsing subscriber JSON: $e');
+      print('JSON data: $json');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() => {
@@ -34,5 +47,6 @@ class Subscriper {
     'Ambers': amber,
     'circuit_number': circuit_number,
     'phone': phone,
+    'barcode_data': barcode_data,
   };
 }

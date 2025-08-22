@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
-import 'package:moalidaty1/features/workers/services/service.dart';
+import 'package:moalidaty1/features/workers/services/service_worker.dart';
 
 class UpdateWorkerDialog extends StatefulWidget {
   final Gen_Worker worker;
@@ -14,21 +14,21 @@ class UpdateWorkerDialog extends StatefulWidget {
 class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
   late TextEditingController nameCtrl;
   late TextEditingController phoneCtrl;
-  late TextEditingController salaryCtrl;
+
 
   @override
   void initState() {
     super.initState();
     nameCtrl = TextEditingController(text: widget.worker.name ?? '');
     phoneCtrl = TextEditingController(text: widget.worker.phone ?? '');
-    salaryCtrl = TextEditingController(text: widget.worker.salary ?? '');
+
   }
 
   @override
   void dispose() {
     nameCtrl.dispose();
     phoneCtrl.dispose();
-    salaryCtrl.dispose();
+
     super.dispose();
   }
 
@@ -63,13 +63,7 @@ class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: salaryCtrl,
-              decoration: const InputDecoration(
-                labelText: 'الراتب',
-                border: OutlineInputBorder(),
-              ),
-            ),
+
           ],
         ),
       ),
@@ -86,7 +80,6 @@ class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
               id: widget.worker.id,
               name: nameCtrl.text,
               phone: phoneCtrl.text,
-              salary: salaryCtrl.text,
             );
             workerService.updateWorker(updatedWorker);
             Navigator.pop(context);

@@ -119,7 +119,7 @@ class SimpleWaiting extends StatelessWidget {
       child: SizedBox(
         width: 120,
         height: 60,
-        child: Text("Error in feching the data"),
+        child: const Text("جاري التحميل..."),
       ),
     );
   }

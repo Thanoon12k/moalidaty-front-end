@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
-import 'package:moalidaty1/features/subscripers/services/service.dart';
+import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
 
 class UpdateSubscriperDialoge extends StatefulWidget {
   final Subscriper sub;
@@ -19,7 +19,7 @@ class _UpdateSubscriperDialogeState extends State<UpdateSubscriperDialoge> {
   late TextEditingController circiut_numctrl;
   late TextEditingController phonectrl;
 
-  final sub_service = Get.find<subscripersService>();
+  final sub_service = Get.find<SubscripersService>();
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _UpdateSubscriperDialogeState extends State<UpdateSubscriperDialoge> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("اضافة مشترك جديد"),
+      title: const Text("تعديل بيانات المشترك"),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       content: SingleChildScrollView(
         child: Column(

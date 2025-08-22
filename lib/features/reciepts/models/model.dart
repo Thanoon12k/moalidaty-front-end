@@ -3,54 +3,74 @@ import 'package:moalidaty1/features/workers/models/model.dart';
 
 class Reciept {
   final int id;
+  final String? yearMonthSubscriberId;
+  final int year;
+  final int month;
+  final String amberPrice;
+  final String amountPaid;
   final DateTime date;
-  final Subscriper subscriper;
   final String? image;
-  final double amber_price;
-  final double amount_paid;
-  final Gen_Worker? worker;
+  final int subscriber;
+  final int? worker;
+
+  Subscriper? _subscriber;
+  Gen_Worker? _worker;
+
   Reciept({
-    this.id = 0,
+    required this.id,
+    this.yearMonthSubscriberId,
+    required this.year,
+    required this.month,
+    required this.amberPrice,
+    required this.amountPaid,
     required this.date,
-    required this.subscriper,
     this.image,
-    required this.amber_price,
-    required this.amount_paid,
+    required this.subscriber,
     this.worker,
-  });
+    Subscriper? subscriberObj,
+    Gen_Worker? workerObj,
+  }) {
+    _subscriber = subscriberObj;
+    _worker = workerObj;
+  }
 
-  String get subscriberName => subscriper.name ;
-
-  @override
-  String toString() =>
-      "reciept: ${subscriper.name}, date: $date, amber_price: $amber_price, amount_paid: $amount_paid";
+  String get subscriberName => _subscriber?.name ?? 'subscriper_num=:$subscriber';
 
   factory Reciept.fromJson(Map<String, dynamic> json) {
     return Reciept(
       id: json['id'] as int,
+      yearMonthSubscriberId: json['year_month_subscriber_id'] as String?,
+      year: json['year'] as int,
+      month: json['month'] as int,
+      amberPrice: json['amber_price'] as String,
+      amountPaid: json['amount_paid'] as String,
       date: DateTime.parse(json['date'] as String),
-      subscriper: Subscriper.fromJson(
-        json['subscriper'] as Map<String, dynamic>,
-      ),
       image: json['image'] as String?,
-      amber_price: (json['amber_price'] as num).toDouble(),
-      amount_paid: (json['amount_paid'] as num).toDouble(),
-      worker:
-          json['worker'] != null
-              ? Gen_Worker.fromJson(json['worker'] as Map<String, dynamic>)
-              : null,
+      subscriber: json['subscriber'] as int,
+      worker: json['worker'] as int?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'year_month_subscriber_id': yearMonthSubscriberId,
+      'year': year,
+      'month': month,
+      'amber_price': amberPrice,
+      'amount_paid': amountPaid,
       'date': date.toIso8601String(),
-      'subscriper': subscriper.toJson(),
       'image': image,
-      'amber_price': amber_price,
-      'amount_paid': amount_paid,
-      'worker': worker?.toJson(),
+      'subscriber': subscriber,
+      'worker': worker,
     };
+  }
+
+  void setSubscriber(Subscriper subscriberObj) {
+    _subscriber = subscriberObj;
+  }
+
+  void setWorker(Gen_Worker workerObj) {
+    _worker = workerObj;
   }
 }

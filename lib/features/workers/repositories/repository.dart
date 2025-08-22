@@ -1,75 +1,108 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class WorkerRepository {
   final String baseUrl = GlobalConstants.baseAddress;
 
   Future<List<Gen_Worker>> fetchWorkers() async {
+    String fetchUrl = "$baseUrl/workers/";
 
-    final response = await http.get(Uri.parse('$baseUrl/workers/'));
-    print('fetch workers status code: ${response.statusCode}');
-    print('fetch workers Response: ${response.body}');
+    try {
+      final response = await http.get(Uri.parse(fetchUrl));
 
-    if (response.statusCode == 200) {
-      List data = json.decode(response.body);
-      return data.map((json) => Gen_Worker.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load workers list');
+      if (response.statusCode == 200) {
+        List listData = json.decode(response.body);
+        return listData.map((jsonRow) => Gen_Worker.fromJson(jsonRow)).toList();
+      } else {
+        throw Exception(
+          "Failed to fetch workers from $fetchUrl. Status: ${response.statusCode}",
+        );
+      }
+    } catch (e) {
+      throw Exception("Error in fetching workers: $e");
     }
   }
 
   Future<Gen_Worker> fetchWorkerDetail(int id) async {
-    final response = await http.get(Uri.parse('$baseUrl/workers/$id/'));
-    if (response.statusCode == 200) {
-      return Gen_Worker.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load worker detail with id $id');
+    String fetchUrl = "$baseUrl/workers/$id/";
+
+    try {
+      final response = await http.get(Uri.parse(fetchUrl));
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonData = json.decode(response.body);
+        return Gen_Worker.fromJson(jsonData);
+      } else {
+        throw Exception(
+          "Failed to fetch worker detail from $fetchUrl. Status: ${response.statusCode}",
+        );
+      }
+    } catch (e) {
+      throw Exception("Error in fetching worker detail: $e");
     }
   }
 
   Future<Gen_Worker> createWorker(Gen_Worker worker) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/workers/'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(worker.toJson()),
-    );
-    print('Create response: ${response.statusCode}');
-    print('Create response body: ${response.body}');
-    print('Worker to create: ${worker.toJson()}');
-    if (response.statusCode == 201) {
-      return Gen_Worker.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to create worker');
+    String createUrl = "$baseUrl/workers/";
+
+    try {
+      final response = await http.post(
+        Uri.parse(createUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(worker.toJson()),
+      );
+
+      if (response.statusCode == 201) {
+        final createdWorker = Gen_Worker.fromJson(json.decode(response.body));
+        return createdWorker;
+      } else {
+        throw Exception(
+          'Failed to create worker. Status: ${response.statusCode}, Body: ${response.body}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error in creating worker: $e');
     }
   }
 
   Future<Gen_Worker> updateWorker(int id, Gen_Worker worker) async {
-    
-    final response = await http.put(
-      Uri.parse('$baseUrl/workers/$id/'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(worker.toJson()),
-    );
-    print('Update response: ${response.statusCode}');
-    print('Update response body: ${response.body}');
-    print('Worker to update: ${worker.toJson()}');
-    if (response.statusCode == 200) {
-      return Gen_Worker.fromJson(json.decode(response.body));
-    } else {
-      throw Exception(
-        'Failed to update worker name ${worker.name} with id $id',
+    String updateUrl = "$baseUrl/workers/$id/";
+
+    try {
+      final response = await http.put(
+        Uri.parse(updateUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(worker.toJson()),
       );
+
+      if (response.statusCode == 200) {
+        final updatedWorker = Gen_Worker.fromJson(json.decode(response.body));
+        return updatedWorker;
+      } else {
+        throw Exception(
+          'Failed to update worker. Status: ${response.statusCode}, Body: ${response.body}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error in updating worker: $e');
     }
   }
 
   Future<void> deleteWorker(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/workers/$id/'));
-    print('Delete response: ${response.statusCode}');
-    print('Delete response body: ${response.body}');
-    if (response.statusCode != 204) {
-      throw Exception('Failed to delete worker with id $id');
+    String deleteUrl = "$baseUrl/workers/$id/";
+
+    try {
+      final response = await http.delete(Uri.parse(deleteUrl));
+
+      if (response.statusCode != 204) {
+        throw Exception(
+          "Failed to delete worker from $deleteUrl. Status: ${response.statusCode}",
+        );
+      }
+    } catch (e) {
+      throw Exception("Error in deleting worker: $e");
     }
   }
 }

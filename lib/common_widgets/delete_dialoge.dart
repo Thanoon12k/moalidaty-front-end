@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
-import 'package:moalidaty1/features/subscripers/services/service.dart';
+import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
-import 'package:moalidaty1/features/workers/services/service.dart';
+import 'package:moalidaty1/features/workers/services/service_worker.dart';
 
 class deleteYesNoBox extends StatelessWidget {
   final Gen_Worker? worker;
@@ -28,7 +28,7 @@ class deleteYesNoBox extends StatelessWidget {
               final workerService = Get.find<WorkerService>();
               workerService.removeWorker(worker!);
             } else if (subscriper != null) {
-              final subsService = Get.find<subscripersService>();
+              final subsService = Get.find<SubscripersService>();
 
               subsService.deleteSubscriper(subscriper!);
             }

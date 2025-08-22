@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
-import 'package:moalidaty1/features/workers/services/service.dart';
+import 'package:moalidaty1/features/workers/services/service_worker.dart';
 
 class AddWorkerDialog extends StatelessWidget {
   AddWorkerDialog({super.key});
@@ -10,7 +10,7 @@ class AddWorkerDialog extends StatelessWidget {
 
   final phoneCtrl = TextEditingController();
 
-  final salaryCtrl = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +37,7 @@ class AddWorkerDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: salaryCtrl,
-              decoration: const InputDecoration(
-                labelText: 'الراتب',
-                border: OutlineInputBorder(),
-              ),
-            ),
+
           ],
         ),
       ),
@@ -59,7 +53,6 @@ class AddWorkerDialog extends StatelessWidget {
             final worker = Gen_Worker(
               name: nameCtrl.text,
               phone: phoneCtrl.text == "" ? "077" : phoneCtrl.text,
-              salary: salaryCtrl.text == "" ? "0" : salaryCtrl.text,
             );
             workerService.addWorker(worker);
             Navigator.pop(context);
