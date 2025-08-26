@@ -31,8 +31,51 @@ Content-Type: application/json
 }
 
 ###
-GET https://moalidty.pythonanywhere.com/receipts/ HTTP/1.1
+GET https://moalidty.pythonanywhere.com/workers/ HTTP/1.1
 
 ###
 GET https://moalidty.pythonanywhere.com/budgets/ HTTP/1.1
 
+###
+POST https://moalidty.pythonanywhere.com/receipts/ HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="subscriber"
+
+7
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="amount"
+
+40000
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="date"
+
+2025-08-08
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="amber_price"
+
+5500.00
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="year"
+
+2025
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="month"
+
+8
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="year_month_subscriber_id"
+
+2025-08-7
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="worker"
+
+5
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="logo.png"
+Content-Type: image/png
+
+@logo.png
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

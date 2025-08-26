@@ -11,6 +11,7 @@ import 'package:moalidaty1/features/workers/ui/list_workers.dart';
 import 'package:moalidaty1/routes/routes.dart';
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await initServices();
   runApp(const MyApp());
@@ -22,10 +23,10 @@ Future<void> initServices() async {
   try {
     // Register services
     Get.lazyPut<BudgetService>(() => BudgetService());
-
     Get.lazyPut<WorkerService>(() => WorkerService());
     Get.lazyPut<SubscripersService>(() => SubscripersService());
     Get.lazyPut<RecieptServices>(() => RecieptServices());
+
 
     // Initialize services in parallel
     await Future.wait([
@@ -65,6 +66,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

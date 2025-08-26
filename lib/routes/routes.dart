@@ -3,7 +3,6 @@ import 'package:moalidaty1/features/reciepts/ui/list_reciepts.dart';
 import 'package:moalidaty1/features/subscripers/ui/subscripersList.dart';
 import 'package:moalidaty1/features/workers/ui/list_workers.dart';
 import 'package:moalidaty1/main.dart';
-
 final class Routes {
   static const String home = '/';
   static const String workerList = '/worker-list';
