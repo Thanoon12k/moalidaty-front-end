@@ -9,7 +9,7 @@ class RecieptRepository {
   Future<List<Reciept>> fetchReciepts() async {
     String fetchUrl = "$baseUrl/receipts/";
     
-    try {
+    // try {
       final response = await http.get(Uri.parse(fetchUrl));
 
       if (response.statusCode == 200) {
@@ -38,9 +38,9 @@ class RecieptRepository {
       } else {
         throw Exception("Failed to fetch receipts from $fetchUrl. Status: ${response.statusCode}");
       }
-    } catch (e) {
-        throw Exception("Failed to fetch receipts from $fetchUrl. because: $e");
-    }
+    // } catch (e) {
+    //     throw Exception("Failed to fetch receipts from $fetchUrl. because: $e");
+    // }
   }
 
   Future<Reciept> createReciept(Reciept reciept) async {

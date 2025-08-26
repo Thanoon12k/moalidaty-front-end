@@ -54,7 +54,7 @@ class DisplayReceiptDialog extends StatelessWidget {
                       _buildInfoRow('السنة:', '${receipt.year}'),
                       _buildInfoRow(
                         'سعر الامبير:',
-                        '${receipt.amberPrice} د.ع',
+                        '${(receipt.amberPrice)} د.ع',
                       ),
                       _buildInfoRow(
                         'المبلغ المدفوع:',

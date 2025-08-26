@@ -6,8 +6,8 @@ class Reciept {
   final String? yearMonthSubscriberId;
   final int year;
   final int month;
-  final String amberPrice;
-  final String amountPaid;
+  final double amberPrice;
+  final double amountPaid;
   final DateTime date;
   final String? image;
   final int subscriber;
@@ -34,7 +34,8 @@ class Reciept {
     _worker = workerObj;
   }
 
-  String get subscriberName => _subscriber?.name ?? 'subscriper_num=:$subscriber';
+  String get subscriberName =>
+      _subscriber?.name ?? 'subscriper_num=:$subscriber';
 
   factory Reciept.fromJson(Map<String, dynamic> json) {
     return Reciept(
@@ -42,8 +43,8 @@ class Reciept {
       yearMonthSubscriberId: json['year_month_subscriber_id'] as String?,
       year: json['year'] as int,
       month: json['month'] as int,
-      amberPrice: json['amber_price'] as String,
-      amountPaid: json['amount_paid'] as String,
+      amberPrice: double.tryParse(json['amber_price'].toString()) ?? 0.0,
+      amountPaid: double.tryParse(json['amount_paid'].toString()) ?? 0.0,
       date: DateTime.parse(json['date'] as String),
       image: json['image'] as String?,
       subscriber: json['subscriber'] as int,

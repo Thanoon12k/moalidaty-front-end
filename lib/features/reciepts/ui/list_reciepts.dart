@@ -19,7 +19,7 @@ class RecieptsListPage extends StatelessWidget {
       body: Obx(() {
         // Show loading indicator while fetching data
         if (recieptServices.list_rcpts.isEmpty) {
-          return const Center(child: GeneratorLoadingIndicator());
+          return const Center(child: SimpleWaiting());
         }
 
         return ListView.builder(
@@ -116,7 +116,7 @@ class RecieptsListPage extends StatelessWidget {
             ),
             onPressed: () {
               // اضافة ايصال جديد
-              showDialog(context: context, builder: (_) => AddReceiptDialog());
+              // showDialog(context: context, builder: (_) => AddReceiptDialog());
             },
           ),
         ),

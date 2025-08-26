@@ -69,8 +69,10 @@ class RecieptServices extends GetxService {
 
       list_rcpts.assignAll(fetchedReciepts);
       print('RecieptServices: Updated list with ${list_rcpts.length} receipts');
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('Error fetching receipts: $e');
+      print(stackTrace);
+      rethrow;
       // You might want to show a snackbar or handle error UI here
     }
   }
