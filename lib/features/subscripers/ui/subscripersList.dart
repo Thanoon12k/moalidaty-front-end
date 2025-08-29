@@ -14,7 +14,27 @@ class SubscripersListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final subsService = Get.find<SubscripersService>();
     return Scaffold(
-      appBar: CustomAppBar(title: "قائمة المشتركين", font_size: 32),
+      appBar: CustomAppBar(
+        title: "قائمة المشتركين",
+        font_size: 32,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            tooltip: 'تحديث القائمة',
+            onPressed: () async {
+              await subsService
+                  .getSubscripers(); // or any method that reloads data
+              Get.snackbar(
+                'تم التحديث',
+                'تم تحميل المشتركين من جديد',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.green[400],
+                colorText: Colors.white,
+              );
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder(
         future: subsService.getSubscripers(),
         builder: (context, snapshot) {

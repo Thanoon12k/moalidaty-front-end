@@ -13,7 +13,26 @@ class BudgetsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "قائمة المبالغ"),
+      appBar: CustomAppBar(
+        title: "قائمة الميزانيات",
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            tooltip: 'تحديث الميزانيات',
+            onPressed: () async {
+              await budget_service
+                  .fetchBudgets(); // or any method that reloads data
+              Get.snackbar(
+                'تم التحديث',
+                'تم تحميل الميزانيات من جديد',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.green[400],
+                colorText: Colors.white,
+              );
+            },
+          ),
+        ],
+      ),
       body: Obx(
         () => ListView.builder(
           itemCount: budget_service.list_budgets.length,

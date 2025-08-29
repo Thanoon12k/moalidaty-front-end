@@ -76,7 +76,7 @@ class RecieptServices extends GetxService {
       //     print('Error enriching receipt ${receipt.id}: $e');
       //   }
       // }
-
+      fetchedReciepts.sort((a, b) => b.dateCreated!.compareTo(a.dateCreated!));
       list_rcpts.assignAll(fetchedReciepts);
       print('RecieptServices: Updated list with ${list_rcpts.length} receipts');
       // } catch (e, stackTrace) {
@@ -93,82 +93,79 @@ class RecieptServices extends GetxService {
     }
   }
 
-    Future<void> addReciept(Reciept reciept) async {
-      // ttry {
-      final createdReceipt = await recieptRepository.createReciept(reciept);
-      await getReciepts();
-      // list_rcpts.add(createdReceipt);
-      // } catch (e, stackTrace) {
-      //   print('Error is: (( $e ))');
-      //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-      //   print(stackTrace);
-      //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
-      //   rethrow;
-      //   print('Error adding receipt: $e');
-      //   rethrow;
-      // }
-    }
-
-    Future<void> deleteReciept(Reciept reciept) async {
-      // ttry {
-      if (reciept.id == null) {
-        throw Exception('Cannot delete receipt without an ID');
-      }
-
-      await recieptRepository.destroyReciept(reciept.id!);
-      list_rcpts.remove(reciept);
-      // } catch (e, stackTrace) {
-      //   print('Error is: (( $e ))');
-      //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-      //   print(stackTrace);
-      //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
-      //   rethrow;
-      //   print('Error deleting receipt: $e');
-      //   rethrow;
-      // }
-    }
-
-    Future<void> editReciept(Reciept reciept) async {
-      // ttry {
-      final updatedReceipt = await recieptRepository.updateReciept(reciept);
-      final index = list_rcpts.indexWhere((r) => r.id == reciept.id);
-      if (index != -1) {
-        list_rcpts[index] = updatedReceipt;
-      } else {
-        print('Receipt with id ${reciept.id} not found in the list.');
-      }
-      // } catch (e, stackTrace) {
-      //   print('Error is: (( $e ))');
-      //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-      //   print(stackTrace);
-      //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
-      //   rethrow;
-      //   print('Error updating receipt ${reciept.id}: $e');
-      //   rethrow;
-      // }
-    }
-
-    Reciept? getReceiptById(int id) {
-      // ttry {
-      return list_rcpts.firstWhere((r) => r.id == id);
-      // } catch (e, stackTrace) {
-      //   print('Error is: (( $e ))');
-      //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-      //   print(stackTrace);
-      //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
-      //   rethrow;
-      //   return null;
-      // }
-    }
-
-    List<Reciept> getReceiptsBySubscriber(int subscriber) {
-      return list_rcpts.where((r) => r.subscriber == subscriber).toList();
-    }
-
-    List<Reciept> getReceiptsByYearMonth(int year, int month) {
-      return list_rcpts
-          .where((r) => r.year == year && r.month == month)
-          .toList();
-    }
+  Future<void> addReciept(Reciept reciept) async {
+    // ttry {
+    final createdReceipt = await recieptRepository.createReciept(reciept);
+    await getReciepts();
+    // list_rcpts.add(createdReceipt);
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('Error adding receipt: $e');
+    //   rethrow;
+    // }
   }
 
+  Future<void> deleteReciept(Reciept reciept) async {
+    // ttry {
+    if (reciept.id == null) {
+      throw Exception('Cannot delete receipt without an ID');
+    }
+
+    await recieptRepository.destroyReciept(reciept.id!);
+    list_rcpts.remove(reciept);
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('Error deleting receipt: $e');
+    //   rethrow;
+    // }
+  }
+
+  Future<void> editReciept(Reciept reciept) async {
+    // ttry {
+    final updatedReceipt = await recieptRepository.updateReciept(reciept);
+    final index = list_rcpts.indexWhere((r) => r.id == reciept.id);
+    if (index != -1) {
+      list_rcpts[index] = updatedReceipt;
+    } else {
+      print('Receipt with id ${reciept.id} not found in the list.');
+    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('Error updating receipt ${reciept.id}: $e');
+    //   rethrow;
+    // }
+  }
+
+  Reciept? getReceiptById(int id) {
+    // ttry {
+    return list_rcpts.firstWhere((r) => r.id == id);
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   return null;
+    // }
+  }
+
+  List<Reciept> getReceiptsBySubscriber(int subscriber) {
+    return list_rcpts.where((r) => r.subscriber == subscriber).toList();
+  }
+
+  List<Reciept> getReceiptsByYearMonth(int year, int month) {
+    return list_rcpts.where((r) => r.year == year && r.month == month).toList();
+  }
+}

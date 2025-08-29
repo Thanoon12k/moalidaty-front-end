@@ -75,7 +75,7 @@ class DisplayReceiptDialog extends StatelessWidget {
                       const SizedBox(height: 24),
 
                       // Receipt Image
-                      if (receipt.image != null && receipt.image!.isNotEmpty)
+                      if (receipt.imageUrl != null && receipt.imageUrl != '')
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -98,7 +98,7 @@ class DisplayReceiptDialog extends StatelessWidget {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
                                   child: Image.network(
-                                    receipt.image!,
+                                    receipt.imageUrl ?? '',
                                     height: 200,
                                     fit: BoxFit.contain,
                                     errorBuilder:

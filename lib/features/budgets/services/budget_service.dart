@@ -13,10 +13,19 @@ class BudgetService extends GetxService {
   }
 
   Future<void> fetchBudgets() async {
-    // ttry {
     final fetchedBudgets = await budgetRepository.fetchBudgets();
     print('Fetched ${fetchedBudgets.length} budgets');
     print('Budgets: $fetchedBudgets');
+
+    // Sort by year (descending), then by month (descending)
+    fetchedBudgets.sort((a, b) {
+      if (b.year != a.year) {
+        return b.year.compareTo(a.year);
+      }
+      return b.month.compareTo(a.month);
+    });
+
+
     list_budgets.assignAll(fetchedBudgets);
     // } catch (e, stackTrace) {
     //   print('Error is: (( $e ))');

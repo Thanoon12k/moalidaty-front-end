@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
 
@@ -10,7 +11,8 @@ class Reciept {
   final double amountPaid;
   final DateTime? dateCreated;
   final DateTime? dateReceived;
-  final String? image;
+  final String? imageUrl;
+  final XFile? imageFile; // for POST/uploading
   final int subscriber;
   final int? worker;
 
@@ -26,7 +28,8 @@ class Reciept {
     required this.amountPaid,
     this.dateCreated,
     this.dateReceived,
-    this.image,
+    this.imageUrl,
+    this.imageFile,
     required this.subscriber,
     this.worker,
     Subscriper? subscriberObj,
@@ -58,7 +61,7 @@ class Reciept {
           json['date_received'] != null
               ? DateTime.tryParse(json['date_received'])
               : null,
-      image: json['image'] as String?,
+      imageUrl: json['image'] as String?,
       subscriber: json['subscriber'] as int,
       worker: json['worker'] as int?,
     );
@@ -74,7 +77,7 @@ class Reciept {
       'amount_paid': amountPaid.toStringAsFixed(2),
       'date_created': dateCreated?.toIso8601String(),
       'date_received': dateReceived?.toIso8601String(),
-      'image': image,
+      'image': imageFile,
       'subscriber': subscriber,
       'worker': worker,
     };

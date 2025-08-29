@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
@@ -8,6 +10,7 @@ import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/budgets/models/budgets_model.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
 import 'package:moalidaty1/features/workers/services/service_worker.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddReceiptDialoge extends StatefulWidget {
   const AddReceiptDialoge({super.key});
@@ -24,6 +27,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
   late List<int> years;
   late List<int> months;
   late List<Budget> budgets;
+  XFile? selectedImage;
 
   Subscriper? selectedSubscriber;
   Gen_Worker? selectedWorker;
@@ -126,6 +130,30 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
               ),
 
               const SizedBox(height: 24),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.camera_alt),
+                label: const Text('اختر صورة الإيصال'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(fontSize: 16),
+                ),
+                onPressed: selectImage,
+              ),
+              const SizedBox(height: 24),
+              if (selectedImage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      File(selectedImage!.path),
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   ElevatedButton.icon(
@@ -161,7 +189,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
                           amberPrice: amberPrice,
                           amountPaid: totalPaid,
                           dateReceived: DateTime.now(),
-                          image: null
+                          imageFile: selectedImage,
                         ),
                       );
                       Navigator.of(context).pop();
@@ -197,6 +225,55 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> selectImage() async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('اختر من المعرض'),
+                onTap: () async {
+                  final image = await ImagePicker().pickImage(
+                    source: ImageSource.gallery,
+                  );
+                  if (image != null) {
+                    setState(() {
+                      selectedImage = image;
+                    });
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('التقط صورة بالكاميرا'),
+                onTap: () async {
+                  final image = await ImagePicker().pickImage(
+                    source: ImageSource.camera,
+                  );
+                  if (image != null) {
+                    setState(() {
+                      selectedImage = image;
+                    });
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

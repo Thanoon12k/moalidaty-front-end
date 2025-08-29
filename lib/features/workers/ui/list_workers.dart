@@ -15,7 +15,26 @@ class WorkersListPage extends StatelessWidget {
     final workerService = Get.find<WorkerService>();
 
     return Scaffold(
-      appBar: CustomAppBar(title: "قائمة المشغلين"),
+      appBar: CustomAppBar(
+        title: "قائمة المشغلين",
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            tooltip: 'تحديث القائمة',
+            onPressed: () async {
+              await workerService
+                  .getWorkers(); // or any method that reloads data
+              Get.snackbar(
+                'تم التحديث',
+                'تم تحميل المشغلين من جديد',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.green[400],
+                colorText: Colors.white,
+              );
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder(
         future: workerService.getWorkers(),
         builder: (context, snapshot) {

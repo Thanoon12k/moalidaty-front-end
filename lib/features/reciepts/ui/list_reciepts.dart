@@ -4,7 +4,7 @@ import 'package:moalidaty1/common_widgets/appbar.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/features/reciepts/models/receipt_model.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
-import 'package:moalidaty1/features/reciepts/ui/add_receipt.dart';
+import 'package:moalidaty1/features/reciepts/ui/add_receipt_dialoge.dart';
 import 'package:moalidaty1/features/reciepts/ui/display_reciept_dialoge.dart';
 
 class RecieptsListPage extends StatelessWidget {
@@ -15,7 +15,28 @@ class RecieptsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'قائمة الإيصالات', font_size: 30),
+      appBar: CustomAppBar(
+        title: 'قائمة الإيصالات',
+        font_size: 30,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            tooltip: 'تحديث القائمة',
+            onPressed: () async {
+              await recieptServices
+                  .getReciepts(); // or any method that reloads data
+              Get.snackbar(
+                'تم التحديث',
+                'تم تحميل الإيصالات من جديد',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.green[400],
+                colorText: Colors.white,
+              );
+            },
+          ),
+        ],
+      ),
+
       body: Obx(() {
         // Show loading indicator while fetching data
         if (recieptServices.list_rcpts.isEmpty) {
@@ -38,11 +59,11 @@ class RecieptsListPage extends StatelessWidget {
                     border: Border.all(color: Colors.grey.shade300),
                   ),
                   child:
-                      reciept.image != null && reciept.image!.isNotEmpty
+                      reciept.imageUrl != null && reciept.imageUrl != ''
                           ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.network(
-                              reciept.image!,
+                              reciept.imageUrl!,
                               fit: BoxFit.cover,
                               errorBuilder:
                                   (context, error, stackTrace) => const Icon(
