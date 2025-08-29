@@ -19,7 +19,7 @@ class RecieptsListPage extends StatelessWidget {
       body: Obx(() {
         // Show loading indicator while fetching data
         if (recieptServices.list_rcpts.isEmpty) {
-          return const Center(child: SimpleWaiting());
+          return const Center(child: GeneratorLoadingIndicator());
         }
 
         return ListView.builder(
@@ -76,7 +76,7 @@ class RecieptsListPage extends StatelessWidget {
                       style: const TextStyle(fontSize: 22, color: Colors.blue),
                     ),
                     Text(
-                      'التاريخ: ${_formatDate(reciept.dateReceived ?? DateTime.now())} | الشهر: ${reciept.month}/${reciept.year}',
+                      ' الشهر: ${reciept.month}/${reciept.year} |   تاريخ الاستلام: ${_formatDate(reciept.dateReceived ?? reciept.dateCreated!)}',
                       style: const TextStyle(fontSize: 14, color: Colors.green),
                     ),
                   ],

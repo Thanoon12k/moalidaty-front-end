@@ -38,6 +38,9 @@ class Reciept {
 
   String get subscriberName =>
       _subscriber?.name ?? 'subscriber_num=:$subscriber';
+
+  String get subscriperCircuitNummber => _subscriber?.circuit_number ?? "x";
+
   String get workerName => _worker?.name ?? 'worker_num=:$worker';
   factory Reciept.fromJson(Map<String, dynamic> json) {
     return Reciept(

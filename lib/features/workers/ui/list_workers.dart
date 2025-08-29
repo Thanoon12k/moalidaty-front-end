@@ -20,16 +20,16 @@ class WorkersListPage extends StatelessWidget {
         future: workerService.getWorkers(),
         builder: (context, snapshot) {
           return Obx(() {
-            if (workerService.workers.isEmpty) {
+            if (workerService.workers_list.isEmpty) {
               return const Center(child: GeneratorLoadingIndicator());
             }
 
             return ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: workerService.workers.length,
+              itemCount: workerService.workers_list.length,
               separatorBuilder: (_, __) => const Divider(thickness: 2),
               itemBuilder: (context, index) {
-                final worker = workerService.workers[index];
+                final worker = workerService.workers_list[index];
                 return Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(

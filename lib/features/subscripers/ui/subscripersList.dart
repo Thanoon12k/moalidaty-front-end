@@ -19,16 +19,16 @@ class SubscripersListPage extends StatelessWidget {
         future: subsService.getSubscripers(),
         builder: (context, snapshot) {
           return Obx(() {
-            if (subsService.list_subs.isEmpty) {
+            if (subsService.subscripers_list.isEmpty) {
               return const Center(child: SimpleWaiting());
             }
 
             return ListView.separated(
               separatorBuilder: (_, _) => const Divider(thickness: 2),
-              itemCount: subsService.list_subs.length,
+              itemCount: subsService.subscripers_list.length,
               padding: EdgeInsets.all(16),
               itemBuilder: (context, index) {
-                final sub = subsService.list_subs[index];
+                final sub = subsService.subscripers_list[index];
                 return Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(

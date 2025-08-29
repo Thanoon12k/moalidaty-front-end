@@ -45,11 +45,17 @@ class DisplayReceiptDialog extends StatelessWidget {
                     children: [
                       // Basic Info
                       _buildInfoRow('رقم الإيصال:', '${receipt.id}'),
-                      _buildInfoRow('التاريخ:', _formatDate(receipt.dateReceived ??DateTime.now())),
+                      _buildInfoRow(
+                        'التاريخ:',
+                        _formatDate(receipt.dateReceived ?? DateTime.now()),
+                      ),
                       _buildInfoRow('المشترك:', receipt.subscriberName),
-                      _buildInfoRow('رقم المشترك:', '${receipt.subscriber}'),
+                      _buildInfoRow(
+                        'رقم الجوزة:',
+                        receipt.subscriperCircuitNummber,
+                      ),
                       if (receipt.worker != null)
-                        _buildInfoRow('العامل:', '${receipt.worker}'),
+                        _buildInfoRow('العامل:', receipt.workerName),
                       _buildInfoRow('الشهر:', '${receipt.month}'),
                       _buildInfoRow('السنة:', '${receipt.year}'),
                       _buildInfoRow(
