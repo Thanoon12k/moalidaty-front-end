@@ -23,7 +23,7 @@ class Subscriper {
   factory Subscriper.fromJson(Map<String, dynamic> json) {
     // print('Parsing subscriber JSON: $json');
 
-    try {
+    // ttry {
       final subscriber = Subscriper(
         id: json["id"] ?? 0,
         name: json["name"] ?? "",
@@ -34,11 +34,16 @@ class Subscriper {
       );
       // print('Successfully parsed subscriber: ID=${subscriber.id}, Name=${subscriber.name}');
       return subscriber;
-    } catch (e) {
-      print('Error parsing subscriber JSON: $e');
-      print('JSON data: $json');
-      rethrow;
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('Error parsing subscriber JSON: $e');
+    //   print('JSON data: $json');
+    //   rethrow;
+    // }
   }
 
   Map<String, dynamic> toJson() => {

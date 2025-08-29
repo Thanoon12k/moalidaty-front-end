@@ -9,7 +9,7 @@ class WorkerRepository {
   Future<List<Gen_Worker>> fetchWorkers() async {
     String fetchUrl = "$baseUrl/workers/";
 
-    try {
+    // ttry {
       final response = await http.get(Uri.parse(fetchUrl));
 
       if (response.statusCode == 200) {
@@ -20,15 +20,20 @@ class WorkerRepository {
           "Failed to fetch workers from $fetchUrl. Status: ${response.statusCode}",
         );
       }
-    } catch (e) {
-      throw Exception("Error in fetching workers: $e");
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception("Error in fetching workers: $e");
+    // }
   }
 
   Future<Gen_Worker> fetchWorkerDetail(int id) async {
     String fetchUrl = "$baseUrl/workers/$id/";
 
-    try {
+    // ttry {
       final response = await http.get(Uri.parse(fetchUrl));
 
       if (response.statusCode == 200) {
@@ -39,15 +44,20 @@ class WorkerRepository {
           "Failed to fetch worker detail from $fetchUrl. Status: ${response.statusCode}",
         );
       }
-    } catch (e) {
-      throw Exception("Error in fetching worker detail: $e");
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception("Error in fetching worker detail: $e");
+    // }
   }
 
   Future<Gen_Worker> createWorker(Gen_Worker worker) async {
     String createUrl = "$baseUrl/workers/";
 
-    try {
+    // ttry {
       final response = await http.post(
         Uri.parse(createUrl),
         headers: {'Content-Type': 'application/json'},
@@ -62,15 +72,20 @@ class WorkerRepository {
           'Failed to create worker. Status: ${response.statusCode}, Body: ${response.body}',
         );
       }
-    } catch (e) {
-      throw Exception('Error in creating worker: $e');
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception('Error in creating worker: $e');
+    // }
   }
 
   Future<Gen_Worker> updateWorker(int id, Gen_Worker worker) async {
     String updateUrl = "$baseUrl/workers/$id/";
 
-    try {
+    // ttry {
       final response = await http.put(
         Uri.parse(updateUrl),
         headers: {'Content-Type': 'application/json'},
@@ -85,15 +100,20 @@ class WorkerRepository {
           'Failed to update worker. Status: ${response.statusCode}, Body: ${response.body}',
         );
       }
-    } catch (e) {
-      throw Exception('Error in updating worker: $e');
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception('Error in updating worker: $e');
+    // }
   }
 
   Future<void> deleteWorker(int id) async {
     String deleteUrl = "$baseUrl/workers/$id/";
 
-    try {
+    // ttry {
       final response = await http.delete(Uri.parse(deleteUrl));
 
       if (response.statusCode != 204) {
@@ -101,8 +121,13 @@ class WorkerRepository {
           "Failed to delete worker from $deleteUrl. Status: ${response.statusCode}",
         );
       }
-    } catch (e) {
-      throw Exception("Error in deleting worker: $e");
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception("Error in deleting worker: $e");
+    // }
   }
 }

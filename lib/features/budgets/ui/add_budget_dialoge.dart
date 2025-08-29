@@ -1,0 +1,99 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:moalidaty1/features/budgets/models/budgets_model.dart';
+import 'package:moalidaty1/features/budgets/services/budget_service.dart';
+
+class AddBudgetDialoge extends StatelessWidget {
+  AddBudgetDialoge({super.key});
+  BudgetService budgetService = Get.find<BudgetService>();
+  final List<String> _months_list = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+  ];
+  final List<String> _years_list = List.generate(
+    11,
+    (index) => (2020 + index).toString(),
+  );
+  int _selected_month = DateTime.now().month;
+  int _selected_year = DateTime.now().year;
+  final _price_per_ampere = TextEditingController(text: '1000.0');
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('إضافة ميزانية جديدة'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(height: 20),
+          DropdownMenu(
+            label: const Text('السنة'),
+            initialSelection: _selected_year.toString(),
+            onSelected: (value) => _selected_year = int.parse(value!),
+            dropdownMenuEntries:
+                _years_list
+                    .map((year) => DropdownMenuEntry(value: year, label: year))
+                    .toList(),
+          ),
+          SizedBox(height: 20),
+
+          DropdownMenu(
+            label: const Text('الشهر'),
+            initialSelection: _selected_month.toString(),
+            onSelected: (value) => _selected_month = int.parse(value!),
+            dropdownMenuEntries:
+                _months_list
+                    .map(
+                      (month) => DropdownMenuEntry(value: month, label: month),
+                    )
+                    .toList(),
+          ),
+          SizedBox(height: 20),
+          TextField(
+            controller: _price_per_ampere,
+            decoration: const InputDecoration(
+              labelText: 'سعر الأمبير',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+          ),
+          // يمكنك إضافة حقول أخرى حسب الحاجة
+        ],
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+          child: const Text('رجوع'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            // هنا يمكنك إضافة منطق حفظ الميزانية الجديدة
+            // Navigator.pop(context);
+            final new_budget = Budget(
+              amber_price: double.tryParse(_price_per_ampere.text)!,
+              year: _selected_year,
+              month: _selected_month,
+              year_month: "$_selected_year-$_selected_month",
+              paid_subs: [],
+              unpaid_subs: [],
+            );
+            budgetService.addBudget(new_budget);
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+          child: const Text('     حفظ      '),
+        ),
+      ],
+    );
+  }
+}

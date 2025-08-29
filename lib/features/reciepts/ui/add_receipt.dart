@@ -1,115 +1,172 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
-import 'package:moalidaty1/features/reciepts/models/model.dart';
-import 'package:moalidaty1/features/subscripers/models/model.dart';
+import 'package:moalidaty1/features/reciepts/models/receipt_model.dart';
 import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
 
-class AddReceiptService extends GetxController {
-  final _subscribersService = Get.find<SubscripersService>();
-  final _receiptService = Get.find<RecieptServices>();
-  final _budgetService = Get.find<BudgetService>();
+class AddReceiptDialoge extends StatelessWidget {
+  AddReceiptDialoge({super.key});
 
-  // Observable values
-  // final RxList<int> availableYears = <int>[].obs;
-  // final RxList<int> availableMonths = <int>[].obs;
-  final Rx<Subscriper?> selectedSubscriber = Rx<Subscriper?>(null);
-  final RxInt selectedYear = DateTime.now().year.obs;
-  final RxInt selectedMonth = DateTime.now().month.obs;
-  final RxDouble amberPrice = 0.0.obs;
-  final RxDouble amountPaid = 0.0.obs;
-  final RxString imagePath = RxString('');
- 
+  final totalPaidCtrl = TextEditingController();
+  final ampereCtrl = TextEditingController();
+
+  final selectedSubscriperId = RxnInt();
+  final selectedMonth = RxInt(1);
+  final selectedYear = RxInt(DateTime.now().year);
+
+  int subsciperAmbers = 0;
+
   @override
-  void onInit() {
-    super.onInit();
-    initData();
-  }
+  Widget build(BuildContext context) {
+    final subscriperService = Get.find<SubscripersService>();
+    final budgetService = Get.find<BudgetService>();
+    final receiptService = Get.find<RecieptServices>();
 
-  void initData() {
-    // try {
-    //   // Get unique years from budgets
-    //   availableYears.value = _budgetService.budgets
-    //       .map((b) => b.year)
-    //       .toSet()
-    //       .toList()
-    //     ..sort();
+    final months =
+        budgetService.list_budgets.map((b) => b.month).toSet().toList()..sort();
+    final years =
+        budgetService.list_budgets.map((b) => b.year).toSet().toList()..sort();
 
-    //   if (availableYears.isNotEmpty) {
-    //     selectedYear.value = availableYears.last;
-    //     updateAvailableMonths();
-    //   }
-    // } catch (e) {
-    //   print('Error initializing data: $e');
-    // }
-  }
+    return AlertDialog(
+      title: const Text('إضافة إيصال جديد'),
+      content: SingleChildScrollView(
+        child: Obx(() {
+          final subs = subscriperService.list_subs;
 
-  // void updateAvailableMonths() {
-  //   availableMonths.value = _budgetService.budgets
-  //       .where((b) => b.year == selectedYear.value)
-  //       .map((b) => b.month)
-  //       .toSet()
-  //       .toList()
-  //     ..sort();
-    
-  //   if (availableMonths.isNotEmpty && !availableMonths.contains(selectedMonth.value)) {
-  //     selectedMonth.value = availableMonths.first;
-  //   }
-  //   updateAmberPrice();
-  // }
+          if (subs.isEmpty || months.isEmpty || years.isEmpty) {
+            return const Center(child: Text('البيانات غير متوفرة'));
+          }
 
-  // void updateAmberPrice() {
-  //   if (selectedSubscriber.value != null) {
-  //     final budget = _budgetService.budgets.firstWhereOrNull(
-  //       (b) => b.year == selectedYear.value && b.month == selectedMonth.value,
-  //     );
+          selectedSubscriperId.value ??= subs.last.id;
+          selectedMonth.value = months.last;
+          selectedYear.value = years.last;
 
-  //     if (budget != null) {
-  //       amberPrice.value = budget.amber_price;
-  //     } else {
-  //       amberPrice.value = 0.0;
-  //       Get.snackbar(
-  //         'تنبيه',
-  //         'لا يوجد ميزانية للشهر والسنة المختارة',
-  //         backgroundColor: Colors.orange,
-  //         colorText: Colors.white,
-  //       );
-  //     }
-  //   }
-  // }
+          return Column(
+            children: [
+              DropdownButtonFormField<int>(
+                value: selectedSubscriperId.value,
+                decoration: const InputDecoration(
+                  labelText: 'المشترك',
+                  border: OutlineInputBorder(),
+                ),
+                items:
+                    subs.map((s) {
+                      return DropdownMenuItem<int>(
+                        value: s.id,
+                        child: Text(s.name),
+                      );
+                    }).toList(),
+                onChanged: (val) => selectedSubscriperId.value = val,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<int>(
+                value: selectedYear.value,
+                decoration: const InputDecoration(
+                  labelText: 'السنة',
+                  border: OutlineInputBorder(),
+                ),
+                items:
+                    years.map((y) {
+                      return DropdownMenuItem<int>(
+                        value: y,
+                        child: Text(y.toString()),
+                      );
+                    }).toList(),
+                onChanged:
+                    (val) => selectedYear.value = val ?? DateTime.now().year,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<int>(
+                value: selectedMonth.value,
+                decoration: const InputDecoration(
+                  labelText: 'الشهر',
+                  border: OutlineInputBorder(),
+                ),
+                items:
+                    months.map((m) {
+                      return DropdownMenuItem<int>(
+                        value: m,
+                        child: Text(m.toString()),
+                      );
+                    }).toList(),
+                onChanged: (val) {
+                  selectedMonth.value = val ?? 1;
 
-  Future<void> submitForm() async {
-  //   if (selectedSubscriber.value == null) return;
+                  final budget = budgetService.list_budgets.firstWhere(
+                    (b) =>
+                        b.month == selectedMonth.value &&
+                        b.year == selectedYear.value,
+                    orElse: () => budgetService.list_budgets.first,
+                  );
 
-  //   try {
-  //     final newReceipt = Reciept(
-  //       date: DateTime.now(),
-  //       subscriberId: selectedSubscriber.value!.id,
-  //       amberPrice: _budgetService.budgets.firstWhere((b)=>b.month=selectedMonth && b.year==selectedYear).amber_price,
-  //       amountPaid: amountPaid.value,
-  //       year: selectedYear.value,
-  //       month: selectedMonth.value,
-  //       image: imagePath.value.isEmpty ? null : imagePath.value,
-  //       subscriber: selectedSubscriber.value,
-  //     );
+                  ampereCtrl.text = budget.amber_price.toString();
 
-  //     await _receiptService.addReciept(newReceipt);
-  //     Get.back();
-  //     Get.snackbar(
-  //       'نجاح',
-  //       'تم إضافة الوصل بنجاح',
-  //       backgroundColor: Colors.green,
-  //       colorText: Colors.white,
-  //     );
-  //   } catch (e) {
-  //     Get.snackbar(
-  //       'خطأ',
-  //       'حدث خطأ أثناء إضافة الوصل',
-  //       backgroundColor: Colors.red,
-  //       colorText: Colors.white,
-  //     );
-  //   }
+                  final subscriper = subs.firstWhere(
+                    (s) => s.id == selectedSubscriperId.value,
+                    orElse: () => subs.first,
+                  );
+
+                  subsciperAmbers = subscriper.amber;
+                  totalPaidCtrl.text = (subsciperAmbers * budget.amber_price)
+                      .toStringAsFixed(2);
+                },
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: ampereCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'سعر الامبير',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: totalPaidCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'المبلغ الكلي المدفوع',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+          );
+        }),
+      ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actions: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+          child: const Text('رجوع'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (selectedSubscriperId.value != null) {
+              final receipt = Reciept(
+                amberPrice: double.tryParse(ampereCtrl.text) ?? 0.0,
+                amountPaid: double.tryParse(totalPaidCtrl.text) ?? 0.0,
+                month: selectedMonth.value,
+                year: selectedYear.value,
+                subscriber: selectedSubscriperId.value!,
+                dateReceived: DateTime.now(),
+              );
+              receiptService.addReciept(receipt);
+              Navigator.pop(context);
+            } else {
+              Get.snackbar('خطأ', 'يرجى اختيار مشترك صالح');
+            }
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+          child: const Text('إضافة'),
+        ),
+      ],
+    );
   }
 }

@@ -11,63 +11,94 @@ class WorkerService extends GetxService {
     print('WorkerService: onInit called');
 
     super.onInit();
-    try {
+    // ttry {
       await getWorkers();
-    } catch (e) {
-      print('WorkerService: Error in onInit: $e');
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('WorkerService: Error in onInit: $e');
+    // }
   }
 
   Future<void> getWorkers() async {
-    try {
+    // ttry {
       print('WorkerService: Starting to fetch workers');
       final workerList = await repository.fetchWorkers();
       print('WorkerService: Fetched ${workerList.length} workers');
       workers.assignAll(workerList);
-    } catch (e) {
-      print('WorkerService: Error fetching workers: $e');
-      // Continue with empty list instead of failing completely
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('WorkerService: Error fetching workers: $e');
+    //   // Continue with empty list instead of failing completely
+    // }
   }
 
   Future<void> addWorker(Gen_Worker worker) async {
-    try {
+    // ttry {
       final createdWorker = await repository.createWorker(worker);
       workers.add(createdWorker);
-    } catch (e) {
-      print('Error adding worker: $e');
-      rethrow;
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('Error adding worker: $e');
+    //   rethrow;
+    // }
   }
 
   Future<void> updateWorker(Gen_Worker worker) async {
-    try {
+    // ttry {
       final updatedWorker = await repository.updateWorker(worker.id, worker);
       final index = workers.indexWhere((w) => w.id == worker.id);
       if (index != -1) {
         workers[index] = updatedWorker;
       }
-    } catch (e) {
-      print('Error updating worker: $e');
-      rethrow;
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('Error updating worker: $e');
+    //   rethrow;
+    // }
   }
 
   Future<void> removeWorker(Gen_Worker worker) async {
-    try {
+    // ttry {
       await repository.deleteWorker(worker.id);
       workers.remove(worker);
-    } catch (e) {
-      print('Error removing worker: $e');
-      rethrow;
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   print('Error removing worker: $e');
+    //   rethrow;
+    // }
   }
 
   Gen_Worker? getWorkerById(int id) {
-    try {
+    // ttry {
       return workers.firstWhere((w) => w.id == id);
-    } catch (e) {
-      return null;
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   rethrow;
+    //   return null;
+    // }
   }
 }

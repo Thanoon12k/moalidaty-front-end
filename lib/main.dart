@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
+import 'package:moalidaty1/features/budgets/ui/budgets_list.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
 import 'package:moalidaty1/features/reciepts/ui/list_reciepts.dart';
 import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
@@ -11,7 +12,6 @@ import 'package:moalidaty1/features/workers/ui/list_workers.dart';
 import 'package:moalidaty1/routes/routes.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await initServices();
   runApp(const MyApp());
@@ -20,28 +20,29 @@ void main() async {
 Future<void> initServices() async {
   print('Starting services initialization...');
 
-  try {
-    // Register services
-    Get.lazyPut<BudgetService>(() => BudgetService());
-    Get.lazyPut<WorkerService>(() => WorkerService());
-    Get.lazyPut<SubscripersService>(() => SubscripersService());
-    Get.lazyPut<RecieptServices>(() => RecieptServices());
+  // ttry {
+  // Register services
+  Get.lazyPut<BudgetService>(() => BudgetService());
+  Get.lazyPut<WorkerService>(() => WorkerService());
+  Get.lazyPut<SubscripersService>(() => SubscripersService());
+  Get.lazyPut<RecieptServices>(() => RecieptServices());
 
+  // Initialize services in parallel
+  await Future.wait([
+    Get.find<BudgetService>().onInit(),
 
-    // Initialize services in parallel
-    await Future.wait([
-      Get.find<BudgetService>().onInit(),
+    Get.find<SubscripersService>().onInit(),
+    Get.find<WorkerService>().onInit(),
+    Get.find<RecieptServices>().onInit(),
+  ]);
 
-      Get.find<SubscripersService>().onInit(),
-      Get.find<WorkerService>().onInit(),
-      Get.find<RecieptServices>().onInit(),
-    ]);
-
-    print('All services initialized successfully');
-  } catch (e) {
-    print('Error initializing services: $e');
-    // You might want to show an error dialog or handle the error appropriately
-  }
+  print('All services initialized successfully');
+  // } catch (e, stackTrace) {
+  //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+  //   print(stackTrace);
+  //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+  //   // You might want to show an error dialog or handle the error appropriately
+  // }
 }
 
 class MyApp extends StatelessWidget {
@@ -67,8 +68,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -76,27 +75,41 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('ادارة المولدة')),
-      body: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Get.to(() => WorkersListPage());
-            },
-            child: Text('عرض قائمة المشغلين'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.to(() => SubscripersListPage());
-            },
-            child: Text('عرض قائمة المشتركين'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.to(() => RecieptsListPage());
-            },
-            child: Text('عرض قائمة الإيصالات'),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Get.to(() => WorkersListPage());
+              },
+              child: Text('عرض قائمة المشغلين', style: TextStyle(fontSize: 20)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Get.to(() => SubscripersListPage());
+              },
+              child: Text(
+                'عرض قائمة المشتركين',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Get.to(() => RecieptsListPage());
+              },
+              child: Text(
+                'عرض قائمة الإيصالات',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Get.to(() => BudgetsListPage());
+              },
+              child: Text('عرض قائمة المبالغ', style: TextStyle(fontSize: 20)),
+            ),
+          ],
+        ),
       ),
     );
   }

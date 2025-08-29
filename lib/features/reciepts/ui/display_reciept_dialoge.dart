@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moalidaty1/features/reciepts/models/model.dart';
+import 'package:moalidaty1/features/reciepts/models/receipt_model.dart';
 
 class DisplayReceiptDialog extends StatelessWidget {
   final Reciept receipt;
@@ -45,7 +45,7 @@ class DisplayReceiptDialog extends StatelessWidget {
                     children: [
                       // Basic Info
                       _buildInfoRow('رقم الإيصال:', '${receipt.id}'),
-                      _buildInfoRow('التاريخ:', _formatDate(receipt.date)),
+                      _buildInfoRow('التاريخ:', _formatDate(receipt.dateReceived ??DateTime.now())),
                       _buildInfoRow('المشترك:', receipt.subscriberName),
                       _buildInfoRow('رقم المشترك:', '${receipt.subscriber}'),
                       if (receipt.worker != null)

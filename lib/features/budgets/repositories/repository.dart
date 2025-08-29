@@ -1,49 +1,63 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:moalidaty1/constants/global_constants.dart';
-import 'package:moalidaty1/features/budgets/models/model.dart';
+import 'package:moalidaty1/features/budgets/models/budgets_model.dart';
 
 class BudgetRepository {
   final String baseUrl = GlobalConstants.baseAddress;
 
   Future<List<Budget>> fetchBudgets() async {
     String fetchUrl = "$baseUrl/budgets/";
-    
-    try {
+
+    // ttry {
       final response = await http.get(Uri.parse(fetchUrl));
 
       if (response.statusCode == 200) {
         List listData = json.decode(response.body);
         return listData.map((jsonRow) => Budget.fromJson(jsonRow)).toList();
       } else {
-        throw Exception("Failed to fetch budgets from $fetchUrl. Status: ${response.statusCode}");
+        throw Exception(
+          "Failed to fetch budgets from $fetchUrl. Status: ${response.statusCode}",
+        );
       }
-    } catch (e) {
-      throw Exception("Error in fetching budgets: $e");
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception("Error in fetching budgets: $e");
+    // }
   }
 
   Future<Budget> fetchBudgetDetail(int id) async {
     String fetchUrl = "$baseUrl/budgets/$id/";
-    
-    try {
+
+    // ttry {
       final response = await http.get(Uri.parse(fetchUrl));
 
       if (response.statusCode == 200) {
         Map<String, dynamic> jsonData = json.decode(response.body);
         return Budget.fromJson(jsonData);
       } else {
-        throw Exception("Failed to fetch budget detail from $fetchUrl. Status: ${response.statusCode}");
+        throw Exception(
+          "Failed to fetch budget detail from $fetchUrl. Status: ${response.statusCode}",
+        );
       }
-    } catch (e) {
-      throw Exception("Error in fetching budget detail: $e");
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception("Error in fetching budget detail: $e");
+    // }
   }
 
   Future<Budget> createBudget(Budget budget) async {
     String createUrl = "$baseUrl/budgets/";
-    
-    try {
+
+    // ttry {
       final response = await http.post(
         Uri.parse(createUrl),
         headers: {'Content-Type': 'application/json'},
@@ -54,17 +68,24 @@ class BudgetRepository {
         final createdBudget = Budget.fromJson(json.decode(response.body));
         return createdBudget;
       } else {
-        throw Exception('Failed to create budget. Status: ${response.statusCode}, Body: ${response.body}');
+        throw Exception(
+          'Failed to create budget. Status: ${response.statusCode}, Body: ${response.body}',
+        );
       }
-    } catch (e) {
-      throw Exception('Error in creating budget: $e');
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception('Error in creating budget: $e');
+    // }
   }
 
   Future<Budget> updateBudget(int id, Budget budget) async {
     String updateUrl = "$baseUrl/budgets/$id/";
-    
-    try {
+
+    // ttry {
       final response = await http.put(
         Uri.parse(updateUrl),
         headers: {'Content-Type': 'application/json'},
@@ -75,24 +96,38 @@ class BudgetRepository {
         final updatedBudget = Budget.fromJson(json.decode(response.body));
         return updatedBudget;
       } else {
-        throw Exception('Failed to update budget. Status: ${response.statusCode}, Body: ${response.body}');
+        throw Exception(
+          'Failed to update budget. Status: ${response.statusCode}, Body: ${response.body}',
+        );
       }
-    } catch (e) {
-      throw Exception('Error in updating budget: $e');
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception('Error in updating budget: $e');
+    // }
   }
 
   Future<void> deleteBudget(int id) async {
     String deleteUrl = "$baseUrl/budgets/$id/";
-    
-    try {
+
+    // ttry {
       final response = await http.delete(Uri.parse(deleteUrl));
 
       if (response.statusCode != 204) {
-        throw Exception("Failed to delete budget from $deleteUrl. Status: ${response.statusCode}");
+        throw Exception(
+          "Failed to delete budget from $deleteUrl. Status: ${response.statusCode}",
+        );
       }
-    } catch (e) {
-      throw Exception("Error in deleting budget: $e");
-    }
+    // } catch (e, stackTrace) {
+    //   print('Error is: (( $e ))');
+    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
+    //   print(stackTrace);
+    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+    //   rethrow;
+    //   throw Exception("Error in deleting budget: $e");
+    // }
   }
 }

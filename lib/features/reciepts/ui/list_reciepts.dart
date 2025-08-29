@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
-import 'package:moalidaty1/features/reciepts/models/model.dart';
+import 'package:moalidaty1/features/reciepts/models/receipt_model.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
 import 'package:moalidaty1/features/reciepts/ui/add_receipt.dart';
 import 'package:moalidaty1/features/reciepts/ui/display_reciept_dialoge.dart';
@@ -76,7 +76,7 @@ class RecieptsListPage extends StatelessWidget {
                       style: const TextStyle(fontSize: 22, color: Colors.blue),
                     ),
                     Text(
-                      'التاريخ: ${_formatDate(reciept.date)} | الشهر: ${reciept.month}/${reciept.year}',
+                      'التاريخ: ${_formatDate(reciept.dateReceived ?? DateTime.now())} | الشهر: ${reciept.month}/${reciept.year}',
                       style: const TextStyle(fontSize: 14, color: Colors.green),
                     ),
                   ],
@@ -116,7 +116,7 @@ class RecieptsListPage extends StatelessWidget {
             ),
             onPressed: () {
               // اضافة ايصال جديد
-              // showDialog(context: context, builder: (_) => AddReceiptDialog());
+              showDialog(context: context, builder: (_) => AddReceiptDialoge());
             },
           ),
         ),
