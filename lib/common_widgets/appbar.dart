@@ -16,7 +16,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: GlobalConstants.ScreenWidth,
       child: AppBar(
         title: Text(title),
         backgroundColor: Colors.deepPurple[400],
