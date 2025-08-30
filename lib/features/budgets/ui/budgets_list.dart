@@ -21,7 +21,7 @@ class BudgetsListPage extends StatelessWidget {
             tooltip: 'تحديث الميزانيات',
             onPressed: () async {
               await budget_service
-                  .fetchBudgets(); // or any method that reloads data
+                  .getBudgets(); // or any method that reloads data
               Get.snackbar(
                 'تم التحديث',
                 'تم تحميل الميزانيات من جديد',
@@ -75,7 +75,6 @@ class BudgetsListPage extends StatelessWidget {
                         context: context,
                         builder: (context) => ViewBudgetDetailsDialoge(budget),
                       );
-                      print('View budget ${budget.id}');
                     },
                   ),
                   IconButton(
@@ -88,7 +87,6 @@ class BudgetsListPage extends StatelessWidget {
                             (context) =>
                                 DeleteBudgetDialoge(budget, budget_service),
                       );
-                      print('Delete budget ${budget.id}');
                     },
                   ),
                 ],

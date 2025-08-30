@@ -21,27 +21,21 @@ class Subscriper {
   String toString() => name;
 
   factory Subscriper.fromJson(Map<String, dynamic> json) {
-    // print('Parsing subscriber JSON: $json');
-
     // ttry {
-      final subscriber = Subscriper(
-        id: json["id"] ?? 0,
-        name: json["name"] ?? "",
-        amber: json["Ambers"] ?? 0,
-        circuit_number: json["circuit_number"] ?? "0",
-        phone: json["phone"] ?? "077",
-        barcode_data: json["barcode_data"],
-      );
-      // print('Successfully parsed subscriber: ID=${subscriber.id}, Name=${subscriber.name}');
-      return subscriber;
+    final subscriber = Subscriper(
+      id: json["id"] ?? 0,
+      name: json["name"] ?? "",
+      amber: json["Ambers"] ?? 0,
+      circuit_number: json["circuit_number"] ?? "0",
+      phone: json["phone"] ?? "077",
+      barcode_data: json["barcode_data"],
+    );
+
+    return subscriber;
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('Error parsing subscriber JSON: $e');
-    //   print('JSON data: $json');
+
     //   rethrow;
     // }
   }

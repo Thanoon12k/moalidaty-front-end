@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:moalidaty1/constants/global_constants.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -7,7 +7,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
 
   const CustomAppBar({
-    super.key, 
+    super.key,
     required this.title,
     this.font_size = 36,
     this.actions,
@@ -15,18 +15,21 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(title),
-      backgroundColor: Colors.deepPurple[400],
-      toolbarHeight: 80,
-      titleTextStyle: TextStyle(
-        fontSize: font_size,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        letterSpacing: 2,
+    return Container(
+      width: GlobalConstants.ScreenWidth,
+      child: AppBar(
+        title: Text(title),
+        backgroundColor: Colors.deepPurple[400],
+        toolbarHeight: 80,
+        titleTextStyle: TextStyle(
+          fontSize: font_size,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          letterSpacing: 2,
+        ),
+        iconTheme: const IconThemeData(color: Colors.white, size: 36),
+        actions: actions,
       ),
-      iconTheme: const IconThemeData(color: Colors.white, size: 36),
-      actions: actions,
     );
   }
 

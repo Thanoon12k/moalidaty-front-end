@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
 import 'package:moalidaty1/features/budgets/ui/budgets_list.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
@@ -18,8 +20,6 @@ void main() async {
 }
 
 Future<void> initServices() async {
-  print('Starting services initialization...');
-
   // ttry {
   // Register services
   Get.lazyPut<BudgetService>(() => BudgetService());
@@ -35,12 +35,8 @@ Future<void> initServices() async {
     Get.find<WorkerService>().onInit(),
     Get.find<RecieptServices>().onInit(),
   ]);
-
-  print('All services initialized successfully');
   // } catch (e, stackTrace) {
-  //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-  //   print(stackTrace);
-  //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
   //   // You might want to show an error dialog or handle the error appropriately
   // }
 }
@@ -50,6 +46,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GlobalConstants.globalScreenWidth = MediaQuery.of(context).size.width;
+    GlobalConstants.globalScreenWidth = MediaQuery.of(context).size.height;
+
     return GetMaterialApp(
       title: 'Moalidaty',
       debugShowCheckedModeBanner: false,
@@ -74,7 +73,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('ادارة المولدة')),
+      appBar: CustomAppBar(
+        title: 'أدارة المولدة',
+        font_size: GlobalConstants.scaleTo(32),
+      ),
+
       body: Center(
         child: Column(
           children: [
@@ -82,31 +85,42 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Get.to(() => WorkersListPage());
               },
-              child: Text('عرض قائمة المشغلين', style: TextStyle(fontSize: 20)),
+              child: Text(
+                'عرض قائمة المشغلين',
+                style: TextStyle(fontSize: GlobalConstants.scaleTo(19)),
+              ),
             ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Get.to(() => SubscripersListPage());
               },
               child: Text(
                 'عرض قائمة المشتركين',
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: GlobalConstants.scaleTo(19)),
               ),
             ),
+            SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () {
                 Get.to(() => RecieptsListPage());
               },
               child: Text(
                 'عرض قائمة الإيصالات',
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: GlobalConstants.scaleTo(19)),
               ),
             ),
+            SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () {
                 Get.to(() => BudgetsListPage());
               },
-              child: Text('عرض قائمة المبالغ', style: TextStyle(fontSize: 20)),
+              child: Text(
+                'عرض قائمة المبالغ',
+                style: TextStyle(fontSize: GlobalConstants.scaleTo(19)),
+              ),
             ),
           ],
         ),

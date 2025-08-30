@@ -41,9 +41,9 @@
 // //         updateAvailableMonths();
 // //       }
 // //     }  catch (e, stackTrace) {
-//       print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-//       print(stackTrace);
-//       print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
+
+
 // //       print('Error initializing data: $e');
 // //     }
 // //   }

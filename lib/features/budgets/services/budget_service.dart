@@ -1,22 +1,20 @@
 import 'package:get/get.dart';
+import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/budgets/models/budgets_model.dart';
-import 'package:moalidaty1/features/budgets/repositories/repository.dart';
+import 'package:moalidaty1/features/budgets/api/budget_api.dart';
 
 class BudgetService extends GetxService {
   final RxList<Budget> list_budgets = <Budget>[].obs;
-  final budgetRepository = BudgetRepository();
+  final budgetRepository = BudgetAPI();
 
   @override
   Future<void> onInit() async {
     super.onInit();
-    await fetchBudgets();
+    await getBudgets();
   }
 
-  Future<void> fetchBudgets() async {
+  Future<void> getBudgets() async {
     final fetchedBudgets = await budgetRepository.fetchBudgets();
-    print('Fetched ${fetchedBudgets.length} budgets');
-    print('Budgets: $fetchedBudgets');
-
     // Sort by year (descending), then by month (descending)
     fetchedBudgets.sort((a, b) {
       if (b.year != a.year) {
@@ -25,15 +23,11 @@ class BudgetService extends GetxService {
       return b.month.compareTo(a.month);
     });
 
-
     list_budgets.assignAll(fetchedBudgets);
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('Error fetching budgets: $e');
+
     //   // You might want to show a snackbar or handle error UI here
     // }
   }
@@ -43,12 +37,9 @@ class BudgetService extends GetxService {
     final createdBudget = await budgetRepository.createBudget(budget);
     list_budgets.add(createdBudget);
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('Error adding budget: $e');
+
     //   rethrow;
     // }
   }
@@ -61,12 +52,9 @@ class BudgetService extends GetxService {
       list_budgets[index] = updatedBudget;
     }
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('Error updating budget: $e');
+
     //   rethrow;
     // }
   }
@@ -79,12 +67,9 @@ class BudgetService extends GetxService {
       list_budgets.removeAt(index);
     }
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('Error removing budget: $e');
+
     //   rethrow;
     // }
   }
@@ -93,10 +78,7 @@ class BudgetService extends GetxService {
     // ttry {
     return list_budgets.firstWhere((b) => b.id == id);
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
     //   return null;
     // }
@@ -106,10 +88,7 @@ class BudgetService extends GetxService {
     // ttry {
     return list_budgets.firstWhere((b) => b.year_month == yearMonth);
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
     //   return null;
     // }

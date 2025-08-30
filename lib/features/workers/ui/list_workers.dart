@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
 import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
+import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/workers/ui/add_worker.dart';
 import 'package:moalidaty1/features/workers/ui/update_worker.dart';
 import '../services/service_worker.dart';
@@ -17,6 +18,8 @@ class WorkersListPage extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: "قائمة المشغلين",
+        font_size: 34,
+
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
@@ -42,15 +45,17 @@ class WorkersListPage extends StatelessWidget {
             if (workerService.workers_list.isEmpty) {
               return const Center(child: GeneratorLoadingIndicator());
             }
-
+            double num = 32;
+            num = 24;
+            num = 6;
             return ListView.separated(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(GlobalConstants.scaleTo(16)),
               itemCount: workerService.workers_list.length,
               separatorBuilder: (_, __) => const Divider(thickness: 2),
               itemBuilder: (context, index) {
                 final worker = workerService.workers_list[index];
                 return Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(16),
@@ -69,38 +74,38 @@ class WorkersListPage extends StatelessWidget {
                         radius: 28,
                         child: Text(
                           '${index + 1}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 18),
+                      SizedBox(width: 18),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               worker.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               'الهاتف: ${worker.phone ?? "غير محدد"}',
-                              style: const TextStyle(
-                                fontSize: 22,
+                              style: TextStyle(
+                                fontSize: 21,
                                 color: Colors.green,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               'الهاتف: ${worker.phone}',
-                              style: const TextStyle(
-                                fontSize: 22,
+                              style: TextStyle(
+                                fontSize: 21,
                                 color: Colors.blue,
                               ),
                             ),
@@ -135,16 +140,13 @@ class WorkersListPage extends StatelessWidget {
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16),
         child: SizedBox(
           height: 60,
           width: double.infinity,
           child: ElevatedButton.icon(
-            icon: const Icon(Icons.add, size: 32),
-            label: const Text(
-              'إضافة مشغل جديد',
-              style: TextStyle(fontSize: 24),
-            ),
+            icon: Icon(Icons.add, size: 32),
+            label: Text('إضافة مشغل جديد', style: TextStyle(fontSize: 24)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red[400],
               foregroundColor: Colors.white,

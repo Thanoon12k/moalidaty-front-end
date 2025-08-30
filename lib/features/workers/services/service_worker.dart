@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:moalidaty1/features/workers/repositories/repository.dart';
+import 'package:moalidaty1/features/workers/api/workers_api.dart';
 import "../models/model.dart";
 
 class WorkerService extends GetxService {
@@ -8,34 +8,24 @@ class WorkerService extends GetxService {
 
   @override
   Future<void> onInit() async {
-    print('WorkerService: onInit called');
-
     super.onInit();
     // ttry {
     await getWorkers();
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('WorkerService: Error in onInit: $e');
+
     // }
   }
 
   Future<void> getWorkers() async {
     // ttry {
-    print('WorkerService: Starting to fetch workers');
     final workerList = await repository.fetchWorkers();
-    print('WorkerService: Fetched ${workerList.length} workers');
     workers_list.assignAll(workerList);
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('WorkerService: Error fetching workers: $e');
+
     //   // Continue with empty list instead of failing completely
     // }
   }
@@ -45,12 +35,9 @@ class WorkerService extends GetxService {
     final createdWorker = await repository.createWorker(worker);
     workers_list.add(createdWorker);
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('Error adding worker: $e');
+
     //   rethrow;
     // }
   }
@@ -63,12 +50,9 @@ class WorkerService extends GetxService {
       workers_list[index] = updatedWorker;
     }
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('Error updating worker: $e');
+
     //   rethrow;
     // }
   }
@@ -78,12 +62,9 @@ class WorkerService extends GetxService {
     await repository.deleteWorker(worker.id);
     workers_list.remove(worker);
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
-    //   print('Error removing worker: $e');
+
     //   rethrow;
     // }
   }
@@ -92,10 +73,7 @@ class WorkerService extends GetxService {
     // ttry {
     return workers_list.firstWhere((w) => w.id == id);
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
     //   rethrow;
     //   return null;

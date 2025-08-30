@@ -155,6 +155,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
                 ),
               const SizedBox(height: 24),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton.icon(
                     icon: const Icon(Icons.arrow_back),

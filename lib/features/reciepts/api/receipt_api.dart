@@ -1,56 +1,26 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/reciepts/models/receipt_model.dart';
 
-class RecieptRepository {
+class RecieptAPI {
   final String baseUrl = GlobalConstants.baseAddress;
 
   Future<List<Reciept>> fetchReciepts() async {
     String fetchUrl = "$baseUrl/receipts/";
-
+    List<Reciept> recieptList = [];
     // ttry {
     final response = await http.get(Uri.parse(fetchUrl));
-
     if (response.statusCode == 200) {
-      print('Receipt API Response Status: ${response.statusCode}');
-      // print('Receipt API Response Body: ${response.body}');
-
-      final dynamic responseData = json.decode(response.body);
-      print('Receipt API Parsed Response Type: ${responseData.runtimeType}');
-
-      // Handle both wrapped response structure and direct array response
-      List listData;
-      if (responseData is Map<String, dynamic> &&
-          responseData.containsKey('value')) {
-        // Wrapped response: {"value": [...]}
-        print('Receipt API: Using wrapped response structure');
-        listData = responseData['value'] as List;
-      } else if (responseData is List) {
-        // Direct array response: [...]
-        print('Receipt API: Using direct array response structure');
-        listData = responseData;
-      } else {
-        throw Exception(
-          "Unexpected response format: ${responseData.runtimeType}",
-        );
-      }
-
-      print('Receipt API: Found ${listData.length} receipts');
-      return listData.map((jsonRow) => Reciept.fromJson(jsonRow)).toList();
-    } else {
-      throw Exception(
-        "Failed to fetch receipts from $fetchUrl. Status: ${response.statusCode}",
-      );
+      List<dynamic> listData = json.decode(response.body);
+      recieptList =
+          listData.map((jsonRow) => Reciept.fromJson(jsonRow)).toList();
     }
-    // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
-    //   rethrow;
-    //   throw Exception("Failed to fetch receipts from $fetchUrl. because: $e");
-    // }
+    debugPrint(
+      "Fetched Receipts status: ${response.statusCode} got (${recieptList.length}) items",
+    );
+    return recieptList;
   }
 
   Future<Reciept> createReciept(Reciept reciept) async {
@@ -103,10 +73,7 @@ class RecieptRepository {
       );
     }
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
     //   throw Exception("Error in deleting receipt: $e");
     // }
@@ -131,10 +98,7 @@ class RecieptRepository {
       );
     }
     // } catch (e, stackTrace) {
-    //   print('Error is: (( $e ))');
-    //   print(" ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ ");
-    //   print(stackTrace);
-    //   print(" ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗");
+
     //   rethrow;
     //   throw Exception('Error in updating receipt: $e');
     // }

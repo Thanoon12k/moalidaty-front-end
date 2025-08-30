@@ -69,13 +69,31 @@ class AddBudgetDialoge extends StatelessWidget {
           // يمكنك إضافة حقول أخرى حسب الحاجة
         ],
       ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
       actions: [
-        ElevatedButton(
+        ElevatedButton.icon(
+          icon: const Icon(Icons.arrow_back),
+          label: const Text('رجوع'),
+
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.grey,
+            foregroundColor: Colors.white,
+            // padding: const EdgeInsets.symmetric(vertical: 12),
+            textStyle: const TextStyle(fontSize: 18),
+          ),
           onPressed: () => Navigator.pop(context),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-          child: const Text('رجوع'),
         ),
-        ElevatedButton(
+        const SizedBox(width: 10),
+        ElevatedButton.icon(
+          label: const Text('     حفظ      '),
+
+          icon: const Icon(Icons.check, size: 20),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
+            // padding: const EdgeInsets.symmetric(vertical: 5),
+            textStyle: const TextStyle(fontSize: 18),
+          ),
           onPressed: () {
             // هنا يمكنك إضافة منطق حفظ الميزانية الجديدة
             // Navigator.pop(context);
@@ -90,8 +108,6 @@ class AddBudgetDialoge extends StatelessWidget {
             budgetService.addBudget(new_budget);
             Navigator.pop(context);
           },
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-          child: const Text('     حفظ      '),
         ),
       ],
     );
