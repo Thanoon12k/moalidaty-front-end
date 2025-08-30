@@ -4,12 +4,23 @@ import "../models/model.dart";
 
 class WorkerService extends GetxService {
   final RxList<Gen_Worker> workersList = <Gen_Worker>[].obs;
+  final RxBool showSearch = false.obs;
+  final RxString searchQuery = ''.obs;
+
   final WorkerRepository api = WorkerRepository();
 
   @override
   Future<void> onInit() async {
     super.onInit();
     await getWorkers();
+  }
+
+  List<Gen_Worker> get filteredWorkers {
+    final query = searchQuery.value.toLowerCase().trim();
+    if (query.isEmpty) return workersList;
+    return workersList.where((worker) {
+      return worker.name.toLowerCase().contains(query);
+    }).toList();
   }
 
   Future<void> getWorkers() async {

@@ -9,7 +9,7 @@ import 'package:moalidaty1/features/workers/ui/update_worker.dart';
 import '../services/service_worker.dart';
 
 class WorkersListPage extends StatelessWidget {
-  const WorkersListPage({super.key});
+  WorkersListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class WorkersListPage extends StatelessWidget {
             icon: const Icon(Icons.search, color: Colors.white),
             tooltip: 'البحث',
             onPressed: () {
-              // TODO: Implement search functionality
+              workerService.showSearch.value = !workerService.showSearch.value;
             },
           ),
           PopupMenuButton<String>(
@@ -60,13 +60,57 @@ class WorkersListPage extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (workerService.workersList.isEmpty) {
+        if (workerService.filteredWorkers.isEmpty) {
           return _buildEmptyState();
         }
 
         return Column(
           children: [
-            _buildHeaderStats(workerService.workersList.length),
+            if (workerService.showSearch.value)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Obx(
+                  () => TextField(
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 18),
+                    decoration: InputDecoration(
+                      hintText: 'ابحث عن مشغل...',
+                      hintTextDirection: TextDirection.rtl,
+                      prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                      suffixIcon:
+                          workerService.searchQuery.value.isNotEmpty
+                              ? IconButton(
+                                icon: Icon(
+                                  Icons.clear,
+                                  color: Colors.grey[600],
+                                ),
+                                onPressed:
+                                    () => workerService.searchQuery.value = '',
+                                tooltip: 'مسح البحث',
+                              )
+                              : null,
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      workerService.searchQuery.value = value;
+                    },
+                  ),
+                ),
+              ),
+
+            _buildHeaderStats(workerService.filteredWorkers.length),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
@@ -77,9 +121,9 @@ class WorkersListPage extends StatelessWidget {
                     horizontal: GlobalConstants.scaleTo(16),
                     vertical: GlobalConstants.scaleTo(8),
                   ),
-                  itemCount: workerService.workersList.length,
+                  itemCount: workerService.filteredWorkers.length,
                   itemBuilder: (context, index) {
-                    final worker = workerService.workersList[index];
+                    final worker = workerService.filteredWorkers[index];
                     return _buildWorkerCard(context, worker, index);
                   },
                 ),
