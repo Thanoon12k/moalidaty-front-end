@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
 import 'package:moalidaty1/features/reciepts/models/receipt_model.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
+import 'package:moalidaty1/features/reciepts/ui/list_reciepts.dart';
 import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/budgets/models/budgets_model.dart';
@@ -13,7 +14,8 @@ import 'package:moalidaty1/features/workers/services/service_worker.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddReceiptDialoge extends StatefulWidget {
-  const AddReceiptDialoge({super.key});
+  final Subscriper? deisinatedSubscriper;
+  const AddReceiptDialoge({super.key, this.deisinatedSubscriper});
 
   @override
   State<AddReceiptDialoge> createState() => _AddReceiptDialogeState();
@@ -51,8 +53,9 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
 
     years = budgets.map((b) => b.year).toSet().toList()..sort();
     months = budgets.map((b) => b.month).toSet().toList()..sort();
-
-    if (subscribers.isNotEmpty) {
+    if (widget.deisinatedSubscriper != null) {
+      selectedSubscriber = widget.deisinatedSubscriper;
+    } else {
       selectedSubscriber = subscribers.first;
     }
 
@@ -194,6 +197,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
                         ),
                       );
                       Navigator.of(context).pop();
+                      Get.to(() => RecieptsListPage());
                     },
                   ),
                 ],
