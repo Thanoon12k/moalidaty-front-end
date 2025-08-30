@@ -13,7 +13,7 @@ class SubscripersListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subsService = Get.find<SubscripersService>();
+    final subsService = Get.find<SubscribersService>();
     return Scaffold(
       appBar: CustomAppBar(
         title: "قائمة المشتركين",
@@ -36,113 +36,99 @@ class SubscripersListPage extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: subsService.getSubscripers(),
-        builder: (context, snapshot) {
-          return Obx(() {
-            if (subsService.subscripers_list.isEmpty) {
-              return const Center(child: SimpleWaiting());
-            }
+      body: Obx(() {
+        if (subsService.subscripers_list.isEmpty) {
+          return const Center(child: SimpleWaiting());
+        }
 
-            return ListView.separated(
-              separatorBuilder: (_, _) => const Divider(thickness: 2),
-              itemCount: subsService.subscripers_list.length,
+        return ListView.separated(
+          separatorBuilder: (_, _) => const Divider(thickness: 2),
+          itemCount: subsService.subscripers_list.length,
+          padding: EdgeInsets.all(15),
+          itemBuilder: (context, index) {
+            final sub = subsService.subscripers_list[index];
+            return Container(
               padding: EdgeInsets.all(15),
-              itemBuilder: (context, index) {
-                final sub = subsService.subscripers_list[index];
-                return Container(
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blueGrey,
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blueGrey,
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.red[300],
-                        radius: 27,
-                        child: Text(
-                          '${index + 1}',
+                ],
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.red[300],
+                    radius: 27,
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 18),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+                        Text(
+                          sub.name,
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
+                            fontSize: 27,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                      SizedBox(width: 18),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-
-                          children: [
-                            Text(
-                              sub.name,
-                              style: TextStyle(
-                                fontSize: 27,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'الامبيرات: ${sub.amber}',
-                              style: TextStyle(
-                                fontSize: 22,
-                                color: Colors.green,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'رقم الجوزة: ${sub.circuit_number}',
-                              style: TextStyle(
-                                fontSize: 22,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'الهاتف: ${sub.phone}',
-                              style: TextStyle(
-                                fontSize: 22,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ],
+                        SizedBox(height: 8),
+                        Text(
+                          'الامبيرات: ${sub.amber}',
+                          style: TextStyle(fontSize: 22, color: Colors.green),
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => deleteYesNoBox(subscriper: sub),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => UpdateSubscriperDialoge(sub: sub),
-                          );
-                        },
-                      ),
-                    ],
+                        SizedBox(height: 8),
+                        Text(
+                          'رقم الجوزة: ${sub.circuit_number}',
+                          style: TextStyle(fontSize: 22, color: Colors.blue),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'الهاتف: ${sub.phone}',
+                          style: TextStyle(fontSize: 22, color: Colors.blue),
+                        ),
+                      ],
+                    ),
                   ),
-                );
-              },
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => deleteYesNoBox(subscriper: sub),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => UpdateSubscriperDialoge(sub: sub),
+                      );
+                    },
+                  ),
+                ],
+              ),
             );
-          });
-        },
-      ),
+          },
+        );
+      }),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(15),
         child: SizedBox(

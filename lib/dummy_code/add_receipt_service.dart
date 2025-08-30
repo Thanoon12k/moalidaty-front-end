@@ -85,8 +85,7 @@
 // //   Future<void> submitForm() async {
 // //     if (selectedSubscriber.value == null) return;
 
-//     // ttry {
-// //       final newReceipt = Reciept(
+//   // //       final newReceipt = Reciept(
 // //         date: DateTime.now(),
 // //         subscriberId: selectedSubscriber.value!.id,
 // //         amberPrice: amberPrice.value,

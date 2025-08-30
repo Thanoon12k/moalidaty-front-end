@@ -7,7 +7,7 @@ import 'package:moalidaty1/features/subscripers/services/service_subscripers.dar
 
 class AddSubscriberDialoge extends StatelessWidget {
   AddSubscriberDialoge({super.key});
-  final sub_service = Get.find<SubscripersService>();
+  final sub_service = Get.find<SubscribersService>();
   final namectrl = TextEditingController();
   final amberctrl = TextEditingController();
   final circiut_numctrl = TextEditingController();

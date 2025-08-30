@@ -1,6 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
+import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
+import 'package:moalidaty1/features/workers/services/service_worker.dart';
 
 class Reciept {
   final int? id;
@@ -15,9 +19,8 @@ class Reciept {
   final XFile? imageFile; // for POST/uploading
   final int subscriber;
   final int? worker;
-
-  Subscriper? _subscriber;
-  Gen_Worker? _worker;
+  Subscriper? subscriperObj;
+  Gen_Worker? workerObj;
 
   Reciept({
     this.id,
@@ -32,19 +35,27 @@ class Reciept {
     this.imageFile,
     required this.subscriber,
     this.worker,
-    Subscriper? subscriberObj,
-    Gen_Worker? workerObj,
   }) {
-    _subscriber = subscriberObj;
-    _worker = workerObj;
+    // debugPrint(
+    //   "Initializing Reciept: id=$id, year=$year, month=$month, subscriber=$subscriber, worker=$worker",
+    // );
+    subscriperObj = Get.find<SubscribersService>().subscripers_list.firstWhere(
+      (s) => s.id == subscriber,
+    );
+
+    if (worker != null) {
+      workerObj = Get.find<WorkerService>().workers_list.firstWhere(
+        (w) => w.id == worker,
+      );
+    }
   }
 
-  String get subscriberName =>
-      _subscriber?.name ?? 'subscriber_num=:$subscriber';
+  String get subscriberName => subscriperObj?.name ?? "id-$subscriber";
 
-  String get subscriperCircuitNummber => _subscriber?.circuit_number ?? "x";
+  String get subscriperCircuitNummber =>
+      subscriperObj?.circuit_number ?? "id-$subscriber";
+  String get workerName => workerObj?.name ?? "no worker -$worker";
 
-  String get workerName => _worker?.name ?? 'worker_num=:$worker';
   factory Reciept.fromJson(Map<String, dynamic> json) {
     return Reciept(
       id: json['id'] as int?,
@@ -81,13 +92,5 @@ class Reciept {
       'subscriber': subscriber,
       'worker': worker,
     };
-  }
-
-  void setSubscriber(Subscriper subscriberObj) {
-    _subscriber = subscriberObj;
-  }
-
-  void setWorker(Gen_Worker workerObj) {
-    _worker = workerObj;
   }
 }

@@ -8,7 +8,7 @@ import 'package:moalidaty1/features/reciepts/ui/add_receipt_dialoge.dart';
 import 'package:moalidaty1/features/reciepts/ui/display_reciept_dialoge.dart';
 
 class RecieptsListPage extends StatelessWidget {
-  final recieptServices = Get.find<RecieptServices>();
+  final recieptServices = Get.find<ReceiptServices>();
 
   RecieptsListPage({super.key});
 

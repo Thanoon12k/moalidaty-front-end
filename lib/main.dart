@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
 import 'package:moalidaty1/features/budgets/ui/budgets_list.dart';
@@ -15,30 +16,21 @@ import 'package:moalidaty1/routes/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initServices();
   runApp(const MyApp());
 }
 
 Future<void> initServices() async {
-  // ttry {
   // Register services
   Get.lazyPut<BudgetService>(() => BudgetService());
+  Get.lazyPut<SubscribersService>(() => SubscribersService());
   Get.lazyPut<WorkerService>(() => WorkerService());
-  Get.lazyPut<SubscripersService>(() => SubscripersService());
-  Get.lazyPut<RecieptServices>(() => RecieptServices());
+  Get.lazyPut<ReceiptServices>(() => ReceiptServices());
 
-  // Initialize services in parallel
-  await Future.wait([
-    Get.find<BudgetService>().onInit(),
-
-    Get.find<SubscripersService>().onInit(),
-    Get.find<WorkerService>().onInit(),
-    Get.find<RecieptServices>().onInit(),
-  ]);
-  // } catch (e, stackTrace) {
-
-  //   // You might want to show an error dialog or handle the error appropriately
-  // }
+  // Initialize services sequentially
+  await Get.find<BudgetService>().onInit();
+  await Get.find<SubscribersService>().onInit();
+  await Get.find<WorkerService>().onInit();
+  await Get.find<ReceiptServices>().onInit();
 }
 
 class MyApp extends StatelessWidget {
@@ -47,11 +39,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GlobalConstants.globalScreenWidth = MediaQuery.of(context).size.width;
-    GlobalConstants.globalScreenWidth = MediaQuery.of(context).size.height;
+    GlobalConstants.globalScreenHeight = MediaQuery.of(context).size.height;
 
     return GetMaterialApp(
       title: 'Moalidaty',
       debugShowCheckedModeBanner: false,
+      home: FutureBuilder(
+        future: initServices(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: GeneratorLoadingIndicator()),
+            );
+          } else if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(
+                child: Text('Error initializing services: ${snapshot.error}'),
+              ),
+            );
+          } else {
+            return const HomePage();
+          }
+        },
+      ),
       initialRoute: Routes.home,
       getPages: Routes.pages,
       locale: const Locale('ar', 'IQ'), // اللغة: عربية، الدولة: العراق
@@ -73,22 +83,17 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'أدارة المولدة',
-        font_size: GlobalConstants.scaleTo(32),
-      ),
+      appBar: CustomAppBar(title: 'أدارة المولدة', font_size: 32),
 
       body: Center(
         child: Column(
           children: [
+            SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
                 Get.to(() => WorkersListPage());
               },
-              child: Text(
-                'عرض قائمة المشغلين',
-                style: TextStyle(fontSize: GlobalConstants.scaleTo(19)),
-              ),
+              child: Text('عرض قائمة المشغلين', style: TextStyle(fontSize: 19)),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -97,7 +102,7 @@ class HomePage extends StatelessWidget {
               },
               child: Text(
                 'عرض قائمة المشتركين',
-                style: TextStyle(fontSize: GlobalConstants.scaleTo(19)),
+                style: TextStyle(fontSize: 19),
               ),
             ),
             SizedBox(height: 20),
@@ -108,7 +113,7 @@ class HomePage extends StatelessWidget {
               },
               child: Text(
                 'عرض قائمة الإيصالات',
-                style: TextStyle(fontSize: GlobalConstants.scaleTo(19)),
+                style: TextStyle(fontSize: 19),
               ),
             ),
             SizedBox(height: 20),
@@ -117,10 +122,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Get.to(() => BudgetsListPage());
               },
-              child: Text(
-                'عرض قائمة المبالغ',
-                style: TextStyle(fontSize: GlobalConstants.scaleTo(19)),
-              ),
+              child: Text('عرض قائمة المبالغ', style: TextStyle(fontSize: 19)),
             ),
           ],
         ),

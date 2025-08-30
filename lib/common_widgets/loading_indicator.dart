@@ -31,8 +31,8 @@ class _GeneratorLoadingIndicatorState extends State<GeneratorLoadingIndicator>
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: 120,
-        height: 60,
+        width: 240,
+        height: 120,
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -117,8 +117,8 @@ class SimpleWaiting extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: 120,
-        height: 60,
+        width: 240,
+        height: 120,
         child: const Text("جاري التحميل..."),
       ),
     );

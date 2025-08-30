@@ -19,7 +19,7 @@ class _UpdateSubscriperDialogeState extends State<UpdateSubscriperDialoge> {
   late TextEditingController circiut_numctrl;
   late TextEditingController phonectrl;
 
-  final sub_service = Get.find<SubscripersService>();
+  final sub_service = Get.find<SubscribersService>();
 
   @override
   void initState() {

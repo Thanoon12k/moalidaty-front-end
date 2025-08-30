@@ -20,7 +20,7 @@ class AddReceiptDialoge extends StatefulWidget {
 }
 
 class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
-  final receiptService = Get.find<RecieptServices>();
+  final receiptService = Get.find<ReceiptServices>();
 
   late List<Subscriper> subscribers;
   late List<Gen_Worker> workers;
@@ -41,7 +41,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
   @override
   void initState() {
     super.initState();
-    final subsService = Get.find<SubscripersService>();
+    final subsService = Get.find<SubscribersService>();
     final budgetService = Get.find<BudgetService>();
     final workersService = Get.find<WorkerService>();
 

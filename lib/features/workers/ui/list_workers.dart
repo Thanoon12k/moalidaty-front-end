@@ -38,107 +38,94 @@ class WorkersListPage extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: workerService.getWorkers(),
-        builder: (context, snapshot) {
-          return Obx(() {
-            if (workerService.workers_list.isEmpty) {
-              return const Center(child: GeneratorLoadingIndicator());
-            }
-            double num = 32;
-            num = 24;
-            num = 6;
-            return ListView.separated(
-              padding: EdgeInsets.all(GlobalConstants.scaleTo(16)),
-              itemCount: workerService.workers_list.length,
-              separatorBuilder: (_, __) => const Divider(thickness: 2),
-              itemBuilder: (context, index) {
-                final worker = workerService.workers_list[index];
-                return Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+      body: Obx(() {
+        if (workerService.workers_list.isEmpty) {
+          return const Center(child: GeneratorLoadingIndicator());
+        }
+
+        return ListView.separated(
+          padding: EdgeInsets.all(GlobalConstants.scaleTo(16)),
+          itemCount: workerService.workers_list.length,
+          separatorBuilder: (_, __) => const Divider(thickness: 2),
+          itemBuilder: (context, index) {
+            final worker = workerService.workers_list[index];
+            return Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.red[300],
-                        radius: 28,
-                        child: Text(
-                          '${index + 1}',
+                ],
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.red[300],
+                    radius: 28,
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 18),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          worker.name,
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                      SizedBox(width: 18),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              worker.name,
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'الهاتف: ${worker.phone ?? "غير محدد"}',
-                              style: TextStyle(
-                                fontSize: 21,
-                                color: Colors.green,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'الهاتف: ${worker.phone}',
-                              style: TextStyle(
-                                fontSize: 21,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ],
+                        SizedBox(height: 8),
+                        Text(
+                          'الهاتف: ${worker.phone ?? "غير محدد"}',
+                          style: TextStyle(fontSize: 21, color: Colors.green),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => UpdateWorkerDialog(worker: worker),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => deleteYesNoBox(worker: worker),
-                          );
-                        },
-                      ),
-                    ],
+                        SizedBox(height: 8),
+                        Text(
+                          'الهاتف: ${worker.phone}',
+                          style: TextStyle(fontSize: 21, color: Colors.blue),
+                        ),
+                      ],
+                    ),
                   ),
-                );
-              },
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => UpdateWorkerDialog(worker: worker),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => deleteYesNoBox(worker: worker),
+                      );
+                    },
+                  ),
+                ],
+              ),
             );
-            // Add button at the bottom right
-          });
-        },
-      ),
+          },
+        );
+        // Add button at the bottom right
+      }),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16),
         child: SizedBox(

@@ -26,7 +26,6 @@ class BudgetAPI {
   Future<Budget> fetchBudgetDetail(int id) async {
     String fetchUrl = "$baseUrl/budgets/$id/";
 
-    // ttry {
     final response = await http.get(Uri.parse(fetchUrl));
 
     if (response.statusCode == 200) {
@@ -37,17 +36,12 @@ class BudgetAPI {
         "Failed to fetch budget detail from $fetchUrl. Status: ${response.statusCode}",
       );
     }
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-    //   throw Exception("Error in fetching budget detail: $e");
-    // }
+   
   }
 
   Future<Budget> createBudget(Budget budget) async {
     String createUrl = "$baseUrl/budgets/";
 
-    // ttry {
     final response = await http.post(
       Uri.parse(createUrl),
       headers: {'Content-Type': 'application/json'},
@@ -72,7 +66,6 @@ class BudgetAPI {
   Future<Budget> updateBudget(int id, Budget budget) async {
     String updateUrl = "$baseUrl/budgets/$id/";
 
-    // ttry {
     final response = await http.put(
       Uri.parse(updateUrl),
       headers: {'Content-Type': 'application/json'},
@@ -97,7 +90,6 @@ class BudgetAPI {
   Future<void> deleteBudget(int id) async {
     String deleteUrl = "$baseUrl/budgets/$id/";
 
-    // ttry {
     final response = await http.delete(Uri.parse(deleteUrl));
 
     if (response.statusCode != 204) {

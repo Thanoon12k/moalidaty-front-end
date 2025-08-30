@@ -11,7 +11,6 @@ class SubscriperAPI {
   Future<List<Subscriper>> fetchSubscribers() async {
     String fetchUrl = "$baseUrl/subscribers/";
     List<Subscriper> subscripersList = [];
-    // ttry {
     final response = await http.get(Uri.parse(fetchUrl));
 
     if (response.statusCode == 200) {
@@ -20,14 +19,13 @@ class SubscriperAPI {
           listData.map((jsonRow) => Subscriper.fromJson(jsonRow)).toList();
     }
     debugPrint(
-      "Fetched Subscripers status: ${response.statusCode} got (${subscripersList.length}) items",
+      "Fetched Subscripers status: ${response.statusCode} got (${subscripersList.length}) items }",
     );
     return subscripersList;
   }
 
   Future<void> destroySubscriper(int id) async {
     final String destroyUrl = "$baseUrl/subscribers/$id/";
-    // ttry {
     final response = await http.delete(Uri.parse(destroyUrl));
 
     if (response.statusCode != 204) {
@@ -44,7 +42,6 @@ class SubscriperAPI {
 
   Future<Subscriper> createSubscriper(Subscriper sub) async {
     final String createUrl = "$baseUrl/subscribers/";
-    // ttry {
     final response = await http.post(
       Uri.parse(createUrl),
       headers: {'Content-Type': 'application/json'},
@@ -69,7 +66,6 @@ class SubscriperAPI {
   Future<Subscriper> updateSubscriper(Subscriper sub) async {
     final String updateUrl = "$baseUrl/subscribers/${sub.id}/";
 
-    // ttry {
     final response = await http.put(
       Uri.parse(updateUrl),
       headers: {'Content-Type': 'application/json'},

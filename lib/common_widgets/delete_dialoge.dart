@@ -28,7 +28,7 @@ class deleteYesNoBox extends StatelessWidget {
               final workerService = Get.find<WorkerService>();
               workerService.removeWorker(worker!);
             } else if (subscriper != null) {
-              final subsService = Get.find<SubscripersService>();
+              final subsService = Get.find<SubscribersService>();
 
               subsService.deleteSubscriper(subscriper!);
             }

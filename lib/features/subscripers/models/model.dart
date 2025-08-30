@@ -21,7 +21,6 @@ class Subscriper {
   String toString() => name;
 
   factory Subscriper.fromJson(Map<String, dynamic> json) {
-    // ttry {
     final subscriber = Subscriper(
       id: json["id"] ?? 0,
       name: json["name"] ?? "",

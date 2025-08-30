@@ -26,7 +26,6 @@ class WorkerRepository {
   Future<Gen_Worker> fetchWorkerDetail(int id) async {
     String fetchUrl = "$baseUrl/workers/$id/";
 
-    // ttry {
     final response = await http.get(Uri.parse(fetchUrl));
 
     if (response.statusCode == 200) {
@@ -47,7 +46,6 @@ class WorkerRepository {
   Future<Gen_Worker> createWorker(Gen_Worker worker) async {
     String createUrl = "$baseUrl/workers/";
 
-    // ttry {
     final response = await http.post(
       Uri.parse(createUrl),
       headers: {'Content-Type': 'application/json'},
@@ -72,7 +70,6 @@ class WorkerRepository {
   Future<Gen_Worker> updateWorker(int id, Gen_Worker worker) async {
     String updateUrl = "$baseUrl/workers/$id/";
 
-    // ttry {
     final response = await http.put(
       Uri.parse(updateUrl),
       headers: {'Content-Type': 'application/json'},
@@ -97,7 +94,6 @@ class WorkerRepository {
   Future<void> deleteWorker(int id) async {
     String deleteUrl = "$baseUrl/workers/$id/";
 
-    // ttry {
     final response = await http.delete(Uri.parse(deleteUrl));
 
     if (response.statusCode != 204) {

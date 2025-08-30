@@ -10,7 +10,6 @@ class RecieptAPI {
   Future<List<Reciept>> fetchReciepts() async {
     String fetchUrl = "$baseUrl/receipts/";
     List<Reciept> recieptList = [];
-    // ttry {
     final response = await http.get(Uri.parse(fetchUrl));
     if (response.statusCode == 200) {
       List<dynamic> listData = json.decode(response.body);
@@ -20,6 +19,11 @@ class RecieptAPI {
     debugPrint(
       "Fetched Receipts status: ${response.statusCode} got (${recieptList.length}) items",
     );
+    // for (var reciept in recieptList) {
+      // debugPrint(
+      //   "Receipt ID: ${reciept.id} rec_subscriper ${reciept.subscriberName}, Image URL: ${reciept.imageUrl}",
+      // );
+    // }
     return recieptList;
   }
 
@@ -64,7 +68,6 @@ class RecieptAPI {
   Future<void> destroyReciept(int id) async {
     String deleteUrl = "$baseUrl/receipts/$id/";
 
-    // ttry {
     final response = await http.delete(Uri.parse(deleteUrl));
 
     if (response.statusCode != 204) {
@@ -72,17 +75,11 @@ class RecieptAPI {
         "Failed to delete receipt from $deleteUrl. Status: ${response.statusCode}",
       );
     }
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-    //   throw Exception("Error in deleting receipt: $e");
-    // }
   }
 
   Future<Reciept> updateReciept(Reciept reciept) async {
     String updateUrl = "$baseUrl/receipts/${reciept.id}/";
 
-    // ttry {
     final response = await http.put(
       Uri.parse(updateUrl),
       headers: {'Content-Type': 'application/json'},
