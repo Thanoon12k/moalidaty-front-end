@@ -26,12 +26,12 @@ class Budget {
   });
 
   List<Subscriper> getPaidSubsObjects() {
-    List<Subscriper> allsubs = Get.find<SubscribersService>().subscripers_list;
+    List<Subscriper> allsubs = Get.find<SubscribersService>().subscribersList;
     return allsubs.where((sub) => paid_subs.contains(sub.id)).toList();
   }
 
   List<Subscriper> getUnpaidSubsObjects() {
-    List<Subscriper> allsubs = Get.find<SubscribersService>().subscripers_list;
+    List<Subscriper> allsubs = Get.find<SubscribersService>().subscribersList;
     return allsubs.where((sub) => unpaid_subs.contains(sub.id)).toList();
   }
 

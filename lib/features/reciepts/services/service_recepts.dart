@@ -6,7 +6,7 @@ import 'package:moalidaty1/features/subscripers/services/service_subscripers.dar
 import 'package:moalidaty1/features/workers/services/service_worker.dart';
 
 class ReceiptServices extends GetxService {
-  final RxList<Reciept> list_rcpts = <Reciept>[].obs;
+  final RxList<Reciept> receiptsList = <Reciept>[].obs;
   final RxList<Reciept> list_subs = <Reciept>[].obs;
   final RxList<Reciept> list_budg = <Reciept>[].obs;
 
@@ -29,12 +29,12 @@ class ReceiptServices extends GetxService {
     final fetchedReciepts = await recieptApi.fetchReciepts();
 
     fetchedReciepts.sort((a, b) => b.dateCreated!.compareTo(a.dateCreated!));
-    list_rcpts.assignAll(fetchedReciepts);
+    receiptsList.assignAll(fetchedReciepts);
   }
 
   Future<void> addReciept(Reciept reciept) async {
     final createdReceipt = await recieptApi.createReciept(reciept);
-    list_rcpts.add(createdReceipt);
+    receiptsList.add(createdReceipt);
   }
 
   Future<void> deleteReciept(Reciept reciept) async {
@@ -43,26 +43,28 @@ class ReceiptServices extends GetxService {
     }
 
     await recieptApi.destroyReciept(reciept.id!);
-    list_rcpts.remove(reciept);
+    receiptsList.remove(reciept);
   }
 
   Future<void> editReciept(Reciept reciept) async {
     final updatedReceipt = await recieptApi.updateReciept(reciept);
-    final index = list_rcpts.indexWhere((r) => r.id == reciept.id);
+    final index = receiptsList.indexWhere((r) => r.id == reciept.id);
     if (index != -1) {
-      list_rcpts[index] = updatedReceipt;
+      receiptsList[index] = updatedReceipt;
     } else {}
   }
 
   Reciept? getReceiptById(int id) {
-    return list_rcpts.firstWhere((r) => r.id == id);
+    return receiptsList.firstWhere((r) => r.id == id);
   }
 
   List<Reciept> getReceiptsBySubscriber(int subscriber) {
-    return list_rcpts.where((r) => r.subscriber == subscriber).toList();
+    return receiptsList.where((r) => r.subscriber == subscriber).toList();
   }
 
   List<Reciept> getReceiptsByYearMonth(int year, int month) {
-    return list_rcpts.where((r) => r.year == year && r.month == month).toList();
+    return receiptsList
+        .where((r) => r.year == year && r.month == month)
+        .toList();
   }
 }

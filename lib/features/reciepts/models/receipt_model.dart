@@ -39,12 +39,12 @@ class Reciept {
     // debugPrint(
     //   "Initializing Reciept: id=$id, year=$year, month=$month, subscriber=$subscriber, worker=$worker",
     // );
-    subscriperObj = Get.find<SubscribersService>().subscripers_list.firstWhere(
+    subscriperObj = Get.find<SubscribersService>().subscribersList.firstWhere(
       (s) => s.id == subscriber,
     );
 
     if (worker != null) {
-      workerObj = Get.find<WorkerService>().workers_list.firstWhere(
+      workerObj = Get.find<WorkerService>().workersList.firstWhere(
         (w) => w.id == worker,
       );
     }

@@ -39,14 +39,14 @@ class RecieptsListPage extends StatelessWidget {
 
       body: Obx(() {
         // Show loading indicator while fetching data
-        if (recieptServices.list_rcpts.isEmpty) {
+        if (recieptServices.receiptsList.isEmpty) {
           return const Center(child: GeneratorLoadingIndicator());
         }
 
         return ListView.builder(
-          itemCount: recieptServices.list_rcpts.length,
+          itemCount: recieptServices.receiptsList.length,
           itemBuilder: (context, index) {
-            final Reciept reciept = recieptServices.list_rcpts[index];
+            final Reciept reciept = recieptServices.receiptsList[index];
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               elevation: 2,

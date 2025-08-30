@@ -3,7 +3,7 @@ import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/subscripers/api/subscripers_api.dart';
 
 class SubscribersService extends GetxService {
-  final RxList<Subscriper> subscripers_list = <Subscriper>[].obs;
+  final RxList<Subscriper> subscribersList = <Subscriper>[].obs;
   final subApi = SubscriperAPI();
 
   @override
@@ -24,7 +24,7 @@ class SubscribersService extends GetxService {
 
   Future<void> getSubscripers() async {
     final fetchedSubs = await subApi.fetchSubscribers();
-    subscripers_list.assignAll(fetchedSubs);
+    subscribersList.assignAll(fetchedSubs);
     // } catch (e, stackTrace) {
 
     //   rethrow;
@@ -35,7 +35,7 @@ class SubscribersService extends GetxService {
 
   Future<void> addSubsciper(Subscriper sub) async {
     final createdSub = await subApi.createSubscriper(sub);
-    subscripers_list.add(createdSub);
+    subscribersList.add(createdSub);
     // } catch (e, stackTrace) {
 
     //   rethrow;
@@ -46,7 +46,7 @@ class SubscribersService extends GetxService {
 
   Future<void> deleteSubscriper(Subscriper sub) async {
     await subApi.destroySubscriper(sub.id);
-    subscripers_list.remove(sub);
+    subscribersList.remove(sub);
     // } catch (e, stackTrace) {
 
     //   rethrow;
@@ -57,9 +57,9 @@ class SubscribersService extends GetxService {
 
   Future<void> editSubscriper(Subscriper sub) async {
     final updatedSub = await subApi.updateSubscriper(sub);
-    final index = subscripers_list.indexWhere((s) => s.id == sub.id);
+    final index = subscribersList.indexWhere((s) => s.id == sub.id);
     if (index != -1) {
-      subscripers_list[index] = updatedSub;
+      subscribersList[index] = updatedSub;
     } else {}
     // } catch (e, stackTrace) {
 
@@ -70,7 +70,7 @@ class SubscribersService extends GetxService {
   }
 
   Subscriper? getSubscriberById(int id) {
-    return subscripers_list.firstWhere((s) => s.id == id);
+    return subscribersList.firstWhere((s) => s.id == id);
     // } catch (e, stackTrace) {
 
     //   rethrow;

@@ -45,9 +45,9 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
     final budgetService = Get.find<BudgetService>();
     final workersService = Get.find<WorkerService>();
 
-    subscribers = subsService.subscripers_list;
+    subscribers = subsService.subscribersList;
     budgets = budgetService.list_budgets;
-    workers = workersService.workers_list;
+    workers = workersService.workersList;
 
     years = budgets.map((b) => b.year).toSet().toList()..sort();
     months = budgets.map((b) => b.month).toSet().toList()..sort();
