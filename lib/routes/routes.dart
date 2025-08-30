@@ -3,7 +3,7 @@ import 'package:moalidaty1/features/budgets/ui/budgets_list.dart';
 import 'package:moalidaty1/features/reciepts/ui/list_reciepts.dart';
 import 'package:moalidaty1/features/subscripers/ui/subscripersList.dart';
 import 'package:moalidaty1/features/workers/ui/list_workers.dart';
-import 'package:moalidaty1/main.dart';
+import 'package:moalidaty1/home.dart';
 
 final class Routes {
   static const String home = '/';
