@@ -3,7 +3,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/common_widgets/network_error.dart';
-import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
 import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';

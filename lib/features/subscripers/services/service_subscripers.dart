@@ -3,8 +3,19 @@ import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/subscripers/api/subscripers_api.dart';
 
 class SubscribersService extends GetxService {
-  final RxList<Subscriper> subscribersList = <Subscriper>[].obs;
   final subApi = SubscriperAPI();
+
+  final RxList<Subscriper> subscribersList = <Subscriper>[].obs;
+  final RxBool showSearch = false.obs;
+  final RxString searchQuery = ''.obs;
+
+  List<Subscriper> get filteredSubscripers {
+    final query = searchQuery.value.toLowerCase().trim();
+    if (query.isEmpty) return subscribersList;
+    return subscribersList.where((worker) {
+      return worker.name.toLowerCase().contains(query);
+    }).toList();
+  }
 
   @override
   Future<void> onInit() async {

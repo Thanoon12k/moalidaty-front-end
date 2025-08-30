@@ -72,41 +72,36 @@ class WorkersListPage extends StatelessWidget {
                   horizontal: 16,
                   vertical: 8,
                 ),
-                child: Obx(
-                  () => TextField(
-                    textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 18),
-                    decoration: InputDecoration(
-                      hintText: 'ابحث عن مشغل...',
-                      hintTextDirection: TextDirection.rtl,
-                      prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                      suffixIcon:
-                          workerService.searchQuery.value.isNotEmpty
-                              ? IconButton(
-                                icon: Icon(
-                                  Icons.clear,
-                                  color: Colors.grey[600],
-                                ),
-                                onPressed:
-                                    () => workerService.searchQuery.value = '',
-                                tooltip: 'مسح البحث',
-                              )
-                              : null,
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
+                child: TextField(
+                  textAlign: TextAlign.right,
+                  style: TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'ابحث عن مشغل...',
+                    hintTextDirection: TextDirection.rtl,
+                    prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                    suffixIcon:
+                        workerService.searchQuery.value.isNotEmpty
+                            ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey[600]),
+                              onPressed:
+                                  () => workerService.searchQuery.value = '',
+                              tooltip: 'مسح البحث',
+                            )
+                            : null,
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
                     ),
-                    onChanged: (value) {
-                      workerService.searchQuery.value = value;
-                    },
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
+                  onChanged: (value) {
+                    workerService.searchQuery.value = value;
+                  },
                 ),
               ),
 
