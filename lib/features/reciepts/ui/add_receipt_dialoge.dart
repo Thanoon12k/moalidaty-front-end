@@ -15,7 +15,14 @@ import 'package:image_picker/image_picker.dart';
 
 class AddReceiptDialoge extends StatefulWidget {
   final Subscriper? deisinatedSubscriper;
-  const AddReceiptDialoge({super.key, this.deisinatedSubscriper});
+  final int? destination_month;
+  final int? destination_year;
+  const AddReceiptDialoge({
+    super.key,
+    this.deisinatedSubscriper,
+    this.destination_month,
+    this.destination_year,
+  });
 
   @override
   State<AddReceiptDialoge> createState() => _AddReceiptDialogeState();
@@ -48,16 +55,15 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
     final workersService = Get.find<WorkerService>();
 
     subscribers = subsService.subscribersList;
-    budgets = budgetService.list_budgets;
+    budgets = budgetService.BudgetList;
     workers = workersService.workersList;
 
     years = budgets.map((b) => b.year).toSet().toList()..sort();
     months = budgets.map((b) => b.month).toSet().toList()..sort();
-    if (widget.deisinatedSubscriper != null) {
-      selectedSubscriber = widget.deisinatedSubscriper;
-    } else {
-      selectedSubscriber = subscribers.first;
-    }
+
+    selectedSubscriber = widget.deisinatedSubscriper ?? subscribers.first;
+    selectedYear = widget.destination_year ?? years.first;
+    selectedMonth = widget.destination_month ?? months.first;
 
     updateValues();
   }

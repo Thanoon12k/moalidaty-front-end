@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:moalidaty1/features/budgets/models/budgets_model.dart';
+import 'package:moalidaty1/features/budgets/services/budget_service.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/subscripers/api/subscripers_api.dart';
 
@@ -17,6 +19,16 @@ class SubscribersService extends GetxService {
     }).toList();
   }
 
+    List<Budget> GetUnpaidsBudgetsForSubscriper(int subID) {
+      final budgets = Get.find<BudgetService>().BudgetList;
+      return budgets.where((bdgt) => bdgt.unpaid_subs.contains(subID)).toList();
+    }
+
+   List<Budget> GetpaidsBudgetsForSubscriper(int subID) {
+      final budgets = Get.find<BudgetService>().BudgetList;
+      return budgets.where((bdgt) => bdgt.paid_subs.contains(subID)).toList();
+    }
+  
   @override
   Future<void> onInit() async {
     super.onInit();
