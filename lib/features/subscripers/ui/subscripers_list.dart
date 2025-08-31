@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
-import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
-import 'package:moalidaty1/features/reciepts/ui/add_receipt_dialoge.dart';
-import 'package:moalidaty1/features/reciepts/ui/display_reciept_dialoge.dart';
 import 'package:moalidaty1/features/subscripers/models/model.dart';
 import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty1/features/subscripers/ui/add_subscriper_dialoge.dart';
 import 'package:moalidaty1/features/subscripers/ui/display_subscriper.dart';
-import 'package:moalidaty1/features/subscripers/ui/update_subscriper_dialoge.dart';
 
 class SubscripersListPage extends StatelessWidget {
-  const SubscripersListPage({super.key});
+  SubscripersListPage({super.key});
+  TextEditingController searchTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -61,49 +58,16 @@ class SubscripersListPage extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (subsService.filteredSubscripers.isEmpty) {
+        if (subsService.subscribersList.isEmpty) {
           return _buildEmptyState();
         }
 
         return Column(
           children: [
             if (subsService.showSearch.value)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: TextField(
-                  textAlign: TextAlign.right,
-                  style: TextStyle(fontSize: 18),
-                  decoration: InputDecoration(
-                    hintText: 'ابحث عن مشترك...',
-                    hintTextDirection: TextDirection.rtl,
-                    prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                    suffixIcon:
-                        subsService.searchQuery.value.isNotEmpty
-                            ? IconButton(
-                              icon: Icon(Icons.clear, color: Colors.grey[600]),
-                              onPressed:
-                                  () => subsService.searchQuery.value = '',
-                              tooltip: 'مسح البحث',
-                            )
-                            : null,
-                    filled: true,
-                    fillColor: Colors.grey.shade100,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  onChanged: (value) {
-                    subsService.searchQuery.value = value;
-                  },
-                ),
+              _searchBox(
+                subsService: subsService,
+                searchTextController: searchTextController,
               ),
 
             _buildHeaderStats(subsService.filteredSubscripers.length),
@@ -279,7 +243,7 @@ class SubscripersListPage extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            // displaySubscriperDialoge(context, subsService, sub);
+            displaySubscriperDialoge(context, subsService, sub);
           },
           child: Padding(
             padding: EdgeInsets.all(16),
@@ -288,11 +252,60 @@ class SubscripersListPage extends StatelessWidget {
                 _buildSubscriberAvatar(sub.name, index),
                 SizedBox(width: 16),
                 Expanded(child: _buildSubscriberInfo(sub)),
-                _buildActionButtons(context, subsService, sub),
+                // _buildActionButtons(context, subsService, sub),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _searchBox extends StatelessWidget {
+  _searchBox({
+    super.key,
+    required this.subsService,
+    required this.searchTextController,
+  });
+
+  final SubscribersService subsService;
+  final TextEditingController searchTextController;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: TextField(
+        textAlign: TextAlign.right,
+        style: TextStyle(fontSize: 18),
+        controller: searchTextController,
+        decoration: InputDecoration(
+          hintText: 'ابحث عن مشترك...',
+          hintTextDirection: TextDirection.rtl,
+          prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+          suffixIcon:
+              subsService.searchQuery.value.isNotEmpty
+                  ? IconButton(
+                    icon: Icon(Icons.clear, color: Colors.grey[600]),
+                    onPressed: () {
+                      subsService.searchQuery.value = '';
+                      searchTextController.text = '';
+                    },
+
+                    tooltip: 'مسح البحث',
+                  )
+                  : null,
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        onChanged: (value) {
+          subsService.searchQuery.value = value;
+        },
       ),
     );
   }
@@ -330,42 +343,42 @@ Widget _buildSubscriberInfo(dynamic sub) {
       Text(
         sub.name,
         style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
           color: Colors.grey[800],
         ),
+      ),
+      SizedBox(height: 10),
+      Row(
+        children: [
+          Icon(Icons.flash_on, size: 20, color: Colors.green[600]),
+          SizedBox(width: 8),
+          Text(
+            '${sub.amber} أمبير',
+            style: TextStyle(fontSize: 18, color: Colors.green[700]),
+          ),
+        ],
       ),
       SizedBox(height: 6),
       Row(
         children: [
-          Icon(Icons.flash_on, size: 16, color: Colors.green[600]),
-          SizedBox(width: 6),
-          Text(
-            '${sub.amber} أمبير',
-            style: TextStyle(fontSize: 14, color: Colors.green[600]),
-          ),
-        ],
-      ),
-      SizedBox(height: 4),
-      Row(
-        children: [
-          Icon(Icons.electric_bolt, size: 16, color: Colors.blue[600]),
-          SizedBox(width: 6),
+          Icon(Icons.electric_bolt, size: 20, color: Colors.blue[600]),
+          SizedBox(width: 8),
           Text(
             'الجوزة: ${sub.circuit_number}',
-            style: TextStyle(fontSize: 14, color: Colors.blue[600]),
+            style: TextStyle(fontSize: 18, color: Colors.blue[700]),
           ),
         ],
       ),
-      SizedBox(height: 4),
+      SizedBox(height: 6),
       if (sub.phone != null && sub.phone.isNotEmpty)
         Row(
           children: [
-            Icon(Icons.phone, size: 16, color: Colors.orange[600]),
-            SizedBox(width: 6),
+            Icon(Icons.phone, size: 20, color: Colors.orange[600]),
+            SizedBox(width: 8),
             Text(
               sub.phone,
-              style: TextStyle(fontSize: 14, color: Colors.orange[600]),
+              style: TextStyle(fontSize: 18, color: Colors.orange[700]),
             ),
           ],
         ),
@@ -397,7 +410,7 @@ Widget _buildActionButtons(BuildContext context, subsService, dynamic sub) {
               Text(
                 'تفاصيل المستخدم',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 10,
                   fontWeight: FontWeight.w500,
                   color: Colors.blue[800],
                 ),

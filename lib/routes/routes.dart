@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:moalidaty1/features/budgets/ui/budgets_list.dart';
 import 'package:moalidaty1/features/reciepts/ui/list_reciepts.dart';
-import 'package:moalidaty1/features/subscripers/ui/subscripersList.dart';
+import 'package:moalidaty1/features/subscripers/ui/subscripers_list.dart';
 import 'package:moalidaty1/features/workers/ui/list_workers.dart';
 import 'package:moalidaty1/home.dart';
 

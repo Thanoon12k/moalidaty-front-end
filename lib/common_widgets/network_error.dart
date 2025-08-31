@@ -1,4 +1,3 @@
-
 // Add this external widget class:
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,12 +5,14 @@ import 'package:moalidaty1/main.dart';
 
 class ErrorDisplayWidget extends StatelessWidget {
   final dynamic error;
-  
+
   const ErrorDisplayWidget({super.key, required this.error});
 
-  bool get isNetworkError => error.toString().toLowerCase().contains('socket') ||
+  bool get isNetworkError =>
+      error.toString().toLowerCase().contains('socket') ||
       error.toString().toLowerCase().contains('network') ||
-      error.toString().toLowerCase().contains('connection');
+      error.toString().toLowerCase().contains('connection') ||
+      error.toString().toLowerCase().contains('timeout');
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +44,16 @@ class ErrorDisplayWidget extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: isNetworkError 
-                              ? Colors.orange.shade100 
-                              : Colors.red.shade100,
+                          color:
+                              isNetworkError
+                                  ? Colors.orange.shade100
+                                  : Colors.red.shade100,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: (isNetworkError ? Colors.orange : Colors.red)
+                              color: (isNetworkError
+                                      ? Colors.orange
+                                      : Colors.red)
                                   .withOpacity(0.2),
                               blurRadius: 20,
                               spreadRadius: 5,
@@ -59,17 +63,18 @@ class ErrorDisplayWidget extends StatelessWidget {
                         child: Icon(
                           isNetworkError ? Icons.wifi_off : Icons.error_outline,
                           size: 64,
-                          color: isNetworkError 
-                              ? Colors.orange.shade600 
-                              : Colors.red.shade600,
+                          color:
+                              isNetworkError
+                                  ? Colors.orange.shade600
+                                  : Colors.red.shade600,
                         ),
                       ),
                     );
                   },
                 ),
-                
+
                 SizedBox(height: 32),
-                
+
                 // Error Title
                 Text(
                   isNetworkError ? 'مشكلة في الاتصال' : 'خطأ في النظام',
@@ -80,9 +85,9 @@ class ErrorDisplayWidget extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
+
                 SizedBox(height: 16),
-                
+
                 // Error Message
                 Container(
                   padding: EdgeInsets.all(20),
@@ -90,13 +95,14 @@ class ErrorDisplayWidget extends StatelessWidget {
                     color: Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isNetworkError 
-                          ? Colors.orange.shade200 
-                          : Colors.red.shade200,
+                      color:
+                          isNetworkError
+                              ? Colors.orange.shade200
+                              : Colors.red.shade200,
                     ),
                   ),
                   child: Text(
-                    isNetworkError 
+                    isNetworkError
                         ? 'يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى'
                         : 'حدث خطأ في تحميل البيانات، يرجى المحاولة مرة أخرى',
                     style: TextStyle(
@@ -107,9 +113,9 @@ class ErrorDisplayWidget extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                
+
                 SizedBox(height: 32),
-                
+
                 // Action Buttons
                 Column(
                   children: [
@@ -117,18 +123,22 @@ class ErrorDisplayWidget extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                       onPressed: () {
+                        onPressed: () {
                           Get.offAll(() => const StartupScreen());
                         },
                         icon: Icon(Icons.refresh),
                         label: Text(
                           'إعادة المحاولة',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isNetworkError 
-                              ? Colors.orange.shade600 
-                              : Colors.blue.shade600,
+                          backgroundColor:
+                              isNetworkError
+                                  ? Colors.orange.shade600
+                                  : Colors.blue.shade600,
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -138,7 +148,7 @@ class ErrorDisplayWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     if (isNetworkError) ...[
                       SizedBox(height: 12),
                       // Network Help Button
@@ -159,17 +169,14 @@ class ErrorDisplayWidget extends StatelessWidget {
                     ],
                   ],
                 ),
-                
+
                 SizedBox(height: 24),
-                
+
                 // Technical Details (Collapsible)
                 ExpansionTile(
                   title: Text(
                     'التفاصيل التقنية',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
                   ),
                   children: [
                     Container(
@@ -202,32 +209,33 @@ class ErrorDisplayWidget extends StatelessWidget {
   void _showNetworkTips(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.lightbulb_outline, color: Colors.orange.shade600),
-            SizedBox(width: 8),
-            Text('نصائح لحل مشاكل الاتصال'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _tipItem('تأكد من تشغيل الواي فاي أو البيانات المتنقلة'),
-            _tipItem('جرب الاتصال بشبكة واي فاي أخرى'),
-            _tipItem('أعد تشغيل الراوتر أو الجهاز'),
-            _tipItem('تحقق من رصيد البيانات المتنقلة'),
-            _tipItem('تأكد من عدم وجود مشاكل في الخدمة'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('حسناً'),
+      builder:
+          (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.lightbulb_outline, color: Colors.orange.shade600),
+                SizedBox(width: 8),
+                Text('نصائح لحل مشاكل الاتصال'),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _tipItem('تأكد من تشغيل الواي فاي أو البيانات المتنقلة'),
+                _tipItem('جرب الاتصال بشبكة واي فاي أخرى'),
+                _tipItem('أعد تشغيل الراوتر أو الجهاز'),
+                _tipItem('تحقق من رصيد البيانات المتنقلة'),
+                _tipItem('تأكد من عدم وجود مشاكل في الخدمة'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('حسناً'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -247,10 +255,7 @@ class ErrorDisplayWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Text(
-              text,
-              style: TextStyle(fontSize: 14, height: 1.4),
-            ),
+            child: Text(text, style: TextStyle(fontSize: 14, height: 1.4)),
           ),
         ],
       ),

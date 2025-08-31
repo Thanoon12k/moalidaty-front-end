@@ -11,7 +11,7 @@ import 'package:moalidaty1/features/budgets/ui/budgets_list.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
 import 'package:moalidaty1/features/reciepts/ui/list_reciepts.dart';
 import 'package:moalidaty1/features/subscripers/services/service_subscripers.dart';
-import 'package:moalidaty1/features/subscripers/ui/subscripersList.dart';
+import 'package:moalidaty1/features/subscripers/ui/subscripers_list.dart';
 import 'package:moalidaty1/features/workers/services/service_worker.dart';
 import 'package:moalidaty1/features/workers/ui/list_workers.dart';
 import 'package:moalidaty1/routes/routes.dart';
