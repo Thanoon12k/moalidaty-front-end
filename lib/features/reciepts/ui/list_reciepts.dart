@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/features/reciepts/models/receipt_model.dart';
 import 'package:moalidaty1/features/reciepts/services/service_recepts.dart';
@@ -102,15 +103,33 @@ class RecieptsListPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder:
-                          (context) => DisplayReceiptDialog(receipt: reciept),
-                    );
-                  },
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.remove_red_eye,
+                        color: Colors.blue,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) =>
+                                  DisplayReceiptDialog(receipt: reciept),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => DeleteYesNoBox(instance: reciept),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             );

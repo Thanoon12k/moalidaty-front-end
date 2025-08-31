@@ -91,20 +91,11 @@ class WorkerRepository {
     // }
   }
 
-  Future<void> deleteWorker(int id) async {
+  Future<bool> destroyWorker(int id) async {
     String deleteUrl = "$baseUrl/workers/$id/";
 
     final response = await http.delete(Uri.parse(deleteUrl));
 
-    if (response.statusCode != 204) {
-      throw Exception(
-        "Failed to delete worker from $deleteUrl. Status: ${response.statusCode}",
-      );
-    }
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-    //   throw Exception("Error in deleting worker: $e");
-    // }
+    return response.statusCode == 204;
   }
 }

@@ -37,13 +37,12 @@ class ReceiptServices extends GetxService {
     receiptsList.add(createdReceipt);
   }
 
-  Future<void> deleteReciept(Reciept reciept) async {
-    if (reciept.id == null) {
-      throw Exception('Cannot delete receipt without an ID');
+  Future<bool> removeReceipt(Reciept reciept) async {
+    if (await recieptApi.destroyReciept(reciept.id!)) {
+      receiptsList.remove(reciept);
+      return true;
     }
-
-    await recieptApi.destroyReciept(reciept.id!);
-    receiptsList.remove(reciept);
+    return false;
   }
 
   Future<void> editReciept(Reciept reciept) async {

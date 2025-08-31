@@ -19,16 +19,16 @@ class SubscribersService extends GetxService {
     }).toList();
   }
 
-    List<Budget> GetUnpaidsBudgetsForSubscriper(int subID) {
-      final budgets = Get.find<BudgetService>().BudgetList;
-      return budgets.where((bdgt) => bdgt.unpaid_subs.contains(subID)).toList();
-    }
+  List<Budget> GetUnpaidsBudgetsForSubscriper(int subID) {
+    final budgets = Get.find<BudgetService>().BudgetList;
+    return budgets.where((bdgt) => bdgt.unpaid_subs.contains(subID)).toList();
+  }
 
-   List<Budget> GetpaidsBudgetsForSubscriper(int subID) {
-      final budgets = Get.find<BudgetService>().BudgetList;
-      return budgets.where((bdgt) => bdgt.paid_subs.contains(subID)).toList();
-    }
-  
+  List<Budget> GetpaidsBudgetsForSubscriper(int subID) {
+    final budgets = Get.find<BudgetService>().BudgetList;
+    return budgets.where((bdgt) => bdgt.paid_subs.contains(subID)).toList();
+  }
+
   @override
   Future<void> onInit() async {
     super.onInit();
@@ -48,34 +48,20 @@ class SubscribersService extends GetxService {
   Future<void> getSubscripers() async {
     final fetchedSubs = await subApi.fetchSubscribers();
     subscribersList.assignAll(fetchedSubs);
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-
-    //   // You might want to show a snackbar or handle error UI here
-    // }
   }
 
   Future<void> addSubsciper(Subscriper sub) async {
     final createdSub = await subApi.createSubscriper(sub);
     subscribersList.add(createdSub);
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-
-    //   rethrow;
-    // }
   }
 
-  Future<void> deleteSubscriper(Subscriper sub) async {
-    await subApi.destroySubscriper(sub.id);
-    subscribersList.remove(sub);
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-
-    //   rethrow;
-    // }
+  Future<bool> removeSubscriper(Subscriper sub) async {
+    if (await subApi.destroySubscriper(sub.id)) {
+      subscribersList.remove(sub);
+      filteredSubscripers.remove(sub);
+      return true;
+    }
+    return false;
   }
 
   Future<void> editSubscriper(Subscriper sub) async {
@@ -84,20 +70,9 @@ class SubscribersService extends GetxService {
     if (index != -1) {
       subscribersList[index] = updatedSub;
     } else {}
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-
-    //   rethrow;
-    // }
   }
 
   Subscriper? getSubscriberById(int id) {
     return subscribersList.firstWhere((s) => s.id == id);
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-    //   return null;
-    // }
   }
 }

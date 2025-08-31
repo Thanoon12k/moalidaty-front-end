@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/features/budgets/models/budgets_model.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
 import 'package:moalidaty1/features/budgets/ui/add_budget_dialoge.dart';
@@ -479,7 +480,10 @@ class BudgetsListPage extends StatelessWidget {
                       Icons.delete,
                       'حذف',
                       Colors.red,
-                      () => _deleteBudget(context, budget),
+                      () => showDialog(
+                        context: context,
+                        builder: (context) => DeleteYesNoBox(instance: budget),
+                      ),
                     ),
                   ],
                 ),
@@ -894,13 +898,6 @@ class BudgetsListPage extends StatelessWidget {
     );
   }
 
-  void _deleteBudget(BuildContext context, Budget budget) {
-    showDialog(
-      context: context,
-      builder: (context) => DeleteBudgetDialoge(budget, budget_service),
-    );
-  }
-
   void _showBudgetDetails(BuildContext context, Budget budget) {
     showDialog(
       context: context,
@@ -1072,32 +1069,3 @@ class ViewBudgetDetailsDialoge extends StatelessWidget {
 }
 
 // delete budget dialoge
-class DeleteBudgetDialoge extends StatelessWidget {
-  final BudgetService budget_service;
-  final Budget bu;
-  const DeleteBudgetDialoge(this.bu, this.budget_service, {super.key});
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('حذف الميزانية'),
-      content: Text(
-        'هل أنت متأكد من رغبتك في حذف هذه الميزانية ${bu.year_month} ؟',
-      ),
-      actions: [
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-          child: const Text('رجوع'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            Navigator.pop(context);
-            await budget_service.removeBudget(bu.id);
-          },
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-          child: const Text('حذف'),
-        ),
-      ],
-    );
-  }
-}

@@ -24,20 +24,11 @@ class SubscriperAPI {
     return subscripersList;
   }
 
-  Future<void> destroySubscriper(int id) async {
+  Future<bool> destroySubscriper(int id) async {
     final String destroyUrl = "$baseUrl/subscribers/$id/";
     final response = await http.delete(Uri.parse(destroyUrl));
-
-    if (response.statusCode != 204) {
-      throw Exception(
-        "Failed to delete subscriber from $destroyUrl. Status: ${response.statusCode}",
-      );
-    }
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-    //   throw Exception("Error in deleting subscriber: $e");
-    // }
+    return response.statusCode == 204;
+  
   }
 
   Future<Subscriper> createSubscriper(Subscriper sub) async {

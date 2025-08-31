@@ -36,7 +36,6 @@ class BudgetAPI {
         "Failed to fetch budget detail from $fetchUrl. Status: ${response.statusCode}",
       );
     }
-   
   }
 
   Future<Budget> createBudget(Budget budget) async {
@@ -87,20 +86,11 @@ class BudgetAPI {
     // }
   }
 
-  Future<void> deleteBudget(int id) async {
+  Future<bool> destroyBudget(int id) async {
     String deleteUrl = "$baseUrl/budgets/$id/";
 
     final response = await http.delete(Uri.parse(deleteUrl));
 
-    if (response.statusCode != 204) {
-      throw Exception(
-        "Failed to delete budget from $deleteUrl. Status: ${response.statusCode}",
-      );
-    }
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-    //   throw Exception("Error in deleting budget: $e");
-    // }
+    return response.statusCode == 204;
   }
 }

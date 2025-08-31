@@ -1,4 +1,7 @@
-subscripers search no elements bug
 make central refresh Lists center 
-
 make snackbars for CRUD subscriper,worker,recept,budget info after perform operations 
+make barcode for each subscriper can add receipt from it
+add call subscriper via his phone
+add send receipt to whatsapp
+add print receipt
+add create receipt image from receipt information

@@ -20,9 +20,9 @@ class RecieptAPI {
       "Fetched Receipts status: ${response.statusCode} got (${recieptList.length}) items",
     );
     // for (var reciept in recieptList) {
-      // debugPrint(
-      //   "Receipt ID: ${reciept.id} rec_subscriper ${reciept.subscriberName}, Image URL: ${reciept.imageUrl}",
-      // );
+    // debugPrint(
+    //   "Receipt ID: ${reciept.id} rec_subscriper ${reciept.subscriberName}, Image URL: ${reciept.imageUrl}",
+    // );
     // }
     return recieptList;
   }
@@ -65,16 +65,13 @@ class RecieptAPI {
     }
   }
 
-  Future<void> destroyReciept(int id) async {
+  Future<bool> destroyReciept(int id) async {
     String deleteUrl = "$baseUrl/receipts/$id/";
 
     final response = await http.delete(Uri.parse(deleteUrl));
 
-    if (response.statusCode != 204) {
-      throw Exception(
-        "Failed to delete receipt from $deleteUrl. Status: ${response.statusCode}",
-      );
-    }
+    return response.statusCode == 204;
+    
   }
 
   Future<Reciept> updateReciept(Reciept reciept) async {

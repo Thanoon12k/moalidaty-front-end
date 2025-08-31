@@ -269,16 +269,13 @@ class BudgetService extends GetxService {
     }
   }
 
-  Future<void> removeBudget(int id) async {
-    await budgetApi.deleteBudget(id);
-    final index = BudgetList.indexWhere((b) => b.id == id);
-    if (index != -1) {
-      BudgetList.removeAt(index);
+  Future<bool> removeBudget(Budget budget) async {
+    if (await budgetApi.destroyBudget(budget.id)) {
+      BudgetList.remove(budget);
+      filtered_budgets.remove(budget);
+      return true;
     }
-    final filterIndex = filtered_budgets.indexWhere((b) => b.id == id);
-    if (filterIndex != -1) {
-      filtered_budgets.removeAt(filterIndex);
-    }
+    return false;
   }
 
   Budget? getBudgetById(int id) {

@@ -193,7 +193,7 @@ void displaySubscriperDialoge(
                                 showDialog(
                                   context: context,
                                   builder:
-                                      (_) => deleteYesNoBox(subscriper: sub),
+                                      (_) => DeleteYesNoBox(instance: sub),
                                 );
                               },
                               icon: Icon(Icons.delete),

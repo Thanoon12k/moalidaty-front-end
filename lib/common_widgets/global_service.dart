@@ -6,24 +6,21 @@ import 'package:moalidaty1/features/workers/services/service_worker.dart';
 
 class GlobalService extends GetxService {
   Future<void> resetAll() async {
-    await Get.find<BudgetService>().onInit();
-    await Get.find<WorkerService>().onInit();
-    await Get.find<SubscribersService>().onInit();
-    await Get.find<ReceiptServices>().onInit();
+    await Get.find<BudgetService>().getBudgets();
+    await Get.find<WorkerService>().getWorkers();
+    await Get.find<SubscribersService>().getSubscripers();
+    await Get.find<ReceiptServices>().getReciepts();
   }
 
-  Future<void> resetServices(ser1, ser2, ser3, ser4) async {
-    if (ser1) {
-      await ser1.onInit();
-    }
-    if (ser2) {
-      await ser2.onInit();
-    }
-    if (ser3) {
-      await ser3.onInit();
-    }
-    if (ser4) {
-      await ser4.onInit();
-    }
+  Future<void> resetServices({
+    BudgetService? ser1,
+    WorkerService? ser2,
+    SubscribersService? ser3,
+    ReceiptServices? ser4,
+  }) async {
+    if (ser1 != null) await ser1.getBudgets();
+    if (ser2 != null) await ser2.getWorkers();
+    if (ser3 != null) await ser3.getSubscripers();
+    if (ser4 != null) await ser4.getReciepts();
   }
 }

@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
+import 'package:moalidaty1/common_widgets/global_service.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
 import 'package:moalidaty1/common_widgets/network_error.dart';
 import 'package:moalidaty1/constants/global_constants.dart';
@@ -15,6 +15,7 @@ import 'package:moalidaty1/features/subscripers/ui/subscripers_list.dart';
 import 'package:moalidaty1/features/workers/services/service_worker.dart';
 import 'package:moalidaty1/features/workers/ui/list_workers.dart';
 import 'package:moalidaty1/routes/routes.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -83,10 +84,21 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: Colors.blue.shade100,
-                child: Icon(Icons.power, size: 28, color: Colors.blue.shade600),
+              IconButton(
+                icon: Icon(
+                  Icons.replay_outlined,
+                  size: 28,
+                  color: Colors.blue.shade600,
+                ),
+                onPressed: () async {
+                  GlobalService().resetAll();
+                  Get.to(() => HomePage());
+                },
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.blue.shade100,
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(16),
+                ),
               ),
             ],
           ),

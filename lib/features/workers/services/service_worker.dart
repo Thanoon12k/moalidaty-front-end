@@ -41,9 +41,12 @@ class WorkerService extends GetxService {
     }
   }
 
-  Future<void> removeWorker(Gen_Worker worker) async {
-    await api.deleteWorker(worker.id);
-    workersList.remove(worker);
+  Future<bool> removeWorker(Gen_Worker worker) async {
+    if (await api.destroyWorker(worker.id)) {
+      workersList.removeWhere((w) => w.id == worker.id);
+      return true;
+    }
+    return false;
   }
 
   Gen_Worker? getWorkerById(int id) {
