@@ -492,7 +492,7 @@ class SubscriberBudgetsPage extends StatelessWidget {
                       child: _buildPaymentStatItem(
                         'أشهر مدفوعة',
                         '$monthsPaid',
-                        '${totalPaid.toStringAsFixed(2)} ريال',
+                        '${totalPaid.toStringAsFixed(2)} د.ع',
                         Colors.green,
                         Icons.check_circle,
                       ),
@@ -502,7 +502,7 @@ class SubscriberBudgetsPage extends StatelessWidget {
                       child: _buildPaymentStatItem(
                         'أشهر غير مدفوعة',
                         '$monthsUnpaid',
-                        '${totalUnpaid.toStringAsFixed(2)} ريال',
+                        '${totalUnpaid.toStringAsFixed(2)} د.ع',
                         Colors.red,
                         Icons.cancel,
                       ),
@@ -804,13 +804,13 @@ class SubscriberBudgetsPage extends StatelessWidget {
                 ),
                 _buildDetailRow(
                   'إجمالي المدفوع',
-                  '${totalPaid.toStringAsFixed(2)} ريال',
+                  '${totalPaid.toStringAsFixed(2)} د.ع',
                   Icons.attach_money,
                   Colors.green,
                 ),
                 _buildDetailRow(
                   'إجمالي غير المدفوع',
-                  '${totalUnpaid.toStringAsFixed(2)} ريال',
+                  '${totalUnpaid.toStringAsFixed(2)} د.ع',
                   Icons.money_off,
                   Colors.red,
                 ),
@@ -1003,7 +1003,7 @@ class SubscriberBudgetsPage extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    '${amount.toStringAsFixed(2)} ريال',
+                                    '${amount.toStringAsFixed(2)} د.ع',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -1203,7 +1203,7 @@ class SubscriberBudgetsPage extends StatelessWidget {
                   _buildMonthStatCard(
                     'المشتركين المدفوعين',
                     paidSubs.length.toString(),
-                    '${_calculateTotalAmount(paidSubs, targetBudget.amber_price).toStringAsFixed(2)} ريال',
+                    '${_calculateTotalAmount(paidSubs, targetBudget.amber_price).toStringAsFixed(2)} د.ع',
                     Colors.green,
                     Icons.check_circle,
                   ),
@@ -1211,7 +1211,7 @@ class SubscriberBudgetsPage extends StatelessWidget {
                   _buildMonthStatCard(
                     'المشتركين غير المدفوعين',
                     unpaidSubs.length.toString(),
-                    '${_calculateTotalAmount(unpaidSubs, targetBudget.amber_price).toStringAsFixed(2)} ريال',
+                    '${_calculateTotalAmount(unpaidSubs, targetBudget.amber_price).toStringAsFixed(2)} د.ع',
                     Colors.red,
                     Icons.cancel,
                   ),
@@ -1230,7 +1230,7 @@ class SubscriberBudgetsPage extends StatelessWidget {
                       (sub) => _buildSubscriberListItem(
                         sub.name,
                         '${sub.amber} أمبير',
-                        '${(sub.amber * targetBudget.amber_price).toStringAsFixed(2)} ريال',
+                        '${(sub.amber * targetBudget.amber_price).toStringAsFixed(2)} د.ع',
                         Colors.green,
                       ),
                     ),
@@ -1250,7 +1250,7 @@ class SubscriberBudgetsPage extends StatelessWidget {
                       (sub) => _buildSubscriberListItem(
                         sub.name,
                         '${sub.amber} أمبير',
-                        '${(sub.amber * targetBudget.amber_price).toStringAsFixed(2)} ريال',
+                        '${(sub.amber * targetBudget.amber_price).toStringAsFixed(2)} د.ع',
                         Colors.red,
                       ),
                     ),

@@ -308,7 +308,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
 
   Widget _dropdownWorker() {
     return DropdownButtonFormField<Gen_Worker>(
-      value: selectedWorker,
+      value: selectedWorker ?? workers.first,
       decoration: const InputDecoration(
         labelText: 'اختر المشغل',
         border: OutlineInputBorder(),

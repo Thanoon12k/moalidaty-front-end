@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:moalidaty1/common_widgets/snackbars.dart';
 import 'package:moalidaty1/features/workers/api/workers_api.dart';
 import "../models/model.dart";
 
@@ -23,22 +24,30 @@ class WorkerService extends GetxService {
     }).toList();
   }
 
-  Future<void> getWorkers() async {
+  Future<bool> getWorkers() async {
     final workerList = await api.fetchWorkers();
-    workersList.assignAll(workerList);
-  }
-
-  Future<void> addWorker(Gen_Worker worker) async {
-    final createdWorker = await api.createWorker(worker);
-    workersList.add(createdWorker);
-  }
-
-  Future<void> updateWorker(Gen_Worker worker) async {
-    final updatedWorker = await api.updateWorker(worker.id, worker);
-    final index = workersList.indexWhere((w) => w.id == worker.id);
-    if (index != -1) {
-      workersList[index] = updatedWorker;
+    if (workerList != null) {
+      workersList.assignAll(workerList);
+      return true;
     }
+    return false;
+  }
+
+  Future<bool> addWorker(Gen_Worker worker) async {
+    if (await api.createWorker(worker)) {
+      workersList.add(worker);
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> updateWorker(Gen_Worker worker) async {
+    if (await api.updateWorker(worker)) {
+      final index = workersList.indexWhere((w) => w.id == worker.id);
+      workersList[index] = worker;
+      return true;
+    }
+    return false;
   }
 
   Future<bool> removeWorker(Gen_Worker worker) async {

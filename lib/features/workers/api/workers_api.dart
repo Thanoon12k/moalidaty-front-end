@@ -7,9 +7,8 @@ import 'package:moalidaty1/features/workers/models/model.dart';
 class WorkerRepository {
   final String baseUrl = GlobalConstants.baseAddress;
 
-  Future<List<Gen_Worker>> fetchWorkers() async {
+  Future<List<Gen_Worker>?> fetchWorkers() async {
     String fetchUrl = "$baseUrl/workers/";
-
     final response = await http.get(Uri.parse(fetchUrl));
     List<Gen_Worker> genWorkersList = [];
     if (response.statusCode == 200) {
@@ -20,7 +19,7 @@ class WorkerRepository {
     debugPrint(
       "Fetched Workers status: ${response.statusCode} got (${genWorkersList.length}) items",
     );
-    return genWorkersList;
+    return genWorkersList.isNotEmpty ? genWorkersList : null;
   }
 
   Future<Gen_Worker> fetchWorkerDetail(int id) async {
@@ -43,32 +42,19 @@ class WorkerRepository {
     // }
   }
 
-  Future<Gen_Worker> createWorker(Gen_Worker worker) async {
+  Future<bool> createWorker(Gen_Worker worker) async {
     String createUrl = "$baseUrl/workers/";
-
     final response = await http.post(
       Uri.parse(createUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(worker.toJson()),
     );
 
-    if (response.statusCode == 201) {
-      final createdWorker = Gen_Worker.fromJson(json.decode(response.body));
-      return createdWorker;
-    } else {
-      throw Exception(
-        'Failed to create worker. Status: ${response.statusCode}, Body: ${response.body}',
-      );
-    }
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-    //   throw Exception('Error in creating worker: $e');
-    // }
+    return (response.statusCode == 201);
   }
 
-  Future<Gen_Worker> updateWorker(int id, Gen_Worker worker) async {
-    String updateUrl = "$baseUrl/workers/$id/";
+  Future<bool> updateWorker(Gen_Worker worker) async {
+    String updateUrl = "$baseUrl/workers/${worker.id}/";
 
     final response = await http.put(
       Uri.parse(updateUrl),
@@ -76,19 +62,7 @@ class WorkerRepository {
       body: jsonEncode(worker.toJson()),
     );
 
-    if (response.statusCode == 200) {
-      final updatedWorker = Gen_Worker.fromJson(json.decode(response.body));
-      return updatedWorker;
-    } else {
-      throw Exception(
-        'Failed to update worker. Status: ${response.statusCode}, Body: ${response.body}',
-      );
-    }
-    // } catch (e, stackTrace) {
-
-    //   rethrow;
-    //   throw Exception('Error in updating worker: $e');
-    // }
+    return (response.statusCode == 200);
   }
 
   Future<bool> destroyWorker(int id) async {

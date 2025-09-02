@@ -257,7 +257,7 @@ class BudgetsListPage extends StatelessWidget {
               ),
 
               Text(
-                '${stats['total_amount'].toStringAsFixed(2)} ريال',
+                '${stats['total_amount'].toStringAsFixed(2)} د.ع',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -418,7 +418,7 @@ class BudgetsListPage extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'سعر الأمبير: ${budget.amber_price.toStringAsFixed(2)} ريال',
+                            'سعر الأمبير: ${budget.amber_price.toStringAsFixed(2)} د.ع',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -564,7 +564,7 @@ class BudgetsListPage extends StatelessWidget {
             ),
           ),
           Text(
-            '$amount ريال',
+            '$amount د.ع',
             style: TextStyle(fontSize: 12, color: color.withOpacity(0.8)),
           ),
         ],

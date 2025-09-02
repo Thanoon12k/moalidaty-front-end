@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:moalidaty1/common_widgets/appbar.dart';
 import 'package:moalidaty1/common_widgets/delete_dialoge.dart';
 import 'package:moalidaty1/common_widgets/loading_indicator.dart';
+import 'package:moalidaty1/common_widgets/snackbars.dart';
 import 'package:moalidaty1/constants/global_constants.dart';
 import 'package:moalidaty1/features/workers/ui/add_worker.dart';
 import 'package:moalidaty1/features/workers/ui/widgets.dart';
@@ -33,15 +34,8 @@ class WorkersListPage extends StatelessWidget {
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onSelected: (value) async {
               if (value == 'refresh') {
-                await workerService.getWorkers();
-                Get.snackbar(
-                  'تم التحديث',
-                  'تم تحميل المشغلين من جديد',
-                  snackPosition: SnackPosition.TOP,
-                  backgroundColor: Colors.green[400],
-                  colorText: Colors.white,
-                  duration: Duration(seconds: 2),
-                );
+                bool success = await workerService.getWorkers();
+                DispalySnackbar(success, "تحميل", "المشغلين");
               }
             },
             itemBuilder:
@@ -110,13 +104,11 @@ class WorkersListPage extends StatelessWidget {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  await workerService.getWorkers();
+                  bool success = await workerService.getWorkers();
+                  DispalySnackbar(success, "تحميل", "المشغلين");
                 },
                 child: ListView.builder(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: GlobalConstants.scaleTo(16),
-                    vertical: GlobalConstants.scaleTo(8),
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   itemCount: workerService.filteredWorkers.length,
                   itemBuilder: (context, index) {
                     final worker = workerService.filteredWorkers[index];

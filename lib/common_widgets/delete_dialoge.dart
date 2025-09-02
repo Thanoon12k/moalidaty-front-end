@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty1/common_widgets/snackbars.dart';
 import 'package:moalidaty1/features/budgets/models/budgets_model.dart';
 import 'package:moalidaty1/features/budgets/services/budget_service.dart';
 import 'package:moalidaty1/features/reciepts/models/receipt_model.dart';
@@ -29,43 +30,89 @@ class DeleteYesNoBox extends StatelessWidget {
             ? 'الإيصال'
             : 'العنصر';
 
-    return AlertDialog(
-      title: const Text('تأكيد الحذف'),
-      content: Text('هل أنت متأكد أنك تريد حذف $title؟'),
-      actions: [
-        TextButton(onPressed: () => Get.back(), child: const Text('لا')),
-        TextButton(
-          onPressed: () async {
-            Get.back();
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              size: 48,
+              color: Colors.amber[800],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'تأكيد الحذف',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.amber[800],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'هل أنت متأكد أنك تريد حذف $title؟',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, color: Colors.black87),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.cancel, color: Colors.white),
+                    label: const Text('لا'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[400],
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      bool success = false;
 
-            bool success = false;
+                      if (instance is Gen_Worker) {
+                        success = await Get.find<WorkerService>().removeWorker(
+                          instance,
+                        );
+                      } else if (instance is Subscriper) {
+                        success = await Get.find<SubscribersService>()
+                            .removeSubscriper(instance);
+                      } else if (instance is Budget) {
+                        success = await Get.find<BudgetService>().removeBudget(
+                          instance,
+                        );
+                      } else if (instance is Reciept) {
+                        success = await Get.find<ReceiptServices>()
+                            .removeReceipt(instance);
+                      }
 
-            if (instance is Gen_Worker) {
-              success = await Get.find<WorkerService>().removeWorker(instance);
-            } else if (instance is Subscriper) {
-              success = await Get.find<SubscribersService>().removeSubscriper(
-                instance,
-              );
-            } else if (instance is Budget) {
-              success = await Get.find<BudgetService>().removeBudget(instance);
-            } else if (instance is Reciept) {
-              success = await Get.find<ReceiptServices>().removeReceipt(
-                instance,
-              );
-            }
-            debugPrint('Deletion success: $success');
-
-            Get.snackbar(
-              success ? '✅ نجاح' : '❌ فشل',
-              success ? 'تم حذف $title' : 'فشل حذف $title',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: success ? Colors.green[100] : Colors.red[100],
-              colorText: success ? Colors.green[900] : Colors.red[900],
-            );
-          },
-          child: const Text('نعم'),
+                      Get.back();
+                      DispalySnackbar(success, "حذف", title);
+                    },
+                    icon: const Icon(Icons.check_circle, color: Colors.white),
+                    label: const Text('نعم'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[600],
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

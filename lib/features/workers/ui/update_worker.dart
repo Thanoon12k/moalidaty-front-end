@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty1/common_widgets/snackbars.dart';
 import 'package:moalidaty1/features/workers/models/model.dart';
 import 'package:moalidaty1/features/workers/services/service_worker.dart';
 
@@ -15,13 +16,11 @@ class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
   late TextEditingController nameCtrl;
   late TextEditingController phoneCtrl;
 
-
   @override
   void initState() {
     super.initState();
     nameCtrl = TextEditingController(text: widget.worker.name ?? '');
     phoneCtrl = TextEditingController(text: widget.worker.phone ?? '');
-
   }
 
   @override
@@ -63,7 +62,6 @@ class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
               ),
             ),
             const SizedBox(height: 12),
-
           ],
         ),
       ),
@@ -75,14 +73,16 @@ class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
           child: const Text('رجوع'),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             final updatedWorker = Gen_Worker(
               id: widget.worker.id,
               name: nameCtrl.text,
               phone: phoneCtrl.text,
             );
-            workerService.updateWorker(updatedWorker);
-            Navigator.pop(context);
+                        Navigator.pop(context);
+
+            bool success = await workerService.updateWorker(updatedWorker);
+            DispalySnackbar(success, "تعديل", "المشغل");
           },
           style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
           child: const Text('تحديث'),
