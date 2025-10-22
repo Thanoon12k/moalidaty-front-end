@@ -39,6 +39,8 @@ dependencies:
   image_picker: ^1.2.0
   flutter_localizations:
     sdk: flutter
+  responsive_framework: ^1.5.1
+  auto_size_text: ^3.0.0
   
 
 dev_dependencies:
