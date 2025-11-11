@@ -7,7 +7,7 @@ class Gen_Worker {
   Gen_Worker({
     this.id = 0,
     required this.name,
-    this.phone = "077",
+    this.phone = "---",
     this.date_created,
   });
 

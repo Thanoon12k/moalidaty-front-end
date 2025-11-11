@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moalidaty/constants/global_service.dart';
+import 'package:moalidaty/constants/global_service_manager.dart';
 import 'package:moalidaty/features/budgets/ui/budgets_list.dart';
 import 'package:moalidaty/features/reciepts/services/service_recepts.dart';
 import 'package:moalidaty/features/reciepts/ui/list_reciepts.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty/features/subscripers/ui/subscripers_list.dart';
-import 'package:moalidaty/features/workers/services/service_worker.dart';
+import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
 import 'package:moalidaty/features/workers/ui/list_workers.dart';
 
 class HomePage extends StatelessWidget {
@@ -84,7 +84,7 @@ class HomePage extends StatelessWidget {
                   color: Colors.blue.shade600,
                 ),
                 onPressed: () async {
-                  GlobalService().resetAll();
+                  GlobalServiceManager().refershAllServices();
                   Get.to(() => HomePage());
                 },
                 style: IconButton.styleFrom(
@@ -126,7 +126,7 @@ class HomePage extends StatelessWidget {
           Expanded(
             child: _StatCard(
               title: 'المشغلين',
-              value: '${Get.find<WorkerService>().workersList.length}',
+              value: '${Get.find<WorkerController>().workersList.length}',
               icon: Icons.engineering,
               color: Colors.blue,
             ),

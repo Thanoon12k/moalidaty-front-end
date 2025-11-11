@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:moalidaty/features/workers/api/workers_api.dart';
 import "../models/model.dart";
 
-class WorkerService extends GetxService {
+class WorkerController extends GetxService {
   final RxList<Gen_Worker> workersList = <Gen_Worker>[].obs;
   final RxBool showSearch = false.obs;
   final RxString searchQuery = ''.obs;

@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:moalidaty/features/subscripers/models/model.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty/features/workers/models/model.dart';
-import 'package:moalidaty/features/workers/services/service_worker.dart';
+import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
 
 class Reciept {
   final int? id;
@@ -43,7 +43,7 @@ class Reciept {
     );
 
     if (worker != null) {
-      workerObj = Get.find<WorkerService>().workersList.firstWhere(
+      workerObj = Get.find<WorkerController>().workersList.firstWhere(
         (w) => w.id == worker,
       );
     }

@@ -10,7 +10,7 @@ import 'package:moalidaty/features/subscripers/services/service_subscripers.dart
 import 'package:moalidaty/features/subscripers/models/model.dart';
 import 'package:moalidaty/features/budgets/models/budgets_model.dart';
 import 'package:moalidaty/features/workers/models/model.dart';
-import 'package:moalidaty/features/workers/services/service_worker.dart';
+import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddReceiptDialoge extends StatefulWidget {
@@ -52,7 +52,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
     super.initState();
     final subsService = Get.find<SubscribersService>();
     final budgetService = Get.find<BudgetService>();
-    final workersService = Get.find<WorkerService>();
+    final workersService = Get.find<WorkerController>();
 
     subscribers = subsService.subscribersList;
     budgets = budgetService.BudgetList;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty/common_widgets/snackbars.dart';
 import 'package:moalidaty/features/workers/models/model.dart';
-import 'package:moalidaty/features/workers/services/service_worker.dart';
+import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
 
 class UpdateWorkerDialog extends StatefulWidget {
   final Gen_Worker worker;
@@ -33,7 +33,7 @@ class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final workerService = Get.find<WorkerService>();
+    final workerService = Get.find<WorkerController>();
 
     return AlertDialog(
       title: const Text('تعديل بيانات المشغل'),

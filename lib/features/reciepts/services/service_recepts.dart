@@ -3,7 +3,7 @@ import 'package:moalidaty/features/budgets/services/budget_service.dart';
 import 'package:moalidaty/features/reciepts/models/receipt_model.dart';
 import 'package:moalidaty/features/reciepts/api/receipt_api.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
-import 'package:moalidaty/features/workers/services/service_worker.dart';
+import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
 
 class ReceiptServices extends GetxService {
   final RxList<Reciept> receiptsList = <Reciept>[].obs;
@@ -12,7 +12,7 @@ class ReceiptServices extends GetxService {
 
   final recieptApi = RecieptAPI();
   final sub_service = Get.find<SubscribersService>();
-  final worker_Service = Get.find<WorkerService>();
+  final worker_Service = Get.find<WorkerController>();
   final budget_service = Get.find<BudgetService>();
   @override
   Future<void> onInit() async {

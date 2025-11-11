@@ -1,0 +1,17 @@
+// TODO : add global errors(server responses) to all  forms handler
+// BUG :  add (Login) selection windows
+// BUG  : add generator id field to needed requests
+// TODO : try Review the classes and it fields
+// TODO : try TEST ALL functions
+// BUG: addd some security layers
+// TODO: add extra to pay using QR code
+// TODO: add some ai features
+// BUG : remove create electricgenmodel from  server endpoint for security manner keep only list (add electricgenmodel from admin)
+// BUG : add account section for users
+// TODO : add ai report for subscriper
+// TODO : add icon to the app
+// TODO : make button navigation bar
+// TODO : make the app can navigate between windows by swapping right and left
+// TODO : add phone number to be correct phone number from 11 number only and other form inputs vaidators like name max length and other validators like ambers must numbers min max and circuit number must be unique
+// BUG  : add offline mode windows which is receipts in new windows called (قائمة الانتظار) recoiepts wait as list in their waiting to connect to internet to be sended to server
+// TODO: add protection against butterforce attacks (ma be by limit login attemts)

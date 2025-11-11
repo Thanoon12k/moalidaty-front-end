@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty/common_widgets/snackbars.dart';
 import 'package:moalidaty/features/workers/models/model.dart';
-import 'package:moalidaty/features/workers/services/service_worker.dart';
+import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
 
 class AddWorkerDialog extends StatelessWidget {
   AddWorkerDialog({super.key});
@@ -13,7 +13,7 @@ class AddWorkerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final workerService = Get.find<WorkerService>();
+    final workerService = Get.find<WorkerController>();
 
     return AlertDialog(
       title: const Text('إضافة مشغل جديد'),

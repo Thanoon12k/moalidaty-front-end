@@ -4,14 +4,14 @@ import 'package:moalidaty/common_widgets/appbar.dart';
 import 'package:moalidaty/common_widgets/snackbars.dart';
 import 'package:moalidaty/features/workers/ui/add_worker.dart';
 import 'package:moalidaty/features/workers/ui/widgets.dart';
-import '../services/service_worker.dart';
+import '../controllers/worker_controller.dart';
 
 class WorkersListPage extends StatelessWidget {
   const WorkersListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final workerService = Get.find<WorkerService>();
+    final workerService = Get.find<WorkerController>();
 
     return Scaffold(
       backgroundColor: Colors.grey[50],

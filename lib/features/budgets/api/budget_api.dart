@@ -10,8 +10,8 @@ class BudgetAPI {
   Future<List<Budget>> fetchBudgets() async {
     String fetchUrl = "$baseUrl/budgets/";
     List<Budget> budgetList = [];
-
     final response = await http.get(Uri.parse(fetchUrl));
+    
 
     if (response.statusCode == 200) {
       List<dynamic> listData = json.decode(response.body);
