@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/features/subscripers/models/model.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
 
@@ -70,6 +71,7 @@ class AddSubscriberDialoge extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             final Subscriper new_sub = Subscriper(
+              generator: -1,
               name: namectrl.text,
               amber: int.parse(amberctrl.text),
               circuit_number: circiut_numctrl.text == ""

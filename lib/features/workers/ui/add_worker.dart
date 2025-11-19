@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty/common_widgets/snackbars.dart';
-import 'package:moalidaty/features/workers/models/model.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
+import 'package:moalidaty/features/workers/models/workers_model.dart';
 
 class AddWorkerDialog extends StatelessWidget {
   AddWorkerDialog({super.key});
@@ -10,10 +11,11 @@ class AddWorkerDialog extends StatelessWidget {
   final nameCtrl = TextEditingController();
 
   final phoneCtrl = TextEditingController();
+  final passwordctrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final workerService = Get.find<WorkerController>();
+    final workerController = Get.find<WorkerController>();
 
     return AlertDialog(
       title: const Text('إضافة مشغل جديد'),
@@ -36,6 +38,15 @@ class AddWorkerDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
+
+            TextField(
+              controller: passwordctrl,
+              decoration: const InputDecoration(
+                labelText: 'الرمز السري',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -48,13 +59,15 @@ class AddWorkerDialog extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            final worker = Gen_Worker(
-              name: nameCtrl.text,
-              phone: phoneCtrl.text == "" ? "077" : phoneCtrl.text,
+            final new_worker = MyWorker(
+              generator: -1,
+              password: passwordctrl.text,
+              username: nameCtrl.text,
+              phone: phoneCtrl.text,
             );
             Navigator.pop(context);
 
-            bool success = await workerService.addWorker(worker);
+            bool success = await workerController.addWorker(new_worker);
             DispalySnackbar(success, "إضافة", "المشغل");
           },
           style: ElevatedButton.styleFrom(backgroundColor: Colors.green),

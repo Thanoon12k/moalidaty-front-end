@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty/common_widgets/snackbars.dart';
+import 'package:moalidaty/features/Account/controllers/account_preferences_manager.dart';
 import 'package:moalidaty/constants/global_service_manager.dart';
+import 'package:moalidaty/features/Account/controllers/account_controller.dart';
+import 'package:moalidaty/features/Account/ui/account_info.dart';
 import 'package:moalidaty/features/budgets/ui/budgets_list.dart';
 import 'package:moalidaty/features/reciepts/services/service_recepts.dart';
 import 'package:moalidaty/features/reciepts/ui/list_reciepts.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty/features/subscripers/ui/subscripers_list.dart';
 import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
+import 'package:moalidaty/features/workers/controllers/worker_login_controller.dart';
 import 'package:moalidaty/features/workers/ui/list_workers.dart';
 
 class HomePage extends StatelessWidget {
@@ -27,7 +32,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             children: [
               // Custom Header
-              _buildHeader(),
+              _buildHeader(context),
 
               // Quick Stats Cards
               _buildStatsSection(),
@@ -50,7 +55,11 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final account = Get.find<AccountController>().account;
+
+    final myworker = Get.find<WorkerLoginController>().myworker;
+
     return Container(
       padding: EdgeInsets.all(24),
       child: Column(
@@ -62,14 +71,32 @@ class HomePage extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'إدارة المولدة',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade800,
-                    ),
-                  ),
+                  (account != null)
+                      ? Text(
+                          ' إدارة مولدة ${account.generator_name}',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade800,
+                          ),
+                        )
+                      : (myworker != null)
+                      ? Text(
+                          ' إدارة مولدة ${myworker.generator_name}',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade800,
+                          ),
+                        )
+                      : Text(
+                          ' إدارة مولدة بلا اسم account:$account    worker:$myworker',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade800,
+                          ),
+                        ),
                   SizedBox(height: 4),
                   Text(
                     'نظام إدارة شامل',
@@ -77,21 +104,64 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.replay_outlined,
-                  size: 28,
-                  color: Colors.blue.shade600,
-                ),
-                onPressed: () async {
-                  GlobalServiceManager().refershAllServices();
-                  Get.to(() => HomePage());
+              PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: "account",
+                    child: ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text("ادارة الحساب"),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "refresh",
+                    child: ListTile(
+                      leading: Icon(Icons.refresh_rounded),
+                      title: Text("تحديث"),
+                    ),
+                  ),
+
+                  PopupMenuItem(
+                    value: "show_prefs",
+                    child: ListTile(
+                      leading: Icon(Icons.settings),
+                      title: Text("عرض المخزونات"),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "clear_prefs",
+                    child: ListTile(
+                      leading: Icon(Icons.settings),
+                      title: Text("تنظيف المخزونات "),
+                    ),
+                  ),
+                ],
+                onSelected: (value) async {
+                  switch (value) {
+                    case 'refresh':
+                      GlobalServiceManager().refershAllServices();
+                      Get.reload();
+                      Get.to(() => HomePage());
+                      break;
+                    case 'account':
+                      Get.to(() => AccountInfoPage());
+
+                      break;
+
+                    case 'show_prefs':
+                      final success = await AccountPreferencesManager()
+                          .dispalyData();
+                      DispalySnackbar(success, "عرض", "المخزونات");
+
+                      break;
+                    case 'clear_prefs':
+                      final success = await AccountPreferencesManager()
+                          .clearAllData();
+                      DispalySnackbar(success, "مسح", "المخزونات");
+
+                      break;
+                  }
                 },
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.blue.shade100,
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(16),
-                ),
               ),
             ],
           ),

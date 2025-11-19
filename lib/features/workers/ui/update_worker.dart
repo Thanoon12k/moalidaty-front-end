@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty/common_widgets/snackbars.dart';
-import 'package:moalidaty/features/workers/models/model.dart';
+
 import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
+import 'package:moalidaty/features/workers/models/workers_model.dart';
 
 class UpdateWorkerDialog extends StatefulWidget {
-  final Gen_Worker worker;
+  final MyWorker worker;
   const UpdateWorkerDialog({super.key, required this.worker});
 
   @override
@@ -15,19 +16,21 @@ class UpdateWorkerDialog extends StatefulWidget {
 class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
   late TextEditingController nameCtrl;
   late TextEditingController phoneCtrl;
+  late TextEditingController passwordctrl;
 
   @override
   void initState() {
     super.initState();
-    nameCtrl = TextEditingController(text: widget.worker.name);
-    phoneCtrl = TextEditingController(text: widget.worker.phone ?? '');
+    nameCtrl = TextEditingController(text: widget.worker.username);
+    phoneCtrl = TextEditingController(text: widget.worker.phone);
+    passwordctrl = TextEditingController(text: widget.worker.password);
   }
 
   @override
   void dispose() {
     nameCtrl.dispose();
     phoneCtrl.dispose();
-
+    passwordctrl.dispose();
     super.dispose();
   }
 
@@ -62,6 +65,14 @@ class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
               ),
             ),
             const SizedBox(height: 12),
+            TextField(
+              controller: passwordctrl,
+              decoration: const InputDecoration(
+                labelText: 'الرمز السري',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -74,9 +85,12 @@ class _UpdateWorkerDialogState extends State<UpdateWorkerDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            final updatedWorker = Gen_Worker(
+            final updatedWorker = MyWorker(
               id: widget.worker.id,
-              name: nameCtrl.text,
+
+              generator: widget.worker.generator,
+              password: passwordctrl.text,
+              username: nameCtrl.text,
               phone: phoneCtrl.text,
             );
             Navigator.pop(context);

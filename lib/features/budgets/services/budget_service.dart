@@ -41,7 +41,7 @@ class BudgetService extends GetxService {
       filtered_budgets.assignAll(BudgetList);
     } else {
       final results = BudgetList.where((budget) {
-        return budget.year_month.toLowerCase().contains(query.toLowerCase()) ||
+        return budget.budget_uuid.toLowerCase().contains(query.toLowerCase()) ||
             budget.year.toString().contains(query) ||
             budget.month.toString().contains(query) ||
             budget.amber_price.toString().contains(query);
@@ -278,7 +278,7 @@ class BudgetService extends GetxService {
   }
 
   Budget? getBudgetByYearMonth(String yearMonth) {
-    return BudgetList.firstWhere((b) => b.year_month == yearMonth);
+    return BudgetList.firstWhere((b) => b.budget_uuid == yearMonth);
   }
 
   List<Budget> getBudgetsByYear(int year) {

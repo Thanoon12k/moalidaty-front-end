@@ -129,21 +129,21 @@ class DisplayReceiptDialog extends StatelessWidget {
                     icon: const Icon(Icons.share),
                     label: const Text('مشاركة'),
                     onPressed: () {
-                      // TODO: Implement sharing
+                    
                     },
                   ),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.print),
                     label: const Text('طباعة'),
                     onPressed: () {
-                      // TODO: Implement print functionality
+                     
                     },
                   ),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.save_alt),
                     label: const Text('حفظ'),
                     onPressed: () {
-                      // TODO: Implement save to device
+                    
                     },
                   ),
                 ],

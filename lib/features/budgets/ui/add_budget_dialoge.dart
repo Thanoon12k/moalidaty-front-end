@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/features/budgets/models/budgets_model.dart';
 import 'package:moalidaty/features/budgets/services/budget_service.dart';
 
@@ -94,10 +96,11 @@ class AddBudgetDialoge extends StatelessWidget {
             // هنا يمكنك إضافة منطق حفظ الميزانية الجديدة
             // Navigator.pop(context);
             final newBudget = Budget(
+              generator: -1,
               amber_price: double.tryParse(_price_per_ampere.text)!,
               year: _selected_year,
               month: _selected_month,
-              year_month: "$_selected_year-$_selected_month",
+              budget_uuid: "$_selected_year-$_selected_month",
               paid_subs: [],
               unpaid_subs: [],
             );

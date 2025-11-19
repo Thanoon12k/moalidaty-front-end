@@ -9,8 +9,8 @@ import 'package:moalidaty/features/reciepts/models/receipt_model.dart';
 import 'package:moalidaty/features/reciepts/services/service_recepts.dart';
 import 'package:moalidaty/features/subscripers/models/model.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
-import 'package:moalidaty/features/workers/models/model.dart';
 import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
+import 'package:moalidaty/features/workers/models/workers_model.dart';
 
 class DeleteYesNoBox extends StatelessWidget {
   final dynamic instance;
@@ -19,7 +19,7 @@ class DeleteYesNoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = instance is Gen_Worker
+    final title = instance is MyWorker
         ? 'المشغل'
         : instance is Subscriper
         ? 'المشترك'
@@ -79,9 +79,9 @@ class DeleteYesNoBox extends StatelessWidget {
                     onPressed: () async {
                       bool success = false;
 
-                      if (instance is Gen_Worker) {
+                      if (instance is MyWorker) {
                         success = await Get.find<WorkerController>()
-                            .removeWorker(instance);
+                            .removeWorker(instance.id);
                       } else if (instance is Subscriper) {
                         success = await Get.find<SubscribersService>()
                             .removeSubscriper(instance);

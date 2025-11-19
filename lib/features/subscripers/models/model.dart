@@ -1,7 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:moalidaty/constants/global_constants.dart';
+
 class Subscriper {
   int id;
+  int generator;
   String name;
   String circuit_number;
   int amber;
@@ -10,6 +13,7 @@ class Subscriper {
 
   Subscriper({
     this.id = 0,
+    required this.generator,
     required this.name,
     required this.amber,
     this.circuit_number = "0",
@@ -23,6 +27,7 @@ class Subscriper {
   factory Subscriper.fromJson(Map<String, dynamic> json) {
     final subscriber = Subscriper(
       id: json["id"] ?? 0,
+      generator: json['generator'],
       name: json["name"] ?? "",
       amber: json["Ambers"] ?? 0,
       circuit_number: json["circuit_number"] ?? "0",
@@ -41,6 +46,8 @@ class Subscriper {
 
   Map<String, dynamic> toJson() => {
     'id': id,
+'generator':generator
+    ,
     'name': name,
     'Ambers': amber,
     'circuit_number': circuit_number,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty/common_widgets/delete_dialoge.dart';
-import 'package:moalidaty/features/workers/models/model.dart';
+import 'package:moalidaty/features/workers/models/workers_model.dart';
 import 'package:moalidaty/features/workers/ui/add_worker.dart';
 import 'package:moalidaty/features/workers/ui/update_worker.dart';
 
@@ -114,7 +114,7 @@ Widget buildHeaderStats(int count) {
   );
 }
 
-Widget buildWorkerCard(BuildContext context, Gen_Worker worker, int index) {
+Widget buildWorkerCard(BuildContext context, MyWorker worker, int index) {
   return Container(
     margin: EdgeInsets.only(bottom: 12),
     decoration: BoxDecoration(
@@ -139,7 +139,7 @@ Widget buildWorkerCard(BuildContext context, Gen_Worker worker, int index) {
           padding: EdgeInsets.all(16),
           child: Row(
             children: [
-              buildWorkerAvatar(worker.name, index),
+              buildWorkerAvatar(worker.username, index),
               SizedBox(width: 16),
               Expanded(child: buildWorkerInfo(worker)),
               buildActionButtons(context, worker),
@@ -176,12 +176,12 @@ Widget buildWorkerAvatar(String name, int index) {
   );
 }
 
-Widget buildWorkerInfo(Gen_Worker worker) {
+Widget buildWorkerInfo(MyWorker worker) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        worker.name,
+        worker.username,
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -189,33 +189,39 @@ Widget buildWorkerInfo(Gen_Worker worker) {
         ),
       ),
       SizedBox(height: 6),
-      if (worker.phone != null)
-        Row(
-          children: [
-            Icon(Icons.phone, size: 16, color: Colors.green[600]),
-            SizedBox(width: 6),
-            Text(
-              worker.phone!,
-              style: TextStyle(fontSize: 14, color: Colors.green[600]),
-            ),
-          ],
-        ),
+
+      Row(
+        children: [
+          Icon(Icons.phone, size: 16, color: Colors.green[600]),
+          SizedBox(width: 6),
+          Text(
+            worker.phone,
+            style: TextStyle(fontSize: 14, color: Colors.green[600]),
+          ),
+        ],
+      ),
       SizedBox(height: 4),
       Row(
         children: [
           Icon(Icons.calendar_today, size: 16, color: Colors.blue[600]),
           SizedBox(width: 6),
-          Text(
-            formatDate(worker.date_created!),
-            style: TextStyle(fontSize: 14, color: Colors.blue[600]),
-          ),
+          if (worker.date_created != null)
+            Text(
+              formatDate(worker.date_created!),
+              style: TextStyle(fontSize: 14, color: Colors.blue[600]),
+            )
+          else
+            Text(
+              ("لا يوجد تاريخ"),
+              style: TextStyle(fontSize: 14, color: Colors.blue[600]),
+            ),
         ],
       ),
     ],
   );
 }
 
-Widget buildActionButtons(BuildContext context, Gen_Worker worker) {
+Widget buildActionButtons(BuildContext context, MyWorker worker) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
@@ -256,7 +262,7 @@ Widget buildActionButtons(BuildContext context, Gen_Worker worker) {
   );
 }
 
-void _showWorkerDetails(BuildContext context, Gen_Worker worker) {
+void _showWorkerDetails(BuildContext context, MyWorker worker) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -291,8 +297,8 @@ void _showWorkerDetails(BuildContext context, Gen_Worker worker) {
             ),
           ),
           SizedBox(height: 24),
-          buildDetailRow('الاسم', worker.name, Icons.person),
-          buildDetailRow('الهاتف', worker.phone ?? 'غير محدد', Icons.phone),
+          buildDetailRow('الاسم', worker.username, Icons.person),
+          buildDetailRow('الهاتف', worker.phone, Icons.phone),
           buildDetailRow(
             'تاريخ بدء العمل',
             formatDate(worker.date_created!),

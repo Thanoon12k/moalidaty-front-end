@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/features/budgets/services/budget_service.dart';
 import 'package:moalidaty/features/reciepts/models/receipt_model.dart';
 import 'package:moalidaty/features/reciepts/services/service_recepts.dart';
@@ -9,9 +10,9 @@ import 'package:moalidaty/features/reciepts/ui/list_reciepts.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
 import 'package:moalidaty/features/subscripers/models/model.dart';
 import 'package:moalidaty/features/budgets/models/budgets_model.dart';
-import 'package:moalidaty/features/workers/models/model.dart';
 import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:moalidaty/features/workers/models/workers_model.dart';
 
 class AddReceiptDialoge extends StatefulWidget {
   final Subscriper? deisinatedSubscriper;
@@ -32,14 +33,14 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
   final receiptService = Get.find<ReceiptServices>();
 
   late List<Subscriper> subscribers;
-  late List<Gen_Worker> workers;
+  late List<MyWorker> workers;
   late List<int> years;
   late List<int> months;
   late List<Budget> budgets;
   XFile? selectedImage;
 
   Subscriper? selectedSubscriber;
-  Gen_Worker? selectedWorker;
+  MyWorker? selectedWorker;
   int selectedYear = DateTime.now().year;
   int selectedMonth = DateTime.now().month;
 
@@ -192,6 +193,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
                     onPressed: () {
                       receiptService.addReciept(
                         Reciept(
+                          generator: selectedWorker!.generator,
                           subscriber: selectedSubscriber!.id,
                           worker: selectedWorker?.id,
                           year: selectedYear,
@@ -306,14 +308,14 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
   }
 
   Widget _dropdownWorker() {
-    return DropdownButtonFormField<Gen_Worker>(
+    return DropdownButtonFormField<MyWorker>(
       initialValue: selectedWorker ?? workers.first,
       decoration: const InputDecoration(
         labelText: 'اختر المشغل',
         border: OutlineInputBorder(),
       ),
       items: workers.map((worker) {
-        return DropdownMenuItem(value: worker, child: Text(worker.name));
+        return DropdownMenuItem(value: worker, child: Text(worker.username));
       }).toList(),
       onChanged: (val) {
         setState(() {

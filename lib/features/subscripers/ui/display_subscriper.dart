@@ -10,8 +10,7 @@ void displaySubscriperDialoge(
   SubscribersService subsService,
   Subscriper sub,
 ) {
-  final unpaidBudgets =
-      subsService.GetUnpaidsBudgetsForSubscriper(sub.id);
+  final unpaidBudgets = subsService.GetUnpaidsBudgetsForSubscriper(sub.id);
 
   showModalBottomSheet(
     context: context,
@@ -76,7 +75,7 @@ void displaySubscriperDialoge(
 
               ...unpaidBudgets.map((budget) {
                 final monthName =
-                    budget.year_month; // assuming this is a string
+                    budget.budget_uuid; // assuming this is a string
                 final amount = sub.amber * budget.amber_price;
 
                 return Container(
@@ -99,7 +98,7 @@ void displaySubscriperDialoge(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  budget.year_month,
+                                  budget.budget_uuid,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,

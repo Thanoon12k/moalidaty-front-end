@@ -1,12 +1,16 @@
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/features/subscripers/models/model.dart';
+
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
-import 'package:moalidaty/features/workers/models/model.dart';
+
 import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
+import 'package:moalidaty/features/workers/models/workers_model.dart';
 
 class Reciept {
   final int? id;
+  final int generator;
   final String? yearMonthSubscriberId;
   final int year;
   final int month;
@@ -19,10 +23,11 @@ class Reciept {
   final int subscriber;
   final int? worker;
   Subscriper? subscriperObj;
-  Gen_Worker? workerObj;
+  MyWorker? workerObj;
 
   Reciept({
     this.id,
+    required this.generator,
     this.yearMonthSubscriberId,
     required this.year,
     required this.month,
@@ -53,11 +58,12 @@ class Reciept {
 
   String get subscriperCircuitNummber =>
       subscriperObj?.circuit_number ?? "id-$subscriber";
-  String get workerName => workerObj?.name ?? "no worker -$worker";
+  String get workerName => workerObj?.username ?? "no worker -$worker";
 
   factory Reciept.fromJson(Map<String, dynamic> json) {
     return Reciept(
       id: json['id'] as int?,
+      generator: json['generator'],
       yearMonthSubscriberId: json['year_month_subscriber_id'] as String?,
       year: json['year'] as int,
       month: json['month'] as int,
@@ -78,6 +84,7 @@ class Reciept {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'generator': generator,
       'year_month_subscriber_id': yearMonthSubscriberId,
       'year': year,
       'month': month,

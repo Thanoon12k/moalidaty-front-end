@@ -38,7 +38,7 @@ class SubscriperAPI {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(sub.toJson()),
     );
-
+    debugPrint("going to post create sob ${jsonEncode(sub.toJson())}");
     if (response.statusCode == 201) {
       final createdSub = Subscriper.fromJson(json.decode(response.body));
       return createdSub;

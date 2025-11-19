@@ -1,12 +1,14 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:get/get.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/features/subscripers/models/model.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
 
 class Budget {
   final int id;
-  String year_month;
+  final int generator;
+  String budget_uuid;
   int year;
   int month;
   double amber_price;
@@ -16,7 +18,8 @@ class Budget {
 
   Budget({
     this.id = 0,
-    required this.year_month,
+    required this.generator,
+    required this.budget_uuid,
     this.year = 2025,
     this.month = 5,
     required this.amber_price,
@@ -41,7 +44,8 @@ class Budget {
   factory Budget.fromJson(Map<String, dynamic> json) {
     return Budget(
       id: json['id'] ?? 0,
-      year_month: json['year_month'] ?? '',
+      generator: json['generator'],
+      budget_uuid: json['year_month'] ?? '',
       year: json['year'] ?? 0,
       month: json['month'] ?? 0,
       amber_price: double.tryParse(json['amber_price'].toString()) ?? 0.0,
@@ -55,7 +59,8 @@ class Budget {
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'year_month': year_month,
+'generator':generator,
+    'year_month': budget_uuid,
     'year': year,
     'month': month,
     'amber_price': amber_price.toStringAsFixed(2),

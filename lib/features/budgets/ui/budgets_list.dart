@@ -405,7 +405,7 @@ class BudgetsListPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'ميزانية ${budget.year_month}',
+                            'ميزانية ${budget.budget_uuid}',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -909,7 +909,7 @@ class ViewBudgetDetailsDialoge extends StatelessWidget {
           const Icon(Icons.receipt_long, size: 40, color: Colors.green),
           const SizedBox(height: 8),
           Text(
-            'تفاصيل ميزانية ${bu.year_month}',
+            'تفاصيل ميزانية ${bu.budget_uuid}',
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),

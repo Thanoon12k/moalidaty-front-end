@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moalidaty/common_widgets/list_generators.dart';
 import 'package:moalidaty/common_widgets/loading_indicator.dart';
 import 'package:moalidaty/common_widgets/network_error.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/constants/global_service_manager.dart';
-import 'package:moalidaty/features/Managers/ui/login.dart';
-import 'package:moalidaty/features/budgets/services/budget_service.dart';
-import 'package:moalidaty/features/reciepts/services/service_recepts.dart';
-import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
-import 'package:moalidaty/features/workers/controllers/worker_controller.dart';
+import 'package:moalidaty/features/Account/controllers/account_controller.dart';
+import 'package:moalidaty/features/Account/models/account_model.dart';
+import 'package:moalidaty/features/Account/ui/account_login.dart';
+import 'package:moalidaty/features/workers/controllers/worker_login_controller.dart';
+import 'package:moalidaty/features/workers/models/workers_model.dart';
+
 import 'package:moalidaty/home.dart';
 import 'package:moalidaty/routes/routes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const AppRoot());
-
 }
 
 class AppRoot extends StatelessWidget {
@@ -37,21 +36,20 @@ class AppRoot extends StatelessWidget {
       ],
       theme: ThemeData(fontFamily: 'Cairo'),
       textDirection: TextDirection.rtl,
-      home: const StartupScreen(),
+      home: const LoadingScreen(),
       getPages: Routes.pages,
       initialRoute: Routes.home,
     );
   }
 }
 
-class StartupScreen extends StatelessWidget {
-  const StartupScreen({super.key});
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return LoginPage(); // TODO remove this  lineafter finish development
     return FutureBuilder(
-      future: GlobalServiceManager().initAllServices().timeout(const Duration(seconds: 10)),
+      future: GlobalServiceManager().getUserFromPreference(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -59,12 +57,15 @@ class StartupScreen extends StatelessWidget {
           );
         } else if (snapshot.hasError) {
           return ErrorDisplayWidget(error: snapshot.error);
+        } else if (snapshot.data == null) {
+       
+          return AccountLoginPage();
+        } else if (snapshot.data != null) {
+          return HomePage();
         } else {
-          return const HomePage();
+          return Text("unexpected return type from preference");
         }
       },
     );
   }
 }
-
-

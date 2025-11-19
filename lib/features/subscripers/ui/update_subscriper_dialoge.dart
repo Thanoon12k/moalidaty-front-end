@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/features/subscripers/models/model.dart';
 import 'package:moalidaty/features/subscripers/services/service_subscripers.dart';
 
@@ -96,6 +97,7 @@ class _UpdateSubscriperDialogeState extends State<UpdateSubscriperDialoge> {
         ElevatedButton(
           onPressed: () {
             final Subscriper editedSub = Subscriper(
+              generator: -1,
               id: widget.sub.id,
               name: namectrl.text,
               amber: int.parse(amberctrl.text),
