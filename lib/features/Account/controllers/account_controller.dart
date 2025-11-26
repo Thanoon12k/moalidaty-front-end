@@ -19,13 +19,13 @@ class AccountController extends GetxController {
   @override
   void onClose() {
     _formKey = null;
-    formKey.currentState!.dispose();
+    // formKey.currentState!.dispose();
     super.onClose();
   }
 
   @override
   Future<void> onInit() async {
-    account = await AccountPreferencesManager().getUserAccount();
+    account = GlobalConstants.manager;
     if (account != null) {
       generator_name.value = account!.generator_name;
       debugPrint(" Logged in user found (${account!.username}) ");
@@ -73,9 +73,8 @@ class AccountController extends GetxController {
       GlobalConstants.accountID = account!.id!;
       GlobalConstants.GeneratorName = account!.generator_name;
       return true;
-    } 
-      return false;
-    
+    }
+    return false;
   }
 
   Future<Account?> loginUser() async {

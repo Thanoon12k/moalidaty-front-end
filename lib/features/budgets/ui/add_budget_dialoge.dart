@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty/constants/global_constants.dart';
@@ -96,7 +95,7 @@ class AddBudgetDialoge extends StatelessWidget {
             // هنا يمكنك إضافة منطق حفظ الميزانية الجديدة
             // Navigator.pop(context);
             final newBudget = Budget(
-              generator: -1,
+              generator: GlobalConstants.accountID!,
               amber_price: double.tryParse(_price_per_ampere.text)!,
               year: _selected_year,
               month: _selected_month,

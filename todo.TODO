@@ -15,10 +15,13 @@
 // TODO: receipt image Implement save to device
 // TODO: receipt image Implement print functionality
 // TODO: receipt image Implement sharing functionality
+// TODO : add account section for users
+// TODO  : add generator id field to needed requests
 
 
 
-// DONE :  add (Login) selection windows
-// DONE : add account section for users
-// DONE  : add generator id field to needed requests
+
+
+
+// DONE :  add (Login)  windows
 

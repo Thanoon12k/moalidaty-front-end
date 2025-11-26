@@ -120,7 +120,7 @@ class ErrorDisplayWidget extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          Get.offAll(() => const LoadingScreen());
+                          Get.offAll(() => const SplashScreen());
                         },
                         icon: Icon(Icons.refresh),
                         label: Text(

@@ -8,6 +8,7 @@ import 'package:moalidaty/features/Account/ui/account_login.dart';
 import 'package:moalidaty/features/workers/controllers/worker_login_controller.dart';
 import 'package:moalidaty/features/workers/models/workers_model.dart';
 import 'package:moalidaty/home.dart';
+import 'package:moalidaty/routes/routes.dart';
 
 class WorkerLoginPage extends StatelessWidget {
   final WorkerLoginController controller = Get.find<WorkerLoginController>();
@@ -89,12 +90,14 @@ class WorkerLoginPage extends StatelessWidget {
                           success = await controller.saveWorkertoPreference();
                         }
                         if (success) {
-                          debugPrint(
-                            'the worker with name $logged_worker in generator  ${logged_worker!.generator_name} success in loggin and saved to preference',
+                          Get.find<GlobalServiceManager>().setWorkeConstants(
+                            logged_worker!,
                           );
-                          await GlobalServiceManager().initAllServices();
+                          Get.offAllNamed(Routes.home);
 
-                          Get.to(() => HomePage());
+                          debugPrint(
+                            'the worker with name $logged_worker in generator  ${logged_worker.generator_name} success in loggin and saved to preference',
+                          );
                         }
 
                         DispalySnackbar(success, "تسجيل الدخول", "المولدة");

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty/common_widgets/appbar.dart';
@@ -7,6 +9,7 @@ import 'package:moalidaty/features/Account/controllers/account_controller.dart';
 import 'package:moalidaty/features/Account/models/account_model.dart';
 import 'package:moalidaty/features/workers/ui/worker_login.dart';
 import 'package:moalidaty/home.dart';
+import 'package:moalidaty/routes/routes.dart';
 
 class AccountLoginPage extends StatelessWidget {
   final AccountController controller = Get.find<AccountController>();
@@ -101,9 +104,12 @@ class AccountLoginPage extends StatelessWidget {
                           debugPrint(
                             'the manager with name $logged_account in generator  ${logged_account!.generator_name} success in loggin and saved to preference',
                           );
-                          await GlobalServiceManager().initAllServices();
-                          Get.offAll(() => HomePage());
+                          Get.find<GlobalServiceManager>().setManagerConstants(
+                            logged_account,
+                          );
+                          Get.offAllNamed(Routes.home);
                         }
+
                         DispalySnackbar(success, "تسجيل الدخول", "المولدة");
                       },
                       style: ElevatedButton.styleFrom(

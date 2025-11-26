@@ -1,5 +1,5 @@
 class MyWorker {
-  final int? id;
+  final int id;
   final int generator;
   final String? generator_name;
   final String username;
@@ -8,7 +8,7 @@ class MyWorker {
   DateTime? date_created;
 
   MyWorker({
-    this.id,
+    required this.id,
     required this.generator,
     this.generator_name,
     required this.username,

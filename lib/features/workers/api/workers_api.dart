@@ -17,9 +17,7 @@ class WorkerRepository {
           .map((json_worker) => MyWorker.fromJson(json_worker))
           .toList();
     }
-    debugPrint(
-      "fetch workers status(${response.statusCode}) response is : ${response.body}",
-    );
+
     debugPrint(
       "Fetched Workers status: ${response.statusCode} got (${workers_list.length}) items",
     );

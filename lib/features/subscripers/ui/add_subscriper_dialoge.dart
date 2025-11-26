@@ -71,7 +71,7 @@ class AddSubscriberDialoge extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             final Subscriper new_sub = Subscriper(
-              generator: -1,
+              generator: GlobalConstants.accountID!,
               name: namectrl.text,
               amber: int.parse(amberctrl.text),
               circuit_number: circiut_numctrl.text == ""

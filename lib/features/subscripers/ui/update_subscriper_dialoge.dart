@@ -97,7 +97,7 @@ class _UpdateSubscriperDialogeState extends State<UpdateSubscriperDialoge> {
         ElevatedButton(
           onPressed: () {
             final Subscriper editedSub = Subscriper(
-              generator: -1,
+              generator: GlobalConstants.accountID!,
               id: widget.sub.id,
               name: namectrl.text,
               amber: int.parse(amberctrl.text),

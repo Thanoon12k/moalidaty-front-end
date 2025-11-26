@@ -17,6 +17,7 @@ analyzer:
     camel_case_types: ignore
     use_build_context_synchronously: ignore
     must_be_immutable: ignore
+    unused_import: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

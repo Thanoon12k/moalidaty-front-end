@@ -22,7 +22,7 @@ class WorkerLoginController extends GetxController {
   @override
   void onClose() {
     _formKey = null;
-    formKey.currentState!.dispose();
+    // formKey.currentState!.dispose();
 
     super.onClose();
   }

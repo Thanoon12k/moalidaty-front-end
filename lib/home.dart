@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moalidaty/common_widgets/snackbars.dart';
+import 'package:moalidaty/constants/global_constants.dart';
 import 'package:moalidaty/features/Account/controllers/account_preferences_manager.dart';
 import 'package:moalidaty/constants/global_service_manager.dart';
 import 'package:moalidaty/features/Account/controllers/account_controller.dart';
@@ -56,9 +57,9 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final account = Get.find<AccountController>().account;
+    final account = GlobalConstants.manager;
 
-    final myworker = Get.find<WorkerLoginController>().myworker;
+    final myworker = GlobalConstants.worker;
 
     return Container(
       padding: EdgeInsets.all(24),
@@ -139,7 +140,7 @@ class HomePage extends StatelessWidget {
                 onSelected: (value) async {
                   switch (value) {
                     case 'refresh':
-                      GlobalServiceManager().refershAllServices();
+                      GlobalServiceManager().refershApplicationData();
                       Get.reload();
                       Get.to(() => HomePage());
                       break;
@@ -148,18 +149,18 @@ class HomePage extends StatelessWidget {
 
                       break;
 
-                    case 'show_prefs':
-                      final success = await AccountPreferencesManager()
-                          .dispalyData();
-                      DispalySnackbar(success, "عرض", "المخزونات");
+                    // case 'show_prefs':
+                    //   final success = await AccountPreferencesManager()
+                    //       .dispalyData();
+                    //   DispalySnackbar(success, "عرض", "المخزونات");
 
-                      break;
-                    case 'clear_prefs':
-                      final success = await AccountPreferencesManager()
-                          .clearAllData();
-                      DispalySnackbar(success, "مسح", "المخزونات");
+                    //   break;
+                    // case 'clear_prefs':
+                    //   final success = await AccountPreferencesManager()
+                    //       .clearAllData();
+                    //   DispalySnackbar(success, "مسح", "المخزونات");
 
-                      break;
+                    //   break;
                   }
                 },
               ),

@@ -16,91 +16,84 @@ import 'package:moalidaty/features/workers/models/workers_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalServiceManager extends GetxService {
-  final Future<SharedPreferences> _pref = SharedPreferences.getInstance();
+  SharedPreferences get _prefs => Get.find<SharedPreferences>();
+
+ 
 
   Future<dynamic> getUserFromPreference() async {
-    await Future.delayed(
-      const Duration(seconds: 2),
-    ); // add 2s waiting to loading screen
-    final prefs = await _pref;
-    final manager = prefs.getString('user_account');
-    final worker = prefs.getString('worker_account');
+    final manager = _prefs.getString('user_account');
+    final worker = _prefs.getString('worker_account');
     debugPrint('checking user status: manager$manager     worker:$worker');
     if (manager != null) {
       final Account account = Account.fromJson(jsonDecode(manager));
-      GlobalConstants.accountID = account.id!;
-      GlobalConstants.GeneratorName = account.generator_name;
-      GlobalConstants.AccountType = 'manager';
-      await GlobalServiceManager().initAllServices();
+      setManagerConstants(account);
       return account;
     } else if (worker != null) {
       final MyWorker myWorker = MyWorker.fromJson(jsonDecode(worker));
-      GlobalConstants.accountID = myWorker.generator;
-      GlobalConstants.GeneratorName = myWorker.generator_name;
-      GlobalConstants.AccountType = 'worker';
-      await GlobalServiceManager().initAllServices();
+      setWorkeConstants(myWorker);
       return myWorker;
     }
 
     if (manager == null && worker == null) {
       //no user found in ooreference ()
-      Get.put(AccountController());
-      Get.put(WorkerLoginController());
+      _resetGlobalConstants();
       return null;
     }
   }
 
-  Future<dynamic> clearAllPreference() async {
-    final prefs = await _pref;
-    prefs.clear();
+  Future<dynamic> clearUserSeasion() async {
+    _prefs.clear();
+    _resetGlobalConstants();
+    _disposeCoreServices();
   }
 
-  Future<void> initAllServices() async {
-    // Remove existing controllers first
-    if (Get.isRegistered<BudgetService>()) Get.delete<BudgetService>();
-    if (Get.isRegistered<SubscribersService>())
-      Get.delete<SubscribersService>();
-    if (Get.isRegistered<WorkerController>()) Get.delete<WorkerController>();
-    if (Get.isRegistered<ReceiptServices>()) Get.delete<ReceiptServices>();
-    if (Get.isRegistered<AccountController>()) Get.delete<AccountController>();
-    if (Get.isRegistered<WorkerLoginController>())
-      Get.delete<WorkerLoginController>();
-
-    // Now put them fresh
-    Get.put(BudgetService());
-    Get.put(SubscribersService());
-    Get.put(WorkerController());
-    Get.put(ReceiptServices());
-    Get.put(AccountController());
-    Get.put(WorkerLoginController());
-
-    // Initialize
-    await Get.find<BudgetService>().onInit();
-    await Get.find<SubscribersService>().onInit();
-    await Get.find<WorkerController>().onInit();
-    await Get.find<ReceiptServices>().onInit();
-    await Get.find<AccountController>().onInit();
+  void setManagerConstants(Account account) {
+    GlobalConstants.manager = account;
+    GlobalConstants.accountID = account.id;
+    GlobalConstants.GeneratorName = account.generator_name;
+    GlobalConstants.AccountType = 'manager';
   }
 
-  Future<void> refershAllServices() async {
-    await Get.find<BudgetService>().getBudgets();
-    await Get.find<WorkerController>().getWorkers();
-    await Get.find<SubscribersService>().getSubscripers();
-    await Get.find<ReceiptServices>().getReciepts();
-    await Get.find<AccountController>().onInit();
+  void setWorkeConstants(MyWorker worker) {
+    GlobalConstants.worker = worker;
+    GlobalConstants.accountID = worker.generator;
+    GlobalConstants.GeneratorName = worker.generator_name;
+    GlobalConstants.AccountType = 'worker';
   }
 
-  Future<void> resetServices({
-    BudgetService? ser1,
-    WorkerController? ser2,
-    SubscribersService? ser3,
-    ReceiptServices? ser4,
-    AccountController? ser5,
-  }) async {
-    if (ser1 != null) await ser1.getBudgets();
-    if (ser2 != null) await ser2.getWorkers();
-    if (ser3 != null) await ser3.getSubscripers();
-    if (ser4 != null) await ser4.getReciepts();
-    if (ser5 != null) await ser5.onInit();
+  void _resetGlobalConstants() {
+    GlobalConstants.worker = null;
+    GlobalConstants.manager = null;
+    GlobalConstants.AccountType = null;
+    GlobalConstants.GeneratorName = null;
+    GlobalConstants.accountID = null;
+  }
+
+  Future<void> _disposeCoreServices() async {
+    _deleteIfExists<ReceiptServices>();
+    _deleteIfExists<SubscribersService>();
+    _deleteIfExists<BudgetService>();
+    _deleteIfExists<WorkerController>();
+  }
+
+  Future<void> refershApplicationData() async {
+    if (Get.isRegistered<BudgetService>()) {
+      await Get.find<BudgetService>().getBudgets();
+    }
+    if (Get.isRegistered<SubscribersService>()) {
+      await Get.find<SubscribersService>().getSubscripers();
+    }
+    if (Get.isRegistered<WorkerController>()) {
+      await Get.find<WorkerController>().getWorkers();
+    }
+    if (Get.isRegistered<ReceiptServices>()) {
+      await Get.find<ReceiptServices>().getReciepts();
+    }
+  }
+
+  void _deleteIfExists<T>() {
+    if (Get.isRegistered<T>()) {
+      Get.delete<T>(force: true);
+    }
   }
 }

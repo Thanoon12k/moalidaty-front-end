@@ -60,7 +60,8 @@ class AddWorkerDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             final new_worker = MyWorker(
-              generator: -1,
+              id: -1,
+              generator: GlobalConstants.accountID!,
               password: passwordctrl.text,
               username: nameCtrl.text,
               phone: phoneCtrl.text,
