@@ -169,7 +169,7 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
                 children: [
                   ElevatedButton.icon(
                     icon: const Icon(Icons.arrow_back),
-                    label: const Text(' رجوع '),
+                    label: const Text('رجوع'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey,
                       foregroundColor: Colors.white,
@@ -180,10 +180,10 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
                       Navigator.of(context).pop();
                     },
                   ),
-                  SizedBox(width: 16),
+                  SizedBox(width: 10),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.check, size: 20),
-                    label: const Text(' تسجيل الإيصال '),
+                    label: const Text('تسجيل الإيصال'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
@@ -191,19 +191,24 @@ class _AddReceiptDialogeState extends State<AddReceiptDialoge> {
                       textStyle: const TextStyle(fontSize: 18),
                     ),
                     onPressed: () {
-                      receiptService.addReciept(
-                        Reciept(
-                          generator: selectedWorker!.generator,
-                          subscriber: selectedSubscriber!.id,
-                          worker: selectedWorker?.id,
-                          year: selectedYear,
-                          month: selectedMonth,
-                          amberPrice: amberPrice,
-                          amountPaid: totalPaid,
-                          dateReceived: DateTime.now(),
-                          imageFile: selectedImage,
-                        ),
-                      );
+                      try {
+                        receiptService.addReciept(
+                          Reciept(
+                            generator: GlobalConstants.accountID!,
+                            subscriber: selectedSubscriber!.id,
+                            worker: selectedWorker?.id,
+                            year: selectedYear,
+                            month: selectedMonth,
+                            amberPrice: amberPrice,
+                            amountPaid: totalPaid,
+                            dateReceived: DateTime.now(),
+                            imageFile: selectedImage,
+                          ),
+                        );
+                      } catch (e) {
+                        debugPrint("catch here jow  $selectedWorker");
+                      }
+
                       Navigator.of(context).pop();
                       Get.to(() => RecieptsListPage());
                     },

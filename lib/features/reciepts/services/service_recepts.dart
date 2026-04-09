@@ -33,7 +33,7 @@ class ReceiptServices extends GetxService {
   }
 
   Future<void> addReciept(Reciept reciept) async {
-    final createdReceipt = await recieptApi.createReciept(reciept);
+    final createdReceipt = await recieptApi.postNewReciept(reciept);
     receiptsList.add(createdReceipt);
   }
 

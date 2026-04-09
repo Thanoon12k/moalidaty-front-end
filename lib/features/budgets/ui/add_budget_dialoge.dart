@@ -59,7 +59,9 @@ class AddBudgetDialoge extends StatelessWidget {
             controller: _price_per_ampere,
             decoration: const InputDecoration(
               labelText: 'سعر الأمبير',
+
               border: OutlineInputBorder(),
+              hintText: "دينار عراقي",
             ),
             keyboardType: TextInputType.numberWithOptions(decimal: true),
           ),
@@ -82,9 +84,13 @@ class AddBudgetDialoge extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         ElevatedButton.icon(
-          label: const Text('     حفظ      '),
+          label: const Text('  حفظ '),
 
-          icon: const Icon(Icons.check, size: 20),
+          icon: const Icon(
+            Icons.check,
+            size: 20,
+            textDirection: TextDirection.rtl,
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
             foregroundColor: Colors.white,

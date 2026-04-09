@@ -1,9 +1,14 @@
+import 'dart:ffi';
+
 import 'package:get/get.dart';
 
 import 'package:moalidaty/features/workers/api/workers_api.dart';
 import 'package:moalidaty/features/workers/models/workers_model.dart';
 
 class WorkerController extends GetxService {
+  final bool isOffLineMode = false;
+  final RxList<MyWorker> offLineUIList = <MyWorker>[].obs;
+
   final RxList<MyWorker> workersList = <MyWorker>[].obs;
   final RxBool showSearch = false.obs;
   final RxString searchQuery = ''.obs;
@@ -35,6 +40,10 @@ class WorkerController extends GetxService {
   }
 
   Future<bool> addWorker(MyWorker worker) async {
+    if (isOffLineMode) {
+      offLineUIList.add(worker);
+      return true;
+    }
     if (await api.apiCreateWorker(worker)) {
       workersList.add(worker);
       return true;
@@ -43,6 +52,10 @@ class WorkerController extends GetxService {
   }
 
   Future<bool> updateWorker(MyWorker worker) async {
+    if (isOffLineMode) {
+      // offlineUI.add(classs:MyWorker,operation:'update',object:worker)
+      return true;
+    }
     if (await api.apiUpdateWorker(worker)) {
       final index = workersList.indexWhere((w) => w.id == worker.id);
       workersList[index] = worker;
@@ -52,6 +65,11 @@ class WorkerController extends GetxService {
   }
 
   Future<bool> removeWorker(int id) async {
+    if (isOffLineMode) {
+      // offlineUI.add(classs:MyWorker,operation:'remove',object:worker)
+      // return true
+    }
+
     if (await api.apiDestroyWorker(id)) {
       workersList.removeWhere((w) => w.id == id);
       return true;

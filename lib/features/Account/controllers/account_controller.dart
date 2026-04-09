@@ -6,6 +6,8 @@ import 'package:moalidaty/features/Account/api/account_api.dart';
 import 'package:moalidaty/features/Account/models/account_model.dart';
 
 class AccountController extends GetxController {
+  final RxBool isOffLineMode = false.obs;
+
   Account? account;
   var identifier = ''.obs;
   RxString generator_name = "".obs;

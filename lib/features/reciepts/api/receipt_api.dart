@@ -28,11 +28,12 @@ class RecieptAPI {
     return recieptList;
   }
 
-  Future<Reciept> createReciept(Reciept reciept) async {
+  Future<Reciept> postNewReciept(Reciept reciept) async {
     final uri = Uri.parse('$baseUrl/receipts/');
     final request = http.MultipartRequest('POST', uri);
 
     // Add form fields
+    request.fields['generator'] = reciept.generator.toString();
     request.fields['year'] = reciept.year.toString();
     request.fields['month'] = reciept.month.toString();
     request.fields['amber_price'] = reciept.amberPrice.toStringAsFixed(2);

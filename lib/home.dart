@@ -32,11 +32,11 @@ class HomePage extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              // Custom Header
+              // Custom  text Page Header
               _buildHeader(context),
 
-              // Quick Stats Cards
-              _buildStatsSection(),
+              // Quick Stats Cards upper banner cards
+              Obx(() => _buildStatsSection()),
 
               // Main Menu Grid
               Expanded(child: _buildMenuGrid()),
@@ -170,6 +170,7 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+  // the upper banner section
 
   Widget _buildStatsSection() {
     return Container(

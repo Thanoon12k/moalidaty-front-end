@@ -66,7 +66,7 @@ class WorkerLoginController extends GetxController {
     if (await WorkerPreferencesManager().saveWorkerAccount(myworker!)) {
       debugPrint('welcome worker it is your app  ${myworker!.username} ');
       GlobalConstants.AccountType = "worker";
-      GlobalConstants.accountID = myworker!.id!;
+      GlobalConstants.accountID = myworker!.id;
       GlobalConstants.GeneratorName = myworker!.generator_name;
       return true;
     }
