@@ -1,34 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:moalidaty/common_widgets/loading_indicator.dart';
-import 'package:moalidaty/common_widgets/network_error.dart';
-import 'package:moalidaty/constants/global_service_manager.dart';
-import 'package:moalidaty/features/Account/ui/account_login.dart';
-
-import 'package:moalidaty/home.dart';
-import 'package:moalidaty/routes/routes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'core/storage/secure_storage.dart';
+import 'core/network/api_client.dart';
+import 'core/theme.dart';
+import 'features/auth/controllers/auth_controller.dart';
+import 'features/subscribers/controllers/subscriber_controller.dart';
+import 'features/receipts/controllers/receipt_controller.dart';
+import 'features/budgets/controllers/budget_controller.dart';
+import 'features/workers/controllers/worker_controller.dart';
+import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Get.putAsync(() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs;
-  });
-  Get.put(GlobalServiceManager());
-  runApp(const MainApp());
+  // Force portrait orientation
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  // ── Core services (order matters) ──
+  Get.put(SecureStorage());
+  Get.put(ApiClient());
+
+  // ── Feature controllers — registered globally so Get.find never throws ──
+  // Using fenix:true means GetX auto-recreates them if the page is disposed
+  Get.put(AuthController(), permanent: true);
+  Get.lazyPut<SubscriberController>(() => SubscriberController(), fenix: true);
+  Get.lazyPut<ReceiptController>(() => ReceiptController(), fenix: true);
+  Get.lazyPut<BudgetController>(() => BudgetController(), fenix: true);
+  Get.lazyPut<WorkerController>(() => WorkerController(), fenix: true);
+
+  runApp(const MoalidatnaApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MoalidatnaApp extends StatelessWidget {
+  const MoalidatnaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Moalidaty',
+      title: 'مولداتنا',
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
       locale: const Locale('ar', 'IQ'),
       supportedLocales: const [Locale('ar', 'IQ')],
       localizationsDelegates: const [
@@ -36,43 +53,9 @@ class MainApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: ThemeData(fontFamily: 'Cairo'),
       textDirection: TextDirection.rtl,
-      getPages: Routes.pages,
-      initialRoute: Routes.splashScreen,
+      initialRoute: AppRoutes.splash,
+      getPages: AppRoutes.pages,
     );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _checkAuthStatus();
-  }
-
-  Future<void> _checkAuthStatus() async {
-    // ignore: no_leading_underscores_for_local_identifiers
-    final _global_manager = Get.find<GlobalServiceManager>();
-    final user = await _global_manager.getUserFromPreference();
-    await Future.delayed(const Duration(seconds: 5));
-    if (user != null) {
-      await _global_manager.refershApplicationData();
-      Get.offNamed(Routes.home);
-    } else {
-      Get.offNamed(Routes.login);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: GeneratorLoadingIndicator()));
   }
 }

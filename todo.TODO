@@ -2,11 +2,8 @@
 // INHANCE : try Review the classes and it fields
 // INHANCE : try TEST ALL functions and  apis
 // INHANCE: addd some security layers
-// FEATURE: add extra to pay using QR code
 // FEATURE: add some ai features
-// FEATURE : add ai report for subscriper
-// FEATURE: add protection against butterforce attacks (ma be by limit login attemts)
-// FEATURE: receipt image Implement save to device
+// FEATURE : add plots report for subscriper
 // FEATURE: receipt image Implement print functionality
 // FEATURE: receipt image Implement sharing functionality
 // TODO : add acreceipt problem
