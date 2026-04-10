@@ -11,6 +11,7 @@ import '../subscribers/controllers/subscriber_controller.dart';
 import '../receipts/controllers/receipt_controller.dart';
 import '../budgets/controllers/budget_controller.dart';
 import '../workers/controllers/worker_controller.dart';
+import 'stats_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,26 +28,35 @@ class _HomeScreenState extends State<HomeScreen> {
     ReceiptsScreen(),
     BudgetsScreen(),
     WorkersScreen(),
+    StatsScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final auth = Get.find<AuthController>();
-    final subCtrl = Get.find<SubscriberController>();
-    final recCtrl = Get.find<ReceiptController>();
-    final budCtrl = Get.find<BudgetController>();
-    final worCtrl = Get.find<WorkerController>();
+    final auth     = Get.find<AuthController>();
+    final subCtrl  = Get.find<SubscriberController>();
+    final recCtrl  = Get.find<ReceiptController>();
+    final budCtrl  = Get.find<BudgetController>();
+    final worCtrl  = Get.find<WorkerController>();
 
     return Scaffold(
+      // ── AppBar ──────────────────────────────────────────────────────────
       appBar: AppBar(
         title: Obx(() => Text(
-          'مولدة ${auth.generatorName}',
-          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
+          auth.generatorName.value.isEmpty ? 'مولداتنا' : auth.generatorName.value,
+          style: const TextStyle(
+            fontFamily: 'Cairo',
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         )),
         actions: [
+          // Refresh button
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            tooltip: 'تحديث البيانات',
+            tooltip: 'تحديث',
             onPressed: () {
               subCtrl.load();
               recCtrl.load();
@@ -54,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
               worCtrl.load();
             },
           ),
+          // Menu
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (v) {
@@ -66,7 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 value: 'logout',
                 child: ListTile(
                   leading: Icon(Icons.logout, color: Colors.red),
-                  title: Text('تسجيل الخروج', style: TextStyle(fontFamily: 'Cairo')),
+                  title: Text('تسجيل الخروج',
+                      style: TextStyle(fontFamily: 'Cairo')),
                 ),
               ),
             ],
@@ -74,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      // ── Summary header ─────────────────────────────────────────────────────
+      // ── Body ────────────────────────────────────────────────────────────
       body: Column(
         children: [
           _SummaryBanner(
@@ -92,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      // ── Bottom navigation ─────────────────────────────────────────────────
+      // ── Bottom navigation ────────────────────────────────────────────────
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (i) => setState(() => _selectedIndex = i),
@@ -120,21 +132,28 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedIcon: Icon(Icons.engineering),
             label: 'العمال',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.bar_chart_outlined),
+            selectedIcon: Icon(Icons.bar_chart),
+            label: 'الإحصاء',
+          ),
         ],
       ),
 
       floatingActionButton: _selectedIndex == 1
           ? FloatingActionButton.extended(
-              onPressed: () => Get.find<ReceiptController>().showAddSheet(context),
+              onPressed: () =>
+                  Get.find<ReceiptController>().showAddSheet(context),
               icon: const Icon(Icons.add),
-              label: const Text('إيصال جديد', style: TextStyle(fontFamily: 'Cairo')),
+              label: const Text('إيصال جديد',
+                  style: TextStyle(fontFamily: 'Cairo')),
             )
           : null,
     );
   }
 }
 
-// ─── Summary banner (4 stat chips) ───────────────────────────────────────────
+// ─── Summary banner ───────────────────────────────────────────────────────────
 
 class _SummaryBanner extends StatelessWidget {
   final SubscriberController subCtrl;
@@ -153,13 +172,13 @@ class _SummaryBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: AppTheme.primary,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       child: Obx(() => Row(
         children: [
-          _chip(Icons.people, '${subCtrl.items.length}', 'مشترك'),
-          _chip(Icons.receipt_long, '${recCtrl.items.length}', 'إيصال'),
-          _chip(Icons.account_balance_wallet, '${budCtrl.items.length}', 'شهر'),
-          _chip(Icons.engineering, '${worCtrl.items.length}', 'عامل'),
+          _chip(Icons.people,                  '${subCtrl.items.length}', 'مشترك'),
+          _chip(Icons.receipt_long,            '${recCtrl.items.length}', 'إيصال'),
+          _chip(Icons.account_balance_wallet,  '${budCtrl.items.length}', 'شهر'),
+          _chip(Icons.engineering,             '${worCtrl.items.length}', 'عامل'),
         ],
       )),
     );
@@ -168,15 +187,16 @@ class _SummaryBanner extends StatelessWidget {
   Widget _chip(IconData icon, String value, String label) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white, size: 20),
+            Icon(icon, color: Colors.white, size: 18),
             const SizedBox(height: 2),
             Text(
               value,
@@ -184,7 +204,7 @@ class _SummaryBanner extends StatelessWidget {
                 fontFamily: 'Cairo',
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 15,
               ),
             ),
             Text(
@@ -192,7 +212,7 @@ class _SummaryBanner extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Cairo',
                 color: Colors.white.withOpacity(0.8),
-                fontSize: 11,
+                fontSize: 10,
               ),
             ),
           ],
@@ -202,7 +222,7 @@ class _SummaryBanner extends StatelessWidget {
   }
 }
 
-// ─── Logout confirm dialog ────────────────────────────────────────────────────
+// ─── Logout dialog ────────────────────────────────────────────────────────────
 
 class _LogoutDialog extends StatelessWidget {
   @override
@@ -227,7 +247,8 @@ class _LogoutDialog extends StatelessWidget {
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
           onPressed: () => Get.find<AuthController>().logout(),
-          child: const Text('خروج', style: TextStyle(fontFamily: 'Cairo')),
+          child: const Text('خروج',
+              style: TextStyle(fontFamily: 'Cairo', color: Colors.white)),
         ),
       ],
     );

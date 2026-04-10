@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/theme.dart';
 import '../controllers/subscriber_controller.dart';
 import '../models/subscriber.dart';
+import 'subscriber_detail_screen.dart';
 
 class SubscribersScreen extends StatelessWidget {
   const SubscribersScreen({super.key});
@@ -29,6 +30,9 @@ class SubscribersScreen extends StatelessWidget {
                   itemBuilder: (_, i) => _SubscriberCard(
                     subscriber: ctrl.items[i],
                     onDelete: () => _confirmDelete(context, ctrl, ctrl.items[i]),
+                    onTap: () => Get.to(
+                      () => SubscriberDetailScreen(subscriber: ctrl.items[i]),
+                    ),
                   ),
                 ),
               ),
@@ -67,16 +71,24 @@ class SubscribersScreen extends StatelessWidget {
 class _SubscriberCard extends StatelessWidget {
   final Subscriber subscriber;
   final VoidCallback onDelete;
+  final VoidCallback onTap;
 
-  const _SubscriberCard({required this.subscriber, required this.onDelete});
+  const _SubscriberCard({
+    required this.subscriber,
+    required this.onDelete,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
             // Avatar
             Container(
               width: 48, height: 48,
@@ -110,12 +122,18 @@ class _SubscriberCard extends StatelessWidget {
                   ),
               ],
             )),
-            // Delete
+            // Actions
+            IconButton(
+              icon: const Icon(Icons.qr_code_2, color: AppTheme.primary),
+              onPressed: onTap,
+              tooltip: 'تفاصيل ورمز QR',
+            ),
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: onDelete,
             ),
           ],
+          ),
         ),
       ),
     );

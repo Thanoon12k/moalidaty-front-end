@@ -40,6 +40,15 @@ dependencies:
   # Icons
   cupertino_icons: ^1.0.8
 
+  # Charts
+  fl_chart: ^0.69.0
+
+  # QR Code generation
+  qr_flutter: ^4.1.0
+
+  # QR Code scanner (camera)
+  mobile_scanner: ^5.2.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

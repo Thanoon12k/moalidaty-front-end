@@ -13,10 +13,12 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../../core/network/api_client.dart';
+import '../../../core/theme.dart';
 import '../models/receipt.dart';
 import '../../subscribers/controllers/subscriber_controller.dart';
 import '../../budgets/controllers/budget_controller.dart';
 import '../../workers/controllers/worker_controller.dart';
+import '../ui/qr_scanner_screen.dart';
 
 class ReceiptController extends GetxController {
   final _dio = Get.find<ApiClient>().dio;
@@ -220,7 +222,44 @@ class _AddReceiptSheetState extends State<_AddReceiptSheet> {
             const Text('إضافة إيصال جديد',
                 style: TextStyle(fontFamily:'Cairo',fontSize:20,fontWeight:FontWeight.w700),
                 textAlign: TextAlign.center),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
+
+            // ── QR scan shortcut ───────────────────────────────────
+            OutlinedButton.icon(
+              onPressed: () async {
+                final subId = await Get.to<int>(
+                  () => const QrScannerScreen(),
+                  transition: Transition.downToUp,
+                );
+                if (subId != null && mounted) {
+                  setState(() => _selectedSubscriberId = subId);
+                }
+              },
+              icon: const Icon(Icons.qr_code_scanner),
+              label: const Text('مسح QR لاختيار المشترك',
+                  style: TextStyle(fontFamily: 'Cairo')),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppTheme.primary,
+                side: const BorderSide(color: AppTheme.primary),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Row(children: [
+              Expanded(child: Divider()),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Text('أو اختر يدوياً',
+                    style: TextStyle(
+                        fontFamily: 'Cairo',
+                        color: AppTheme.textMid,
+                        fontSize: 12)),
+              ),
+              Expanded(child: Divider()),
+            ]),
+            const SizedBox(height: 12),
 
             // Subscriber dropdown
             Obx(() => DropdownButtonFormField<int>(

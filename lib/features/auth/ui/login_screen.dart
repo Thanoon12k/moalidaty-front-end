@@ -24,17 +24,12 @@ class _LoginScreenState extends State<LoginScreen>
   final _wPhoneCtrl  = TextEditingController();
   final _wPassCtrl   = TextEditingController();
 
-  // Register fields
-  final _regNameCtrl  = TextEditingController();
-  final _regPhoneCtrl = TextEditingController();
-  final _regPassCtrl  = TextEditingController();
-
   bool _obscurePass = true;
 
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 3, vsync: this);
+    _tabs = TabController(length: 2, vsync: this); // 2 tabs only — no register
   }
 
   @override
@@ -44,9 +39,6 @@ class _LoginScreenState extends State<LoginScreen>
     _passCtrl.dispose();
     _wPhoneCtrl.dispose();
     _wPassCtrl.dispose();
-    _regNameCtrl.dispose();
-    _regPhoneCtrl.dispose();
-    _regPassCtrl.dispose();
     super.dispose();
   }
 
@@ -107,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 child: Column(
                   children: [
-                    // Tab bar
+                    // Tab bar — only Manager and Worker
                     Container(
                       margin: const EdgeInsets.fromLTRB(24, 20, 24, 0),
                       decoration: BoxDecoration(
@@ -126,13 +118,12 @@ class _LoginScreenState extends State<LoginScreen>
                         labelStyle: const TextStyle(
                           fontFamily: 'Cairo',
                           fontWeight: FontWeight.w600,
-                          fontSize: 13,
+                          fontSize: 15,
                         ),
                         dividerColor: Colors.transparent,
                         tabs: const [
                           Tab(text: 'المدير'),
                           Tab(text: 'العامل'),
-                          Tab(text: 'حساب جديد'),
                         ],
                       ),
                     ),
@@ -158,12 +149,6 @@ class _LoginScreenState extends State<LoginScreen>
                                 setState(() => _obscurePass = !_obscurePass),
                             auth: _auth,
                           ),
-                          _RegisterTab(
-                            nameCtrl: _regNameCtrl,
-                            phoneCtrl: _regPhoneCtrl,
-                            passCtrl: _regPassCtrl,
-                            auth: _auth,
-                          ),
                         ],
                       ),
                     ),
@@ -175,6 +160,47 @@ class _LoginScreenState extends State<LoginScreen>
         ),
       ),
     );
+  }
+}
+
+// ─── Shared error + loading button widget ─────────────────────────────────────
+
+class _ErrorBox extends StatelessWidget {
+  final AuthController auth;
+  const _ErrorBox({required this.auth});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (auth.errorMessage.isNotEmpty && auth.isLoading.isFalse) {
+        return Container(
+          margin: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.red.shade50,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.red.shade200),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.red.shade700, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  auth.errorMessage.value,
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    color: Colors.red.shade700,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+      return const SizedBox.shrink();
+    });
   }
 }
 
@@ -202,6 +228,9 @@ class _AccountLoginTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const SizedBox(height: 12),
+          const Icon(Icons.manage_accounts_rounded,
+              size: 48, color: AppTheme.primary),
           const SizedBox(height: 8),
           const Text(
             'تسجيل دخول المدير',
@@ -213,7 +242,7 @@ class _AccountLoginTab extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           const Text(
             'أدخل اسم المولدة وكلمة المرور',
             style: TextStyle(fontFamily: 'Cairo', color: AppTheme.textMid),
@@ -241,48 +270,30 @@ class _AccountLoginTab extends StatelessWidget {
               ),
             ),
           ),
-
-          const SizedBox(height: 8),
-          Obx(() {
-            if (auth.errorMessage.isNotEmpty && auth.isLoading.isFalse) {
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.red.shade200),
-                ),
-                child: Text(
-                  auth.errorMessage.value,
-                  style: TextStyle(
-                    fontFamily: 'Cairo',
-                    color: Colors.red.shade700,
-                    fontSize: 13,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          }),
+          _ErrorBox(auth: auth),
           const SizedBox(height: 24),
-          Obx(() => ElevatedButton(
+          Obx(() => ElevatedButton.icon(
             onPressed: auth.isLoading.value
                 ? null
-                : () => auth.loginAsAccount(
-                      generatorName: genNameCtrl.text,
+                : () {
+                    if (genNameCtrl.text.trim().isEmpty ||
+                        passCtrl.text.trim().isEmpty) {
+                      auth.errorMessage.value = 'الرجاء تعبئة جميع الحقول';
+                      return;
+                    }
+                    auth.loginAsAccount(
+                      genName: genNameCtrl.text,
                       password: passCtrl.text,
-                    ),
-            child: auth.isLoading.value
+                    );
+                  },
+            icon: auth.isLoading.value
                 ? const SizedBox(
-                    height: 20,
-                    width: 20,
+                    height: 18, width: 18,
                     child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
+                        color: Colors.white, strokeWidth: 2),
                   )
-                : const Text('دخول'),
+                : const Icon(Icons.login),
+            label: const Text('دخول'),
           )),
         ],
       ),
@@ -314,6 +325,9 @@ class _WorkerLoginTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const SizedBox(height: 12),
+          const Icon(Icons.engineering_rounded,
+              size: 48, color: AppTheme.primary),
           const SizedBox(height: 8),
           const Text(
             'تسجيل دخول العامل',
@@ -325,7 +339,7 @@ class _WorkerLoginTab extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           const Text(
             'أدخل رقم هاتفك وكلمة المرور',
             style: TextStyle(fontFamily: 'Cairo', color: AppTheme.textMid),
@@ -355,156 +369,30 @@ class _WorkerLoginTab extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          Obx(() {
-            if (auth.errorMessage.isNotEmpty && auth.isLoading.isFalse) {
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.red.shade200),
-                ),
-                child: Text(
-                  auth.errorMessage.value,
-                  style: TextStyle(
-                    fontFamily: 'Cairo',
-                    color: Colors.red.shade700,
-                    fontSize: 13,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          }),
+          _ErrorBox(auth: auth),
           const SizedBox(height: 24),
-          Obx(() => ElevatedButton(
+          Obx(() => ElevatedButton.icon(
             onPressed: auth.isLoading.value
                 ? null
-                : () => auth.loginAsWorker(
+                : () {
+                    if (phoneCtrl.text.trim().isEmpty ||
+                        passCtrl.text.trim().isEmpty) {
+                      auth.errorMessage.value = 'الرجاء تعبئة جميع الحقول';
+                      return;
+                    }
+                    auth.loginAsWorker(
                       phone: phoneCtrl.text,
                       password: passCtrl.text,
-                    ),
-            child: auth.isLoading.value
+                    );
+                  },
+            icon: auth.isLoading.value
                 ? const SizedBox(
-                    height: 20,
-                    width: 20,
+                    height: 18, width: 18,
                     child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
+                        color: Colors.white, strokeWidth: 2),
                   )
-                : const Text('دخول'),
-          )),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Register tab ────────────────────────────────────────────────────────────
-
-class _RegisterTab extends StatelessWidget {
-  final TextEditingController nameCtrl;
-  final TextEditingController phoneCtrl;
-  final TextEditingController passCtrl;
-  final AuthController auth;
-
-  const _RegisterTab({
-    required this.nameCtrl,
-    required this.phoneCtrl,
-    required this.passCtrl,
-    required this.auth,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: 8),
-          const Text(
-            'تسجيل مولدة جديدة',
-            style: TextStyle(
-              fontFamily: 'Cairo',
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textDark,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'اسم المولدة + رقم الهاتف = بيانات الدخول',
-            style: TextStyle(fontFamily: 'Cairo', color: AppTheme.textMid),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 28),
-          TextField(
-            controller: nameCtrl,
-            textDirection: TextDirection.rtl,
-            decoration: const InputDecoration(
-              labelText: 'اسم المولدة',
-              prefixIcon: Icon(Icons.electrical_services_rounded),
-              hintText: 'مثال: مولدة الحي',
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: phoneCtrl,
-            keyboardType: TextInputType.phone,
-            textDirection: TextDirection.ltr,
-            decoration: const InputDecoration(
-              labelText: 'رقم الهاتف',
-              prefixIcon: Icon(Icons.phone),
-              hintText: '07XXXXXXXXX',
-            ),
-          ),
-          const SizedBox(height: 8),
-          Obx(() {
-            if (auth.errorMessage.isNotEmpty && auth.isLoading.isFalse) {
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.red.shade200),
-                ),
-                child: Text(
-                  auth.errorMessage.value,
-                  style: TextStyle(
-                    fontFamily: 'Cairo',
-                    color: Colors.red.shade700,
-                    fontSize: 13,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          }),
-          const SizedBox(height: 24),
-          Obx(() => ElevatedButton(
-            onPressed: auth.isLoading.value
-                ? null
-                : () => auth.register(
-                      generatorName: nameCtrl.text,
-                      phone: phoneCtrl.text,
-                      password: passCtrl.text,
-                    ),
-            child: auth.isLoading.value
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : const Text('إنشاء الحساب'),
+                : const Icon(Icons.login),
+            label: const Text('دخول'),
           )),
         ],
       ),

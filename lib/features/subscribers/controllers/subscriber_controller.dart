@@ -94,14 +94,37 @@ class _AddSubscriberSheetState extends State<_AddSubscriberSheet> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (_name.text.trim().isEmpty || _circuit.text.trim().isEmpty ||
-        _ambers.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى تعبئة الحقول المطلوبة')),
-      );
-      return;
+  String? _validateName(String? v) {
+    if (v == null || v.trim().isEmpty) return 'حقل مطلوب';
+    if (v.trim().length < 3) return 'الاسم يجب أن يكون 3 أحرف على الأقل';
+    return null;
+  }
+
+  String? _validateCircuit(String? v) {
+    if (v == null || v.trim().isEmpty) return 'حقل مطلوب';
+    return null;
+  }
+
+  String? _validateAmbers(String? v) {
+    if (v == null || v.trim().isEmpty) return 'حقل مطلوب';
+    final n = int.tryParse(v.trim());
+    if (n == null || n < 1 || n > 50) return 'قيمة صحيحة بين 1 و 50';
+    return null;
+  }
+
+  String? _validatePhone(String? v) {
+    if (v == null || v.trim().isEmpty) return null; // optional
+    final digits = v.trim().replaceAll(RegExp(r'\D'), '');
+    if (digits.length != 11 || !digits.startsWith('07')) {
+      return 'رقم هاتف غير صالح (07XXXXXXXXX)';
     }
+    return null;
+  }
+
+  final _formKey = GlobalKey<FormState>();
+
+  Future<void> _submit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _loading = true);
     final ok = await _ctrl.add({
       'name':           _name.text.trim(),
@@ -129,38 +152,70 @@ class _AddSubscriberSheetState extends State<_AddSubscriberSheet> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: ListView(controller: sc, children: [
-            const Text('إضافة مشترك جديد',
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 20,
-                    fontWeight: FontWeight.w700),
-                textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            TextField(controller: _name,
+          child: Form(
+            key: _formKey,
+            child: ListView(controller: sc, children: [
+              const Text('إضافة مشترك جديد',
+                  style: TextStyle(fontFamily: 'Cairo', fontSize: 20,
+                      fontWeight: FontWeight.w700),
+                  textAlign: TextAlign.center),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _name,
                 textDirection: TextDirection.rtl,
-                decoration: const InputDecoration(labelText: 'اسم المشترك *')),
-            const SizedBox(height: 12),
-            TextField(controller: _circuit,
+                validator: _validateName,
+                decoration: const InputDecoration(
+                  labelText: 'اسم المشترك *',
+                  prefixIcon: Icon(Icons.person),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _circuit,
                 textDirection: TextDirection.ltr,
-                decoration: const InputDecoration(labelText: 'رقم الجوزة *')),
-            const SizedBox(height: 12),
-            TextField(controller: _ambers,
+                validator: _validateCircuit,
+                decoration: const InputDecoration(
+                  labelText: 'رقم الجوزة *',
+                  prefixIcon: Icon(Icons.tag),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _ambers,
                 keyboardType: TextInputType.number,
                 textDirection: TextDirection.ltr,
-                decoration: const InputDecoration(labelText: 'عدد الأمبيرات *', suffixText: 'أمبير')),
-            const SizedBox(height: 12),
-            TextField(controller: _phone,
+                validator: _validateAmbers,
+                decoration: const InputDecoration(
+                  labelText: 'عدد الأمبيرات *',
+                  suffixText: 'أمبير',
+                  prefixIcon: Icon(Icons.electrical_services),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _phone,
                 keyboardType: TextInputType.phone,
                 textDirection: TextDirection.ltr,
-                decoration: const InputDecoration(labelText: 'رقم الهاتف', hintText: '07XXXXXXXXX')),
-            const SizedBox(height: 28),
-            ElevatedButton(
-              onPressed: _loading ? null : _submit,
-              child: _loading
-                  ? const SizedBox(width: 20, height: 20,
-                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('حفظ المشترك'),
-            ),
-          ]),
+                validator: _validatePhone,
+                decoration: const InputDecoration(
+                  labelText: 'رقم الهاتف',
+                  hintText: '07XXXXXXXXX',
+                  prefixIcon: Icon(Icons.phone),
+                ),
+              ),
+              const SizedBox(height: 28),
+              ElevatedButton.icon(
+                onPressed: _loading ? null : _submit,
+                icon: _loading
+                    ? const SizedBox(width: 18, height: 18,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
+                    : const Icon(Icons.save),
+                label: const Text('حفظ المشترك',
+                    style: TextStyle(fontFamily: 'Cairo')),
+              ),
+            ]),
+          ),
         ),
       ),
     );

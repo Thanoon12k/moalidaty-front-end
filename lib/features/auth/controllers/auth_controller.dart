@@ -10,14 +10,14 @@ class AuthController extends GetxController {
   final _store = Get.find<SecureStorage>();
 
   // ── Observables ────────────────────────────────────────────────────────────
-  final isLoading    = false.obs;
-  final errorMessage = ''.obs;
+  final isLoading     = false.obs;
+  final errorMessage  = ''.obs;
+  final generatorName = ''.obs;   // reactive — drives AppBar title
 
   // Current session (null before login)
   AuthSession? session;
 
-  String get generatorName => session?.generatorName ?? '';
-  bool   get isAccount     => session?.isAccount ?? false;
+  bool get isAccount => session?.isAccount ?? false;
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -45,6 +45,7 @@ class AuthController extends GetxController {
         workerId:      null,
         workerName:    wName,
       );
+      generatorName.value = genName;   // ← update reactive title
       Get.offAllNamed('/home');
     } else {
       Get.offAllNamed('/login');
@@ -54,17 +55,18 @@ class AuthController extends GetxController {
   // ── Account login ──────────────────────────────────────────────────────────
 
   Future<void> loginAsAccount({
-    required String generatorName,
+    required String genName,
     required String password,
   }) async {
     isLoading.value = true;
     errorMessage.value = '';
     try {
       final res = await _dio.post('/auth/account/login/', data: {
-        'generator_name': generatorName.trim(),
+        'generator_name': genName.trim(),
         'password': password.trim(),
       });
       session = AuthSession.fromJson(res.data);
+      generatorName.value = session!.generatorName;  // ← update reactive title
       await _store.saveSession(res.data as Map<String, dynamic>);
       Get.offAllNamed('/home');
     } on DioException catch (e) {
@@ -88,6 +90,7 @@ class AuthController extends GetxController {
         'password': password.trim(),
       });
       session = AuthSession.fromJson(res.data);
+      generatorName.value = session!.generatorName;  // ← update reactive title
       await _store.saveSession(res.data as Map<String, dynamic>);
       Get.offAllNamed('/home');
     } on DioException catch (e) {
@@ -97,35 +100,12 @@ class AuthController extends GetxController {
     }
   }
 
-  // ── Register ───────────────────────────────────────────────────────────────
-
-  Future<void> register({
-    required String generatorName,
-    required String phone,
-    required String password,
-  }) async {
-    isLoading.value = true;
-    errorMessage.value = '';
-    try {
-      final res = await _dio.post('/auth/register/', data: {
-        'generator_name': generatorName.trim(),
-        'phone': phone.trim(),
-        'password': password.trim(),
-      });
-      session = AuthSession.fromJson(res.data);
-      await _store.saveSession(res.data as Map<String, dynamic>);
-      Get.offAllNamed('/home');
-    } on DioException catch (e) {
-      errorMessage.value = _extractError(e);
-    } finally {
-      isLoading.value = false;
-    }
-  }
 
   // ── Logout ─────────────────────────────────────────────────────────────────
 
   Future<void> logout() async {
     session = null;
+    generatorName.value = '';   // clear reactive title
     await _store.clearSession();
     Get.offAllNamed('/login');
   }
