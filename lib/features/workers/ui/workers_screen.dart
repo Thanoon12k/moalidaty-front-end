@@ -1,63 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Worker;
 
-import '../../../core/theme.dart';
+import '../../../core/analytics/analytics.dart';
+import '../../../core/analytics/analytics_controller.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../core/utils/format.dart';
+import '../../../core/widgets/common.dart';
+import '../../../core/widgets/feedback.dart';
 import '../controllers/worker_controller.dart';
 import '../models/worker.dart';
+import 'worker_form_sheet.dart';
 
 class WorkersScreen extends StatelessWidget {
   const WorkersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final ctrl = Get.find<WorkerController>();
+    final stats = Get.find<AnalyticsController>();
 
-    return Obx(() {
-      if (ctrl.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      return Scaffold(
-        backgroundColor: AppTheme.surface,
-        body: ctrl.items.isEmpty
-            ? _EmptyState(onAdd: () => ctrl.showAddSheet(context))
-            : RefreshIndicator(
-                onRefresh: ctrl.load,
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: ctrl.items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) => _WorkerCard(
-                    worker: ctrl.items[i],
-                    onDelete: () => _confirmDelete(context, ctrl, ctrl.items[i]),
-                  ),
-                ),
-              ),
-        floatingActionButton: FloatingActionButton(
-          heroTag: 'wor_fab',
-          onPressed: () => ctrl.showAddSheet(context),
-          child: const Icon(Icons.person_add),
-        ),
-      );
-    });
-  }
-
-  void _confirmDelete(BuildContext ctx, WorkerController ctrl, Worker w) {
-    showDialog(
-      context: ctx,
-      builder: (_) => AlertDialog(
-        title: const Text('حذف العامل',
-            style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700)),
-        content: Text('حذف "${w.name}"؟',
-            style: const TextStyle(fontFamily: 'Cairo')),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('العمال'),
         actions: [
-          TextButton(onPressed: () => Get.back(),
-              child: const Text('إلغاء', style: TextStyle(fontFamily: 'Cairo'))),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () { Get.back(); ctrl.delete(w.id); },
-            child: const Text('حذف', style: TextStyle(fontFamily: 'Cairo')),
+          IconButton(
+            tooltip: 'إضافة عامل',
+            icon: const Icon(Icons.person_add_alt_1_rounded),
+            onPressed: () => showWorkerForm(),
           ),
         ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: ctrl.load,
+        child: Obx(() {
+          final a = stats.analytics.value;
+          final month = stats.focusMonth;
+          final shares = {for (final c in a.collectors(month)) c.workerId: c};
+          final monthTotal = a.summary(month).collected;
+          final active = ctrl.items.where((w) => w.isActive).toList();
+          final stopped = ctrl.items.where((w) => !w.isActive).toList();
+
+          if (ctrl.isLoading.value && ctrl.items.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (ctrl.items.isEmpty) {
+            return ListView(children: [
+              EmptyState(
+                icon: Icons.engineering_outlined,
+                title: 'لا يوجد عمال بعد',
+                subtitle: 'أضف عمال الجباية ليسجّلوا الإيصالات من هواتفهم',
+                actionLabel: 'إضافة عامل',
+                onAction: () => showWorkerForm(),
+              ),
+            ]);
+          }
+          return ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
+            if (ctrl.isOffline.value) const OfflineBanner(),
+            AppCard(
+              child: Row(children: [
+                IconTile(icon: Icons.groups_2_rounded, color: p.success, background: p.successSoft),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('${active.length} عامل نشط',
+                        style: TextStyle(fontWeight: FontWeight.w800, color: p.textPrimary, fontSize: 15)),
+                    Text('تحصيل ${month.label}: ${Fmt.money(monthTotal)}',
+                        style: TextStyle(fontSize: 12, color: p.textSecondary)),
+                  ]),
+                ),
+              ]),
+            ),
+            const SizedBox(height: 4),
+            for (final w in active) _WorkerCard(worker: w, share: shares[w.id], monthTotal: monthTotal, month: month),
+            if (stopped.isNotEmpty) ...[
+              const SectionHeader(title: 'موقوفون'),
+              for (final w in stopped) _WorkerCard(worker: w, share: null, monthTotal: monthTotal, month: month),
+            ],
+          ]);
+        }),
       ),
     );
   }
@@ -65,61 +86,92 @@ class WorkersScreen extends StatelessWidget {
 
 class _WorkerCard extends StatelessWidget {
   final Worker worker;
-  final VoidCallback onDelete;
-  const _WorkerCard({required this.worker, required this.onDelete});
+  final CollectorShare? share;
+  final double monthTotal;
+  final MonthKey month;
+
+  const _WorkerCard({required this.worker, required this.share, required this.monthTotal, required this.month});
+
+  Future<void> _toggleActive() async {
+    final stop = worker.isActive;
+    final ok = await confirmAction(
+      title: stop ? 'إيقاف العامل' : 'إعادة تفعيل العامل',
+      message: stop
+          ? 'لن يتمكن ${worker.name} من تسجيل الدخول، وتبقى إيصالاته محفوظة.'
+          : 'سيتمكن ${worker.name} من تسجيل الدخول مجدداً.',
+      confirm: stop ? 'إيقاف' : 'تفعيل',
+      destructive: stop,
+    );
+    if (ok) {
+      await guard(() => Get.find<WorkerController>().setActive(worker.id, !stop),
+          success: stop ? 'تم إيقاف العامل' : 'تم تفعيل العامل');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(children: [
-          Container(
-            width: 48, height: 48,
-            decoration: BoxDecoration(
-              color: AppTheme.accentL,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.engineering, color: AppTheme.accent),
-          ),
-          const SizedBox(width: 14),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(worker.name,
-                style: const TextStyle(fontFamily: 'Cairo',
-                    fontWeight: FontWeight.w700, fontSize: 15)),
-            const SizedBox(height: 2),
-            Text(worker.phone,
-                style: const TextStyle(fontFamily: 'Cairo',
-                    color: AppTheme.textMid, fontSize: 13)),
-          ])),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: onDelete,
-          ),
-        ]),
+    final p = context.palette;
+    final ratio = monthTotal <= 0 || share == null ? 0.0 : share!.amount / monthTotal;
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Opacity(
+        opacity: worker.isActive ? 1 : 0.6,
+        child: AppCard(
+          padding: const EdgeInsets.fromLTRB(14, 12, 4, 12),
+          child: Column(children: [
+            Row(children: [
+              NameAvatar(name: worker.name),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(worker.name, style: TextStyle(fontWeight: FontWeight.w700, color: p.textPrimary)),
+                  Text(worker.phone, textDirection: TextDirection.ltr, style: TextStyle(fontSize: 12, color: p.textMuted)),
+                ]),
+              ),
+              if (!worker.isActive) Pill(text: 'موقوف', color: p.danger, background: p.dangerSoft),
+              PopupMenuButton<String>(
+                tooltip: 'خيارات',
+                icon: Icon(Icons.more_vert_rounded, color: p.textMuted),
+                onSelected: (v) => switch (v) {
+                  'edit' => showWorkerForm(worker: worker),
+                  'password' => showWorkerPasswordForm(worker),
+                  _ => _toggleActive(),
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(value: 'edit', child: Text('تعديل البيانات')),
+                  const PopupMenuItem(value: 'password', child: Text('تغيير كلمة المرور')),
+                  PopupMenuItem(value: 'active', child: Text(worker.isActive ? 'إيقاف العامل' : 'إعادة التفعيل')),
+                ],
+              ),
+            ]),
+            if (worker.isActive) ...[
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 10),
+                child: Row(children: [
+                  Text('${share?.receipts ?? 0} إيصال • ${Fmt.compactMoney(share?.amount ?? 0)}',
+                      style: TextStyle(fontSize: 11.5, color: p.textSecondary, fontWeight: FontWeight.w600)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: ratio,
+                        minHeight: 6,
+                        color: p.primary,
+                        backgroundColor: p.surfaceAlt,
+                        semanticsLabel: 'حصة العامل من تحصيل ${month.label}',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(Fmt.percent(ratio), style: TextStyle(fontSize: 11, color: p.textMuted)),
+                ]),
+              ),
+            ],
+          ]),
+        ),
       ),
     );
   }
-}
-
-class _EmptyState extends StatelessWidget {
-  final VoidCallback onAdd;
-  const _EmptyState({required this.onAdd});
-
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      const Icon(Icons.engineering_outlined, size: 80, color: AppTheme.textLight),
-      const SizedBox(height: 16),
-      const Text('لا يوجد عمال بعد',
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 18,
-              fontWeight: FontWeight.w600, color: AppTheme.textMid)),
-      const SizedBox(height: 24),
-      ElevatedButton.icon(
-        onPressed: onAdd,
-        icon: const Icon(Icons.person_add),
-        label: const Text('إضافة عامل'),
-      ),
-    ]),
-  );
 }

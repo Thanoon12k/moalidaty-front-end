@@ -1,120 +1,140 @@
-import 'package:dio/dio.dart';
-import 'package:get/get.dart' hide Response;
+import 'dart:async';
 
-import '../../../core/network/api_client.dart';
-import '../../../core/storage/secure_storage.dart';
-import '../models/auth_model.dart';
+import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../app.dart';
+import '../../../core/data/app_error.dart';
+import '../../../core/data/backend.dart';
+import '../../../core/data/data_source.dart';
+import '../../../core/data/local_cache.dart';
+import '../../budgets/controllers/budget_controller.dart';
+import '../../receipts/controllers/receipt_controller.dart';
+import '../../subscribers/controllers/subscriber_controller.dart';
+import '../../workers/controllers/worker_controller.dart';
+import '../models/user_profile.dart';
 
 class AuthController extends GetxController {
-  final _dio   = Get.find<ApiClient>().dio;
-  final _store = Get.find<SecureStorage>();
+  final _backend = Get.find<Backend>();
 
-  // ── Observables ────────────────────────────────────────────────────────────
-  final isLoading     = false.obs;
-  final errorMessage  = ''.obs;
-  final generatorName = ''.obs;   // reactive — drives AppBar title
+  final profile = Rxn<UserProfile>();
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
 
-  // Current session (null before login)
-  AuthSession? session;
+  StreamSubscription<AuthState>? _authSub;
+  bool _signingOut = false;
 
-  bool get isAccount => session?.isAccount ?? false;
-
-  // ── Lifecycle ──────────────────────────────────────────────────────────────
+  DataSource get _ds => _backend.source;
+  bool get isManager => profile.value?.isManager ?? false;
+  bool get isDemo => _backend.isDemo;
 
   @override
   void onInit() {
     super.onInit();
-    _checkExistingSession();
-  }
-
-  Future<void> _checkExistingSession() async {
-    final hasSession = await _store.hasSession;
-    if (hasSession) {
-      // Rebuild session from secure storage
-      final genId   = int.tryParse(await _store.generatorId ?? '') ?? 0;
-      final type    = await _store.userType ?? '';
-      final genName = await _store.generatorName ?? '';
-      final wName   = await _store.workerName;
-
-      session = AuthSession(
-        accessToken:   (await _store.accessToken)!,
-        refreshToken:  (await _store.refreshToken)!,
-        type:          type,
-        generatorId:   genId,
-        generatorName: genName,
-        workerId:      null,
-        workerName:    wName,
-      );
-      generatorName.value = genName;   // ← update reactive title
-      Get.offAllNamed('/home');
-    } else {
-      Get.offAllNamed('/login');
+    if (_backend.hasRemote) {
+      // A refresh token that is rejected (password changed, worker
+      // deactivated…) ends the session: go back to the login screen.
+      _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((s) {
+        if (s.event == AuthChangeEvent.signedOut && profile.value != null && !isDemo && !_signingOut) {
+          _endSession(message: 'انتهت الجلسة، سجّل الدخول من جديد');
+        }
+      });
     }
   }
 
-  // ── Account login ──────────────────────────────────────────────────────────
+  @override
+  void onClose() {
+    _authSub?.cancel();
+    super.onClose();
+  }
 
-  Future<void> loginAsAccount({
-    required String genName,
-    required String password,
-  }) async {
+  /// Called by the splash screen: resume a saved session or show the login.
+  Future<void> bootstrap() async {
+    UserProfile? restored;
+    if (_backend.hasRemote) {
+      try {
+        restored = await _ds.restoreSession();
+        await LocalCache.saveProfile(restored?.toRow());
+      } catch (e) {
+        // Offline start with a saved session: use the cached profile.
+        final cached = await LocalCache.readProfile();
+        if (isNetworkError(e) && cached != null) restored = UserProfile.fromRow(cached);
+      }
+    }
+    if (restored == null) {
+      Get.offAllNamed(AppRoutes.login);
+      return;
+    }
+    profile.value = restored;
+    Get.offAllNamed(AppRoutes.home);
+    unawaited(reloadAll());
+  }
+
+  Future<void> signIn(LoginKind kind, String identifier, String password) async {
+    _backend.useRemote();
+    await _start(() => _ds.signIn(kind, identifier, password));
+  }
+
+  /// Explore the app with sample data, as the manager or as a worker.
+  Future<void> startDemo(LoginKind kind) async {
+    _backend.useDemo();
+    await _start(() => kind == LoginKind.account
+        ? _ds.signIn(kind, 'مولدة الكرخ', 'test1234')
+        : _ds.signIn(kind, '07720000001', 'worker123'));
+  }
+
+  Future<void> _start(Future<UserProfile> Function() signIn) async {
     isLoading.value = true;
     errorMessage.value = '';
     try {
-      final res = await _dio.post('/auth/account/login/', data: {
-        'generator_name': genName.trim(),
-        'password': password.trim(),
-      });
-      session = AuthSession.fromJson(res.data);
-      generatorName.value = session!.generatorName;  // ← update reactive title
-      await _store.saveSession(res.data as Map<String, dynamic>);
-      Get.offAllNamed('/home');
-    } on DioException catch (e) {
-      errorMessage.value = _extractError(e);
+      final p = await signIn();
+      profile.value = p;
+      if (!isDemo) await LocalCache.saveProfile(p.toRow());
+      Get.offAllNamed(AppRoutes.home);
+      unawaited(reloadAll());
+    } catch (e) {
+      errorMessage.value = describeError(e);
     } finally {
       isLoading.value = false;
     }
   }
 
-  // ── Worker login ───────────────────────────────────────────────────────────
-
-  Future<void> loginAsWorker({
-    required String phone,
-    required String password,
-  }) async {
-    isLoading.value = true;
-    errorMessage.value = '';
-    try {
-      final res = await _dio.post('/auth/worker/login/', data: {
-        'phone': phone.trim(),
-        'password': password.trim(),
-      });
-      session = AuthSession.fromJson(res.data);
-      generatorName.value = session!.generatorName;  // ← update reactive title
-      await _store.saveSession(res.data as Map<String, dynamic>);
-      Get.offAllNamed('/home');
-    } on DioException catch (e) {
-      errorMessage.value = _extractError(e);
-    } finally {
-      isLoading.value = false;
-    }
+  /// Loads every list, then sends receipts recorded offline.
+  Future<void> reloadAll() async {
+    final receipts = Get.find<ReceiptController>();
+    await Future.wait([
+      Get.find<SubscriberController>().load(),
+      Get.find<BudgetController>().load(),
+      receipts.load(),
+      Get.find<WorkerController>().load(),
+      receipts.loadPending(),
+    ]);
+    await receipts.syncPending();
   }
 
-
-  // ── Logout ─────────────────────────────────────────────────────────────────
+  Future<void> changePassword(String newPassword) => _ds.changePassword(newPassword);
 
   Future<void> logout() async {
-    session = null;
-    generatorName.value = '';   // clear reactive title
-    await _store.clearSession();
-    Get.offAllNamed('/login');
+    _signingOut = true;
+    try {
+      await _ds.signOut();
+    } catch (_) {
+      // Offline: the local session is still cleared below.
+    } finally {
+      _signingOut = false;
+    }
+    await _endSession();
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
-
-  String _extractError(DioException e) {
-    final data = e.response?.data;
-    if (data is Map && data.containsKey('detail')) return data['detail'];
-    return 'حدث خطأ في الاتصال بالخادم';
+  Future<void> _endSession({String? message}) async {
+    profile.value = null;
+    Get.find<SubscriberController>().clear();
+    Get.find<BudgetController>().clear();
+    Get.find<ReceiptController>().clear();
+    Get.find<WorkerController>().clear();
+    await LocalCache.clearSession();
+    _backend.useRemote();
+    errorMessage.value = message ?? '';
+    Get.offAllNamed(AppRoutes.login);
   }
 }

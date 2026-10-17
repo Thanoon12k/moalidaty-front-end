@@ -1,58 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/theme.dart';
+import '../../../core/theme/app_palette.dart';
 import '../controllers/auth_controller.dart';
+import 'app_logo.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Navigate only once the navigator exists (the old code navigated from
+    // AuthController.onInit, which could run before the app was built).
+    WidgetsBinding.instance.addPostFrameCallback((_) => Get.find<AuthController>().bootstrap());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Scaffold(
-      backgroundColor: AppTheme.primary,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: const Icon(
-                Icons.electrical_services_rounded,
-                size: 60,
-                color: Colors.white,
-              ),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: p.heroGradient,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const AppLogo(size: 96),
+            const SizedBox(height: 22),
+            const Text('مولداتنا',
+                style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white)),
+            const SizedBox(height: 6),
+            Text('نظام إدارة اشتراكات المولدات',
+                style: TextStyle(fontSize: 15, color: Colors.white.withValues(alpha: 0.85))),
+            const SizedBox(height: 56),
+            const SizedBox(
+              width: 26,
+              height: 26,
+              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.4),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'مولداتنا',
-              style: TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 36,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'نظام إدارة اشتراكات المولدة',
-              style: TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
-              ),
-            ),
-            const SizedBox(height: 60),
-            const CircularProgressIndicator(
-              color: Colors.white,
-              strokeWidth: 2,
-            ),
-          ],
+          ]),
         ),
       ),
     );

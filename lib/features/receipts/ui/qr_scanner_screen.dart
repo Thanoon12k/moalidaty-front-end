@@ -1,11 +1,25 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../../../core/theme.dart';
+import '../../../core/widgets/feedback.dart';
+import '../../auth/controllers/auth_controller.dart';
+import 'subscriber_qr.dart';
 
-/// Scans a subscriber QR code and returns the subscriber ID as int.
-/// QR format: moalidatna://sub/[id]/gen/[genId]
+/// Opens the camera and returns the scanned subscriber id (or null).
+Future<int?> scanSubscriberQr() async {
+  final supported = kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.macOS;
+  if (!supported) {
+    showSnack('مسح رمز QR غير مدعوم على هذا الجهاز', error: true);
+    return null;
+  }
+  return Get.to<int>(() => const QrScannerScreen(), transition: Transition.downToUp);
+}
+
 class QrScannerScreen extends StatefulWidget {
   const QrScannerScreen({super.key});
 
@@ -14,8 +28,12 @@ class QrScannerScreen extends StatefulWidget {
 }
 
 class _QrScannerScreenState extends State<QrScannerScreen> {
-  final MobileScannerController _ctrl = MobileScannerController();
-  bool _scanned = false;
+  final _ctrl = MobileScannerController(
+    detectionSpeed: DetectionSpeed.noDuplicates,
+    formats: const [BarcodeFormat.qrCode],
+  );
+  bool _done = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -24,180 +42,122 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 
   void _onDetect(BarcodeCapture capture) {
-    if (_scanned) return;
+    if (_done) return;
     final raw = capture.barcodes.firstOrNull?.rawValue;
     if (raw == null) return;
-
-    // Expected: moalidatna://sub/3/gen/7
-    final uri = Uri.tryParse(raw);
-    if (uri == null ||
-        uri.scheme != 'moalidatna' ||
-        uri.host != 'sub') {
-      _showError('رمز QR غير صالح');
+    final parsed = parseSubscriberQr(raw);
+    final myGenerator = Get.find<AuthController>().profile.value?.generatorId;
+    if (parsed == null) {
+      setState(() => _error = 'رمز QR غير صالح');
       return;
     }
-
-    final parts = raw.split('/');
-    // parts: ['moalidatna:', '', 'sub', '<id>', 'gen', '<genId>']
-    final subId = int.tryParse(parts.length > 3 ? parts[3] : '');
-    if (subId == null) {
-      _showError('تعذر قراءة رمز المشترك');
+    if (parsed.$2 != myGenerator) {
+      setState(() => _error = 'هذا الرمز لمشترك في مولدة أخرى');
       return;
     }
-
-    setState(() => _scanned = true);
+    _done = true;
     _ctrl.stop();
-    Get.back(result: subId);
-  }
-
-  void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg, style: const TextStyle(fontFamily: 'Cairo')),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) setState(() => _scanned = false);
-    });
+    Get.back(result: parsed.$1);
   }
 
   @override
   Widget build(BuildContext context) {
+    const frame = 260.0;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text(
-          'مسح رمز QR المشترك',
-          style: TextStyle(fontFamily: 'Cairo', color: Colors.white),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        foregroundColor: Colors.white,
+        title: const Text('مسح رمز المشترك', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.flash_on, color: Colors.white),
-            onPressed: () => _ctrl.toggleTorch(),
+            tooltip: 'الإضاءة',
+            icon: const Icon(Icons.flashlight_on_rounded),
+            onPressed: _ctrl.toggleTorch,
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          // ── Camera feed ─────────────────────────────────────────────────
-          MobileScanner(
-            controller: _ctrl,
-            onDetect: _onDetect,
-          ),
-
-          // ── Scan frame overlay ──────────────────────────────────────────
-          Center(
-            child: Container(
-              width: 260,
-              height: 260,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppTheme.primary, width: 3),
-                borderRadius: BorderRadius.circular(16),
+      body: Stack(children: [
+        MobileScanner(
+          controller: _ctrl,
+          onDetect: _onDetect,
+          errorBuilder: (context, error) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Text(
+                error.errorCode == MobileScannerErrorCode.permissionDenied
+                    ? 'يجب السماح للتطبيق باستخدام الكاميرا'
+                    : 'تعذر تشغيل الكاميرا',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           ),
-
-          // ── Corner decorations ──────────────────────────────────────────
-          Center(
-            child: SizedBox(
-              width: 260,
-              height: 260,
-              child: CustomPaint(painter: _CornerPainter()),
+        ),
+        // Dim everything but the scan window.
+        ColorFiltered(
+          colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.55), BlendMode.srcOut),
+          child: Stack(children: [
+            Container(decoration: const BoxDecoration(color: Colors.black, backgroundBlendMode: BlendMode.dstOut)),
+            Center(
+              child: Container(
+                width: frame,
+                height: frame,
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+              ),
             ),
-          ),
-
-          // ── Instruction text ────────────────────────────────────────────
-          Positioned(
-            bottom: 80,
-            left: 0, right: 0,
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 40),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    'وجّه الكاميرا نحو رمز QR الخاص بالمشترك',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (_scanned)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text(
-                          'تم المسح بنجاح!',
-                          style: TextStyle(
-                              fontFamily: 'Cairo', color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+          ]),
+        ),
+        Center(
+          child: SizedBox(width: frame, height: frame, child: CustomPaint(painter: _CornerPainter())),
+        ),
+        Positioned(
+          left: 24,
+          right: 24,
+          bottom: 64,
+          child: Column(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              decoration: BoxDecoration(
+                color: (_error == null ? Colors.black : Colors.red.shade700).withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                _error ?? 'وجّه الكاميرا نحو رمز QR الخاص بالمشترك',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
-          ),
-        ],
-      ),
+          ]),
+        ),
+      ]),
     );
   }
 }
 
-/// Draws thick corner markers on the scan frame
 class _CornerPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    const len = 28.0;
-    const thickness = 4.0;
+    const len = 30.0;
     final paint = Paint()
       ..color = Colors.white
-      ..strokeWidth = thickness
+      ..strokeWidth = 4
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-
-    final corners = [
-      // top-left
-      [Offset(0, len), Offset.zero, Offset(len, 0)],
-      // top-right
-      [Offset(size.width - len, 0), Offset(size.width, 0), Offset(size.width, len)],
-      // bottom-left
-      [Offset(0, size.height - len), Offset(0, size.height), Offset(len, size.height)],
-      // bottom-right
-      [
-        Offset(size.width - len, size.height),
-        Offset(size.width, size.height),
-        Offset(size.width, size.height - len),
-      ],
-    ];
-
-    for (final c in corners) {
-      final path = Path()
-        ..moveTo(c[0].dx, c[0].dy)
-        ..lineTo(c[1].dx, c[1].dy)
-        ..lineTo(c[2].dx, c[2].dy);
-      canvas.drawPath(path, paint);
+    final w = size.width, h = size.height;
+    for (final pts in [
+      const [Offset(0, len), Offset.zero, Offset(len, 0)],
+      [Offset(w - len, 0), Offset(w, 0), Offset(w, len)],
+      [Offset(0, h - len), Offset(0, h), Offset(len, h)],
+      [Offset(w - len, h), Offset(w, h), Offset(w, h - len)],
+    ]) {
+      canvas.drawPath(
+        Path()
+          ..moveTo(pts[0].dx, pts[0].dy)
+          ..lineTo(pts[1].dx, pts[1].dy)
+          ..lineTo(pts[2].dx, pts[2].dy),
+        paint,
+      );
     }
   }
 

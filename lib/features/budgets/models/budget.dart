@@ -1,46 +1,54 @@
+import '../../../core/utils/format.dart';
+import '../../../core/utils/json.dart';
+
+/// The price of one amber for one month of one generator.
 class Budget {
   final int id;
-  final int generator;
+  final int generatorId;
   final int year;
   final int month;
   final double amberPrice;
-  final int paidCount;
-  final int unpaidCount;
-  final String dateCreated;
+  final DateTime? dateCreated;
 
   const Budget({
     required this.id,
-    required this.generator,
+    required this.generatorId,
     required this.year,
     required this.month,
     required this.amberPrice,
-    required this.paidCount,
-    required this.unpaidCount,
-    required this.dateCreated,
+    this.dateCreated,
   });
 
-  factory Budget.fromJson(Map<String, dynamic> j) => Budget(
-    id:          j['id'] as int,
-    generator:   j['generator'] as int,
-    year:        j['year'] as int,
-    month:       j['month'] as int,
-    amberPrice:  double.tryParse('${j['amber_price']}') ?? 0.0,
-    paidCount:   j['paid_count'] as int? ?? 0,
-    unpaidCount: j['unpaid_count'] as int? ?? 0,
-    dateCreated: j['date_created'] as String? ?? '',
-  );
+  factory Budget.fromRow(Map<String, dynamic> j) => Budget(
+        id: asInt(j['id']),
+        generatorId: asInt(j['generator_id']),
+        year: asInt(j['year']),
+        month: asInt(j['month']),
+        amberPrice: asDouble(j['amber_price']),
+        dateCreated: asDate(j['date_created']),
+      );
 
-  Map<String, dynamic> toJson() => {
-    'year': year,
-    'month': month,
-    'amber_price': amberPrice,
-  };
+  Map<String, dynamic> toRow() => {
+        'id': id,
+        'generator_id': generatorId,
+        'year': year,
+        'month': month,
+        'amber_price': amberPrice,
+        'date_created': dateCreated?.toUtc().toIso8601String(),
+      };
 
-  static const _months = [
-    '', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
-  ];
+  Budget copyWith({double? amberPrice}) => Budget(
+        id: id,
+        generatorId: generatorId,
+        year: year,
+        month: month,
+        amberPrice: amberPrice ?? this.amberPrice,
+        dateCreated: dateCreated,
+      );
 
-  String get monthName => (month >= 1 && month <= 12) ? _months[month] : '$month';
-  String get label     => '$monthName $year';
+  String get monthName => Fmt.monthName(month);
+  String get label => '$monthName $year';
+
+  /// Sort key: newer months first when sorted descending.
+  int get period => year * 100 + month;
 }
