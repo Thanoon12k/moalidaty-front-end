@@ -21,7 +21,7 @@ void main() {
     tester.view.physicalSize = const Size(1170, 2532);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
-    await registerDependencies();
+    await registerDependencies(demoOnly: true);
     await tester.pumpWidget(const MoalidatnaApp());
     await tester.pump(); // splash → bootstrap
     await tester.pump(const Duration(milliseconds: 600));

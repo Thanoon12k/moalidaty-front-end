@@ -48,9 +48,9 @@ bool get _hasSecureStorage =>
 
 /// Registers services and controllers (order matters). Tests pass their own
 /// [remote] data source or none to run on the demo data.
-Future<void> registerDependencies({DataSource? remote}) async {
+Future<void> registerDependencies({DataSource? remote, bool demoOnly = false}) async {
   await Get.putAsync(() => ThemeController().init(), permanent: true);
-  Get.put(Backend(remote: remote), permanent: true);
+  Get.put(Backend(remote: remote, demoOnly: demoOnly), permanent: true);
   Get.put(SubscriberController(), permanent: true);
   Get.put(BudgetController(), permanent: true);
   Get.put(ReceiptController(), permanent: true);

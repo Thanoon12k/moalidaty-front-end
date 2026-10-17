@@ -35,7 +35,11 @@ cp env/supabase.example.json env/supabase.json   # fill in URL + publishable key
 flutter run --dart-define-from-file=env/supabase.json
 ```
 
-Without the defines the app starts in demo mode only.
+Without defines the app connects to the hosted **demo** project
+(`axncazensmjdqpczvzwf` — temporarily shared with the `clinic_queue` Supabase
+project, for showing the app to customers). Demo logins: `مولدة الكرخ` /
+`test1234`, worker `07720000001` / `worker123`. For real customers, create a
+dedicated project and pass its URL/key with `--dart-define-from-file`.
 
 ## Backend (Supabase)
 

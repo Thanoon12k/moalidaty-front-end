@@ -8,7 +8,9 @@ import 'supabase_data_source.dart';
 /// Holds the active [DataSource]: Supabase when the app is configured,
 /// otherwise (or when the user taps "try the app") the in-memory demo.
 class Backend extends GetxService {
-  Backend({DataSource? remote}) : _remote = remote ?? (Env.hasSupabase ? SupabaseDataSource() : null);
+  /// [demoOnly] runs without any server (tests).
+  Backend({DataSource? remote, bool demoOnly = false})
+      : _remote = demoOnly ? null : remote ?? (Env.hasSupabase ? SupabaseDataSource() : null);
 
   final DataSource? _remote;
   DataSource? _demo;
