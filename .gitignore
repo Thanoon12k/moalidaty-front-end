@@ -49,3 +49,6 @@ env/supabase.json
 # Supabase CLI local state
 supabase/.branches
 supabase/.temp
+
+# Built APKs
+/apk/
