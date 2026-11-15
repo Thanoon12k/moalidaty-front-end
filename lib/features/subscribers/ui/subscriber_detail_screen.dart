@@ -1,583 +1,261 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../core/theme.dart';
+import '../../../core/analytics/analytics_controller.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../core/utils/format.dart';
+import '../../../core/widgets/charts.dart';
+import '../../../core/widgets/common.dart';
+import '../../../core/widgets/controls.dart';
+import '../../../core/widgets/feedback.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../../receipts/controllers/receipt_controller.dart';
-import '../../receipts/models/receipt.dart';
+import '../../receipts/ui/receipt_form_sheet.dart';
+import '../../receipts/ui/receipt_tile.dart';
+import '../../receipts/ui/subscriber_qr.dart';
+import '../controllers/subscriber_controller.dart';
 import '../models/subscriber.dart';
+import 'subscriber_form_sheet.dart';
 
-class SubscriberDetailScreen extends StatelessWidget {
-  final Subscriber subscriber;
-  const SubscriberDetailScreen({super.key, required this.subscriber});
+/// Payment history of one subscriber (styled after the reference "Stock Details").
+class SubscriberDetailScreen extends StatefulWidget {
+  final int subscriberId;
+  const SubscriberDetailScreen({super.key, required this.subscriberId});
+
+  @override
+  State<SubscriberDetailScreen> createState() => _SubscriberDetailScreenState();
+}
+
+class _SubscriberDetailScreenState extends State<SubscriberDetailScreen> {
+  final _subs = Get.find<SubscriberController>();
+  final _stats = Get.find<AnalyticsController>();
+  final _auth = Get.find<AuthController>();
+  int _range = 6; // months shown in the chart (0 = all)
+
+  Future<void> _archive(Subscriber s) async {
+    final ok = await confirmAction(
+      title: 'إيقاف الاشتراك',
+      message: 'سيُخفى "${s.name}" من القوائم مع الاحتفاظ بإيصالاته. متابعة؟',
+      confirm: 'إيقاف',
+      destructive: true,
+    );
+    if (!ok) return;
+    if (await guard(() => _subs.archive(s.id), success: 'تم إيقاف الاشتراك')) Get.back();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final recCtrl = Get.find<ReceiptController>();
-    final myReceipts = recCtrl.items
-        .where((r) => r.subscriber == subscriber.id)
-        .toList()
-      ..sort((a, b) {
-        if (a.year != b.year) return b.year.compareTo(a.year);
-        return b.month.compareTo(a.month);
-      });
+    final p = context.palette;
+    return Obx(() {
+      final s = _subs.byId(widget.subscriberId);
+      final a = _stats.analytics.value;
+      if (s == null) {
+        return Scaffold(
+          appBar: AppBar(),
+          body: const Center(child: EmptyState(icon: Icons.person_off_outlined, title: 'المشترك غير موجود')),
+        );
+      }
+      final standing = a.standing(s);
+      final receipts = a.receiptsOf(s.id).toList()..sort((x, y) => y.period.compareTo(x.period));
+      final owedMonths = a.months.where((m) => s.dateSubscribed == null || !s.dateSubscribed!.isAfter(m.end)).toList();
+      final byPeriod = {for (final r in receipts) r.period: r.amountPaid};
+      final shown = _range == 0 || owedMonths.length <= _range
+          ? owedMonths
+          : owedMonths.sublist(owedMonths.length - _range);
+      final focus = _stats.focusMonth;
+      final paidFocus = Get.find<ReceiptController>().isPaid(s.id, focus.year, focus.month);
+      final hasFocusBudget = a.budgetFor(focus) != null;
+      final avg = receipts.isEmpty ? 0.0 : standing.totalPaid / receipts.length;
 
-    final fmt = NumberFormat('#,##0', 'en');
-    final totalPaid = myReceipts.fold(0.0, (s, r) => s + r.amountPaid);
-
-    // QR data: encode subscriber ID for scanning
-    final qrData =
-        'moalidatna://sub/${subscriber.id}/gen/${subscriber.generator}';
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          subscriber.name,
-          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
-          overflow: TextOverflow.ellipsis,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.qr_code_2),
-            tooltip: 'رمز QR للمشترك',
-            onPressed: () => _showQrDialog(context, qrData),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // ── Info card ──────────────────────────────────────────────────
-          _InfoCard(subscriber: subscriber, totalPaid: totalPaid, fmt: fmt),
-          const SizedBox(height: 16),
-
-          // ── QR Code preview ────────────────────────────────────────────
-          _QrCard(qrData: qrData, subscriber: subscriber),
-          const SizedBox(height: 16),
-
-          // ── Payment history chart ──────────────────────────────────────
-          if (myReceipts.isNotEmpty) ...[
-            _SectionTitle(title: 'سجل المدفوعات'),
-            const SizedBox(height: 8),
-            _PaymentChart(receipts: myReceipts, fmt: fmt),
-            const SizedBox(height: 16),
-            _SectionTitle(title: 'تفاصيل الإيصالات'),
-            const SizedBox(height: 8),
-            ...myReceipts.map((r) => _ReceiptTile(r: r)),
-          ] else ...[
-            Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Column(
-                children: [
-                  Icon(Icons.receipt_long_outlined,
-                      size: 48, color: Colors.grey),
-                  SizedBox(height: 8),
-                  Text(
-                    'لا توجد إيصالات لهذا المشترك',
-                    style: TextStyle(fontFamily: 'Cairo', color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('تفاصيل المشترك'),
+          actions: [
+            if (_auth.isManager)
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert_rounded),
+                onSelected: (v) => v == 'edit' ? showSubscriberForm(subscriber: s) : _archive(s),
+                itemBuilder: (_) => const [
+                  PopupMenuItem(value: 'edit', child: Text('تعديل البيانات')),
+                  PopupMenuItem(value: 'archive', child: Text('إيقاف الاشتراك')),
                 ],
               ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  void _showQrDialog(BuildContext context, String data) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'رمز QR — ${subscriber.name}',
-          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
-          textAlign: TextAlign.center,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.divider),
-              ),
-              child: QrImageView(
-                data: data,
-                version: QrVersions.auto,
-                size: 200,
-                eyeStyle: const QrEyeStyle(
-                  eyeShape: QrEyeShape.square,
-                  color: AppTheme.primary,
-                ),
-                dataModuleStyle: const QrDataModuleStyle(
-                  dataModuleShape: QrDataModuleShape.square,
-                  color: Color(0xFF1A1A2E),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '${subscriber.circuitNumber} — ${subscriber.ambers}A',
-              style: const TextStyle(
-                  fontFamily: 'Cairo',
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textMid),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'امسح هذا الرمز لإنشاء إيصال سريع',
-              style: const TextStyle(
-                  fontFamily: 'Cairo', fontSize: 12, color: AppTheme.textMid),
-            ),
           ],
         ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Get.back(),
-            child: const Text('إغلاق', style: TextStyle(fontFamily: 'Cairo')),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Info card ────────────────────────────────────────────────────────────────
-
-class _InfoCard extends StatelessWidget {
-  final Subscriber subscriber;
-  final double totalPaid;
-  final NumberFormat fmt;
-
-  const _InfoCard({
-    required this.subscriber,
-    required this.totalPaid,
-    required this.fmt,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppTheme.primary, AppTheme.primary.withOpacity(0.8)],
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: Colors.white.withOpacity(0.2),
-                child: Text(
-                  subscriber.name.characters.first,
-                  style: const TextStyle(
-                    fontFamily: 'Cairo',
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+        body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
+          // ── Identity + headline number ───────────────────────────────────
+          AppCard(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                NameAvatar(name: s.name, size: 50),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(s.name, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: p.textPrimary)),
+                    Text(
+                      ['جوزة ${s.circuitNumber}', '${s.ambers} أمبير', if (s.phone.isNotEmpty) s.phone].join(' • '),
+                      style: TextStyle(fontSize: 12, color: p.textMuted),
+                    ),
+                  ]),
+                ),
+              ]),
+              const SizedBox(height: 16),
+              Text('إجمالي المدفوع', style: TextStyle(fontSize: 12, color: p.textSecondary)),
+              Text(Fmt.money(standing.totalPaid),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: p.textPrimary)),
+              const SizedBox(height: 4),
+              Row(children: [
+                Pill(
+                  text: '${standing.paidMonths} من ${owedMonths.length} أشهر',
+                  icon: Icons.check_circle_rounded,
+                  color: p.success,
+                  background: p.successSoft,
+                ),
+                const SizedBox(width: 8),
+                if (standing.unpaidMonths > 0)
+                  Pill(
+                    text: '${standing.unpaidMonths} غير مدفوع',
+                    icon: Icons.error_outline_rounded,
+                    color: p.danger,
+                    background: p.dangerSoft,
+                  ),
+              ]),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 190,
+                child: shown.isEmpty
+                    ? Center(child: Text('لا توجد أشهر مسجّلة بعد', style: TextStyle(color: p.textMuted)))
+                    : SubscriberHistoryChart(months: [for (final m in shown) (m, byPeriod[m.period])]),
+              ),
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: ChartLegend(
+                    alignment: WrapAlignment.start,
+                    items: [('مدفوع', p.series[0]), ('غير مدفوع', p.danger)],
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      subscriber.name,
-                      style: const TextStyle(
-                        fontFamily: 'Cairo',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      'جوزة ${subscriber.circuitNumber}',
-                      style: TextStyle(
-                          fontFamily: 'Cairo',
-                          color: Colors.white.withOpacity(0.85),
-                          fontSize: 13),
-                    ),
-                  ],
+                SegmentedToggle<int>(
+                  selected: _range,
+                  onChanged: (v) => setState(() => _range = v),
+                  options: const [(6, '6 أشهر'), (12, 'سنة'), (0, 'الكل')],
                 ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
+              ]),
+              const SizedBox(height: 14),
+              Divider(color: p.border),
+              const SizedBox(height: 12),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                StatColumn(
+                  value: receipts.isEmpty ? '—' : Fmt.date(receipts.first.dateReceived),
+                  label: 'آخر دفعة',
                 ),
-                child: Text(
-                  '${subscriber.ambers}A',
-                  style: const TextStyle(
-                    fontFamily: 'Cairo',
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                StatColumn(value: avg == 0 ? '—' : Fmt.compactMoney(avg), label: 'متوسط الدفعة'),
+                StatColumn(value: '${standing.unpaidMonths}', label: 'أشهر متأخرة'),
+                StatColumn(
+                  value: s.dateSubscribed == null ? '—' : Fmt.date(s.dateSubscribed!),
+                  label: 'تاريخ الاشتراك',
                 ),
-              ),
-            ],
+              ]),
+            ]),
           ),
-          const SizedBox(height: 16),
-          const Divider(color: Colors.white24),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _infoItem(Icons.phone, subscriber.phone.isEmpty ? '—' : subscriber.phone),
-              _infoItem(Icons.calendar_today, subscriber.dateSubscribed.split('T').first),
-              _infoItem(Icons.payments_rounded, '${fmt.format(totalPaid.toInt())} د.ع'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+          const SizedBox(height: 14),
+          if (hasFocusBudget)
+            SizedBox(
+              height: 52,
+              child: ElevatedButton.icon(
+                onPressed: paidFocus ? null : () => showReceiptForm(subscriber: s, month: focus),
+                icon: Icon(paidFocus ? Icons.check_circle_rounded : Icons.add_card_rounded),
+                label: Text(paidFocus ? 'دفع ${focus.label}' : 'تسجيل دفعة ${focus.label}'),
+              ),
+            ),
 
-  Widget _infoItem(IconData icon, String text) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.white70, size: 18),
-        const SizedBox(height: 4),
-        Text(
-          text,
-          style: const TextStyle(
-              fontFamily: 'Cairo', color: Colors.white, fontSize: 12),
-        ),
-      ],
-    );
+          // ── Month by month ───────────────────────────────────────────────
+          if (owedMonths.isNotEmpty) ...[
+            const SectionHeader(title: 'الأشهر'),
+            AppCard(
+              child: Wrap(spacing: 8, runSpacing: 8, children: [
+                for (final m in owedMonths.reversed)
+                  byPeriod.containsKey(m.period)
+                      ? Pill(text: m.label, icon: Icons.check_rounded, color: p.success, background: p.successSoft)
+                      : Pill(text: m.label, icon: Icons.close_rounded, color: p.danger, background: p.dangerSoft),
+              ]),
+            ),
+          ],
+
+          // ── QR ───────────────────────────────────────────────────────────
+          const SectionHeader(title: 'رمز QR للمشترك'),
+          _QrCard(subscriber: s),
+
+          // ── Receipts ─────────────────────────────────────────────────────
+          SectionHeader(title: 'الإيصالات', trailing: Text('${receipts.length}')),
+          if (receipts.isEmpty)
+            const AppCard(child: EmptyState(icon: Icons.receipt_long_outlined, title: 'لا توجد إيصالات لهذا المشترك'))
+          else
+            AppCard(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(children: [for (final r in receipts) ReceiptTile(receipt: r, dense: true, showWorker: true)]),
+            ),
+        ]),
+      );
+    });
   }
 }
-
-// ─── QR card ─────────────────────────────────────────────────────────────────
 
 class _QrCard extends StatelessWidget {
-  final String qrData;
   final Subscriber subscriber;
-  const _QrCard({required this.qrData, required this.subscriber});
+  const _QrCard({required this.subscriber});
 
-  void _showBig(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'رمز QR — ${subscriber.name}',
-          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
-          textAlign: TextAlign.center,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.divider),
-              ),
-              child: QrImageView(
-                data: qrData,
-                version: QrVersions.auto,
-                size: 220,
-                eyeStyle: const QrEyeStyle(
-                    eyeShape: QrEyeShape.square, color: AppTheme.primary),
-                dataModuleStyle: const QrDataModuleStyle(
-                    dataModuleShape: QrDataModuleShape.square,
-                    color: Color(0xFF1A1A2E)),
-              ),
-            ),
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final data = subscriberQrData(subscriber.id, subscriber.generatorId);
+    Widget qr(double size) => Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+          child: QrImageView(
+            data: data,
+            size: size,
+            padding: EdgeInsets.zero,
+            eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: AppPalette.light.primary),
+            dataModuleStyle: const QrDataModuleStyle(
+                dataModuleShape: QrDataModuleShape.square, color: Color(0xFF181B2C)),
+          ),
+        );
+
+    return AppCard(
+      onTap: () => showDialog(
+        context: context,
+        builder: (c) => AlertDialog(
+          title: Text(subscriber.name, textAlign: TextAlign.center),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            qr(220),
             const SizedBox(height: 12),
-            Text(
-              '${subscriber.circuitNumber} — ${subscriber.ambers}A',
-              style: const TextStyle(
-                  fontFamily: 'Cairo',
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textMid),
-            ),
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Get.back(),
-            child: const Text('إغلاق', style: TextStyle(fontFamily: 'Cairo')),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12),
-        ],
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => _showBig(context),
-            child: QrImageView(
-              data: qrData,
-              version: QrVersions.auto,
-              size: 90,
-              eyeStyle: const QrEyeStyle(
-                  eyeShape: QrEyeShape.square, color: AppTheme.primary),
-              dataModuleStyle: const QrDataModuleStyle(
-                  dataModuleShape: QrDataModuleShape.square,
-                  color: Color(0xFF1A1A2E)),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'رمز QR للمشترك',
-                  style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                      color: AppTheme.textDark),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'امسح الرمز لإنشاء إيصال سريع دون البحث اليدوي',
-                  style: TextStyle(
-                      fontFamily: 'Cairo', fontSize: 12, color: AppTheme.textMid),
-                ),
-                const SizedBox(height: 10),
-                TextButton.icon(
-                  onPressed: () => _showBig(context),
-                  icon: const Icon(Icons.zoom_in, size: 16),
-                  label: const Text('تكبير',
-                      style: TextStyle(fontFamily: 'Cairo', fontSize: 12)),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppTheme.primary,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-// ─── Payment bar chart ────────────────────────────────────────────────────────
-
-class _PaymentChart extends StatelessWidget {
-  final List<Receipt> receipts;
-  final NumberFormat fmt;
-  const _PaymentChart({required this.receipts, required this.fmt});
-
-  static const _months = [
-    '', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final sorted = List<Receipt>.from(receipts)
-      ..sort((a, b) {
-        if (a.year != b.year) return a.year.compareTo(b.year);
-        return a.month.compareTo(b.month);
-      });
-
-    final bars = sorted.asMap().entries.map((e) {
-      return BarChartGroupData(
-        x: e.key,
-        barRods: [
-          BarChartRodData(
-            toY: e.value.amountPaid,
-            color: AppTheme.primary,
-            width: 18,
-            borderRadius: BorderRadius.circular(5),
-          ),
-        ],
-      );
-    }).toList();
-
-    return Container(
-      height: 200,
-      padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12),
-        ],
-      ),
-      child: BarChart(
-        BarChartData(
-          barGroups: bars,
-          borderData: FlBorderData(show: false),
-          gridData: const FlGridData(show: true),
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (v, _) {
-                  final i = v.toInt();
-                  if (i < 0 || i >= sorted.length) {
-                    return const SizedBox.shrink();
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      _months[sorted[i].month],
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 9),
-                    ),
-                  );
-                },
-              ),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 48,
-                getTitlesWidget: (v, _) => Text(
-                  '${fmt.format(v ~/ 1000)}k',
-                  style: const TextStyle(fontSize: 9),
-                ),
-              ),
-            ),
-            topTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          ),
+            Text('جوزة ${subscriber.circuitNumber} • ${subscriber.ambers} أمبير'),
+          ]),
+          actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('إغلاق'))],
         ),
       ),
-    );
-  }
-}
-
-// ─── Receipt tile ─────────────────────────────────────────────────────────────
-
-class _ReceiptTile extends StatelessWidget {
-  final Receipt r;
-  const _ReceiptTile({required this.r});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.green.shade50,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.check_circle, color: Colors.green.shade600, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  r.label,
-                  style: const TextStyle(
-                    fontFamily: 'Cairo',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: AppTheme.textDark,
-                  ),
-                ),
-                if (r.workerName != null && r.workerName!.isNotEmpty)
-                  Text(
-                    'بواسطة: ${r.workerName}',
-                    style: const TextStyle(
-                        fontFamily: 'Cairo',
-                        fontSize: 11,
-                        color: AppTheme.textMid),
-                  ),
-              ],
-            ),
-          ),
-          Text(
-            r.formattedAmount,
-            style: const TextStyle(
-              fontFamily: 'Cairo',
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Section title ────────────────────────────────────────────────────────────
-
-class _SectionTitle extends StatelessWidget {
-  final String title;
-  const _SectionTitle({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 4, height: 20,
-          decoration: BoxDecoration(
-            color: AppTheme.primary, borderRadius: BorderRadius.circular(2)),
+      child: Row(children: [
+        qr(84),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('امسح الرمز لتسجيل دفعة سريعة',
+                style: TextStyle(fontWeight: FontWeight.w700, color: p.textPrimary)),
+            const SizedBox(height: 4),
+            Text('يُطبع الرمز على كل إيصال، فيكفي مسحه في الشهر التالي',
+                style: TextStyle(fontSize: 12, color: p.textSecondary)),
+            const SizedBox(height: 6),
+            Row(children: [
+              Icon(Icons.zoom_in_rounded, size: 16, color: p.primary),
+              const SizedBox(width: 4),
+              Text('اضغط للتكبير', style: TextStyle(fontSize: 12, color: p.primary, fontWeight: FontWeight.w700)),
+            ]),
+          ]),
         ),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontFamily: 'Cairo',
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppTheme.textDark,
-          ),
-        ),
-      ],
+      ]),
     );
   }
 }

@@ -1,22 +1,19 @@
-// INHANCE : add global errors(server responses) to all  forms handler
-// INHANCE : try Review the classes and it fields
-// INHANCE : try TEST ALL functions and  apis
-// INHANCE: addd some security layers
+// INHANCE : try TEST ALL functions and  apis   (partly: flutter test + supabase/tests/api_smoke_test.sh)
 // FEATURE: add some ai features
-// FEATURE : add plots report for subscriper
-// FEATURE: receipt image Implement print functionality
-// FEATURE: receipt image Implement sharing functionality
-// TODO : add acreceipt problem
-// TODO : add account section for users
 // TODO : add icon to the app
-// TODO : make button navigation bar
-// TODO : make the app can navigate between windows by swapping right and left
-// TODO : add limits to from fields and form inputs global validators(like name phone amber)
-// TODO : remove create electricgenmodel from  server endpoint for security manner keep only list (add electricgenmodel from admin)
-// TODO  : add offline mode windows which is receipts in new windows called (قائمة الانتظار) recoiepts wait as list in their waiting to connect to internet to be sended to server
 
+// DONE  : move the database to Supabase (supabase/), Django data migration script
+// DONE  : add global errors(server responses) to all forms handler (core/data/app_error.dart)
+// DONE  : addd some security layers (row level security, worker restrictions, keychain session, no public sign-up)
+// DONE  : add plots report for subscriper (subscriber detail chart + reports screen)
+// DONE  : receipt image print (Arabic PDF) and sharing
+// DONE  : add account section for users (الحساب والإعدادات)
+// DONE  : make button navigation bar
+// DONE  : make the app can navigate between windows by swapping right and left
+// DONE  : add limits to from fields and form inputs global validators
+// DONE  : remove create account from server endpoint (admin-only: private.admin_create_account)
+// DONE  : offline mode — receipts wait in قائمة الانتظار until internet is back
 // DONE  : add generator id field to needed requests
-// DONE : FIX receipt  add dialoge ui buttons
+// DONE  : FIX receipt add dialoge ui buttons
 // DONE  : home upper banner numbers of workers subs receipts not correct updated
-// DONE :  add (Login)  windows
-
+// DONE  : add (Login) windows

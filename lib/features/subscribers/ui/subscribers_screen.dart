@@ -1,181 +1,203 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/theme.dart';
+import '../../../core/analytics/analytics_controller.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../core/widgets/common.dart';
+import '../../../core/widgets/controls.dart';
+import '../../../core/widgets/feedback.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../../receipts/controllers/receipt_controller.dart';
+import '../../shell/ui/tab_header.dart';
 import '../controllers/subscriber_controller.dart';
 import '../models/subscriber.dart';
 import 'subscriber_detail_screen.dart';
+import 'subscriber_form_sheet.dart';
 
-class SubscribersScreen extends StatelessWidget {
+enum _Filter { all, paid, unpaid }
+
+class SubscribersScreen extends StatefulWidget {
   const SubscribersScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final ctrl = Get.find<SubscriberController>();
+  State<SubscribersScreen> createState() => _SubscribersScreenState();
+}
 
-    return Obx(() {
-      if (ctrl.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      return Scaffold(
-        backgroundColor: AppTheme.surface,
-        body: ctrl.items.isEmpty
-            ? _EmptyState(onAdd: () => ctrl.showAddSheet(context))
-            : RefreshIndicator(
-                onRefresh: ctrl.load,
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: ctrl.items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) => _SubscriberCard(
-                    subscriber: ctrl.items[i],
-                    onDelete: () => _confirmDelete(context, ctrl, ctrl.items[i]),
-                    onTap: () => Get.to(
-                      () => SubscriberDetailScreen(subscriber: ctrl.items[i]),
-                    ),
-                  ),
-                ),
-              ),
-        floatingActionButton: FloatingActionButton(
-          heroTag: 'sub_fab',
-          onPressed: () => ctrl.showAddSheet(context),
-          child: const Icon(Icons.person_add),
-        ),
-      );
-    });
+class _SubscribersScreenState extends State<SubscribersScreen> with AutomaticKeepAliveClientMixin {
+  final _ctrl = Get.find<SubscriberController>();
+  final _receipts = Get.find<ReceiptController>();
+  final _stats = Get.find<AnalyticsController>();
+  final _auth = Get.find<AuthController>();
+  final _search = TextEditingController();
+  _Filter _filter = _Filter.all;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
   }
 
-  void _confirmDelete(
-      BuildContext ctx, SubscriberController ctrl, Subscriber s) {
-    showDialog(
-      context: ctx,
-      builder: (_) => AlertDialog(
-        title: const Text('حذف المشترك',
-            style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700)),
-        content: Text('حذف "${s.name}"؟',
-            style: const TextStyle(fontFamily: 'Cairo')),
-        actions: [
-          TextButton(onPressed: () => Get.back(),
-              child: const Text('إلغاء', style: TextStyle(fontFamily:'Cairo'))),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () { Get.back(); ctrl.delete(s.id); },
-            child: const Text('حذف', style: TextStyle(fontFamily:'Cairo')),
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final p = context.palette;
+    return RefreshIndicator(
+      onRefresh: _auth.reloadAll,
+      child: Obx(() {
+        final a = _stats.analytics.value;
+        final month = _stats.focusMonth;
+        final hasBudget = a.budgetFor(month) != null;
+        bool paid(Subscriber s) => _receipts.isPaid(s.id, month.year, month.month);
+        final q = _search.text.trim();
+        final list = _ctrl.items.where((s) {
+          if (q.isNotEmpty && !s.name.contains(q) && !s.circuitNumber.contains(q) && !s.phone.contains(q)) {
+            return false;
+          }
+          return switch (_filter) {
+            _Filter.all => true,
+            _Filter.paid => paid(s),
+            _Filter.unpaid => !paid(s),
+          };
+        }).toList();
+
+        return CustomScrollView(slivers: [
+          SliverToBoxAdapter(
+            child: TabHeader(
+              title: 'المشتركون',
+              subtitle: '${_ctrl.items.length} مشترك • ${a.totalAmbers} أمبير',
+              onAdd: () => showSubscriberForm(),
+              addTooltip: 'إضافة مشترك',
+            ),
           ),
-        ],
-      ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverList.list(children: [
+              if (_ctrl.isOffline.value) const OfflineBanner(),
+              TextField(
+                controller: _search,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  hintText: 'بحث بالاسم أو رقم الجوزة أو الهاتف',
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  fillColor: p.surface,
+                  suffixIcon: q.isEmpty
+                      ? null
+                      : IconButton(
+                          tooltip: 'مسح',
+                          icon: const Icon(Icons.close_rounded),
+                          onPressed: () => setState(_search.clear),
+                        ),
+                ),
+              ),
+              if (hasBudget) ...[
+                const SizedBox(height: 12),
+                SegmentedToggle<_Filter>(
+                  expand: true,
+                  selected: _filter,
+                  onChanged: (f) => setState(() => _filter = f),
+                  options: [
+                    (_Filter.all, 'الكل'),
+                    (_Filter.paid, 'دفعوا ${month.shortLabel}'),
+                    (_Filter.unpaid, 'لم يدفعوا'),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 12),
+            ]),
+          ),
+          if (_ctrl.isLoading.value && _ctrl.items.isEmpty)
+            const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()))
+          else if (list.isEmpty)
+            SliverToBoxAdapter(
+              child: EmptyState(
+                icon: Icons.people_outline_rounded,
+                title: _ctrl.items.isEmpty ? 'لا يوجد مشتركون بعد' : 'لا توجد نتائج',
+                subtitle: _ctrl.items.isEmpty ? 'أضف أول مشترك للبدء' : null,
+                actionLabel: _ctrl.items.isEmpty ? 'إضافة مشترك' : null,
+                onAction: _ctrl.items.isEmpty ? () => showSubscriberForm() : null,
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 110),
+              sliver: SliverList.separated(
+                itemCount: list.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
+                itemBuilder: (_, i) => _SubscriberCard(
+                  subscriber: list[i],
+                  status: hasBudget ? paid(list[i]) : null,
+                  canManage: _auth.isManager,
+                ),
+              ),
+            ),
+        ]);
+      }),
     );
   }
 }
 
 class _SubscriberCard extends StatelessWidget {
   final Subscriber subscriber;
-  final VoidCallback onDelete;
-  final VoidCallback onTap;
+  final bool? status; // paid this month? null = no budget yet
+  final bool canManage;
 
-  const _SubscriberCard({
-    required this.subscriber,
-    required this.onDelete,
-    required this.onTap,
-  });
+  const _SubscriberCard({required this.subscriber, required this.status, required this.canManage});
+
+  Future<void> _archive() async {
+    final ok = await confirmAction(
+      title: 'إيقاف الاشتراك',
+      message: 'سيُخفى "${subscriber.name}" من القوائم مع الاحتفاظ بإيصالاته السابقة. متابعة؟',
+      confirm: 'إيقاف',
+      destructive: true,
+    );
+    if (ok) {
+      await guard(() => Get.find<SubscriberController>().archive(subscriber.id), success: 'تم إيقاف الاشتراك');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-            // Avatar
-            Container(
-              width: 48, height: 48,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryL,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.person, color: AppTheme.primary),
-            ),
-            const SizedBox(width: 14),
-            // Info
-            Expanded(child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(subscriber.name,
-                    style: const TextStyle(fontFamily:'Cairo',
-                        fontWeight: FontWeight.w700, fontSize: 15)),
-                const SizedBox(height: 2),
-                Row(children: [
-                  _chip(Icons.electrical_services, '${subscriber.ambers} أمبير',
-                      AppTheme.warning),
-                  const SizedBox(width: 8),
-                  _chip(Icons.tag, subscriber.circuitNumber, AppTheme.primary),
-                ]),
-                if (subscriber.phone.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(subscriber.phone,
-                        style: const TextStyle(fontFamily:'Cairo',
-                            color: AppTheme.textLight, fontSize: 12)),
-                  ),
-              ],
-            )),
-            // Actions
-            IconButton(
-              icon: const Icon(Icons.qr_code_2, color: AppTheme.primary),
-              onPressed: onTap,
-              tooltip: 'تفاصيل ورمز QR',
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: onDelete,
-            ),
-          ],
-          ),
+    final p = context.palette;
+    final s = subscriber;
+    return AppCard(
+      padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
+      onTap: () => Get.to(() => SubscriberDetailScreen(subscriberId: s.id)),
+      child: Row(children: [
+        NameAvatar(name: s.name),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(s.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, color: p.textPrimary)),
+            const SizedBox(height: 4),
+            Wrap(spacing: 6, runSpacing: 4, children: [
+              Pill(text: s.circuitNumber, icon: Icons.tag_rounded, color: p.primary, background: p.primarySoft),
+              Pill(text: '${s.ambers} أمبير', icon: Icons.bolt_rounded, color: p.orange, background: p.orangeSoft),
+            ]),
+          ]),
         ),
-      ),
-    );
-  }
-
-  Widget _chip(IconData icon, String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 12, color: color),
-        const SizedBox(width: 3),
-        Text(label, style: TextStyle(fontFamily:'Cairo', fontSize:11, color:color)),
+        if (status != null)
+          status!
+              ? Pill(text: 'دفع', icon: Icons.check_rounded, color: p.success, background: p.successSoft)
+              : Pill(text: 'لم يدفع', icon: Icons.schedule_rounded, color: p.danger, background: p.dangerSoft),
+        if (canManage)
+          PopupMenuButton<String>(
+            tooltip: 'خيارات',
+            icon: Icon(Icons.more_vert_rounded, color: p.textMuted),
+            onSelected: (v) => v == 'edit' ? showSubscriberForm(subscriber: s) : _archive(),
+            itemBuilder: (_) => const [
+              PopupMenuItem(value: 'edit', child: Text('تعديل')),
+              PopupMenuItem(value: 'archive', child: Text('إيقاف الاشتراك')),
+            ],
+          )
+        else
+          const SizedBox(width: 8),
       ]),
     );
   }
-}
-
-class _EmptyState extends StatelessWidget {
-  final VoidCallback onAdd;
-  const _EmptyState({required this.onAdd});
-
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      const Icon(Icons.people_outline, size: 80, color: AppTheme.textLight),
-      const SizedBox(height: 16),
-      const Text('لا يوجد مشتركون بعد',
-          style: TextStyle(fontFamily:'Cairo', fontSize:18,
-              fontWeight: FontWeight.w600, color: AppTheme.textMid)),
-      const SizedBox(height: 8),
-      const Text('أضف أول مشترك للبدء',
-          style: TextStyle(fontFamily:'Cairo', color: AppTheme.textLight)),
-      const SizedBox(height: 24),
-      ElevatedButton.icon(
-        onPressed: onAdd,
-        icon: const Icon(Icons.person_add),
-        label: const Text('إضافة مشترك'),
-      ),
-    ]),
-  );
 }
